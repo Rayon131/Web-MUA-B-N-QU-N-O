@@ -1,0 +1,55 @@
+﻿@model DATNN.Models.ChinhSach
+
+<div class="container mt-5">
+    <div class="card shadow-lg" style="border-radius: 16px; border: 1px solid #eee;">
+        <div class="card-header bg-primary text-white" style="border-top-left-radius:16px; border-top-right-radius:16px;">
+            <h2 class="mb-0">@Model.TenChinhSach</h2>
+        </div>
+
+        <div class="card-body">
+            @* Nội dung rich text từ CKEditor *@
+            <div class="policy-content">
+                @Html.Raw(Model.NoiDung)
+            </div>
+        </div>
+
+        <div class="card-footer text-end">
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            <a asp-action="Edit" asp-route-id="@Model.id" class="btn btn-primary">Sửa</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .policy-content {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #333;
+    }
+
+        .policy-content h2, .policy-content h3, .policy-content h4 {
+            color: #222;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .policy-content ul, .policy-content ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .policy-content li {
+            margin-bottom: 8px;
+        }
+
+    .card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+ 
+</style>

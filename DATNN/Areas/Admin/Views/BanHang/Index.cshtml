@@ -1,0 +1,212 @@
+﻿@{
+    ViewData["Title"] = "Bán hàng tại quầy";
+}
+<link rel="stylesheet" href="~/css/pos.css" asp-append-version="true" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- Modal Chi tiết sản phẩm -->
+<div class="modal fade" id="productDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productDetailModalLabel">Chi tiết sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="productDetailBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="addProductToCartBtn">Thêm vào hóa đơn</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-pos">
+    <div class="left-section">
+        <div class="card-body p-0">
+            <!-- p-0 để bảng tràn viền đẹp hơn -->
+            <!-- Header tìm kiếm giữ nguyên -->
+            <div class="p-3 pb-0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="fw-bold m-0"><i class="fas fa-list"></i> Danh sách sản phẩm</h5>
+                </div>
+                <input type="text" placeholder="Tìm kiếm tên sản phẩm (F3)..." oninput="filterProducts(this.value)" class="form-control mb-3" />
+            </div>
+
+            <!-- THAY THẾ GRID CŨ BẰNG TABLE MỚI -->
+            <div class="table-responsive flex-grow-1" style="overflow-y: auto; height: 0;">
+                <table class="table table-hover table-striped table-bordered mb-0" style="border-top: 1px solid #dee2e6;">
+                    <thead class="bg-light sticky-top" style="z-index: 5;">
+                        <tr>
+                            <th class="text-center" style="width: 50px;">STT</th>
+                            <th class="text-center" style="width: 80px;">Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th class="text-end" style="width: 120px;">Giá bán</th>
+                            <th class="text-center" style="width: 100px;">Số lượng</th>
+                            <th class="text-center" style="width: 80px;">Chọn</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-list">
+                        <!-- JS sẽ render dòng tr vào đây -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- KHUNG PHẢI: HÓA ĐƠN -->
+    <div class="right-section">
+        <!-- 1. Tabs Hóa đơn -->
+        <div class="d-flex justify-content-between align-items-center bg-light border-bottom px-2 py-1">
+            <div id="order-tabs" class="d-flex" style="border:none; padding:0;"></div>
+            <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-outline-success" id="create-new-order-btn" title="Thêm đơn"><i class="fas fa-plus"></i></button>
+                <button class="btn btn-sm btn-outline-danger" id="cancel-order-btn" title="Hủy đơn"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+
+        <div id="initial-order-prompt" class="h-100 w-100" style="background: white; z-index: 10;">
+            <div class="d-flex flex-column justify-content-center align-items-center h-100 text-muted">
+                <i class="fas fa-shopping-basket fa-3x mb-3 opacity-50"></i>
+                <p>Chưa có hóa đơn nào được chọn</p>
+                <button class="btn btn-primary" id="start-first-order-btn">Tạo đơn hàng mới</button>
+            </div>
+        </div>
+
+        <!-- 2. Nội dung chi tiết đơn hàng -->
+        <div id="order-section-wrapper" style="display: none; flex-direction: column; height: 100%;">
+
+            <!-- Danh sách hàng trong giỏ (Cuộn được) -->
+            <div class="cart-wrapper">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%">Tên hàng</th>
+                            <th style="width: 15%" class="text-center">SL</th>
+                            <th style="width: 20%" class="text-end">Đơn giá</th>
+                            <th style="width: 20%" class="text-end">Thành tiền</th>
+                            <th style="width: 5%"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-items"></tbody>
+                </table>
+            </div>
+
+            <!-- Khu vực Thanh toán (Cố định dưới đáy) -->
+            <div class="card-body payment-area">
+                <!-- Thông tin khách hàng -->
+                <div class="row g-2 mb-2">
+                    <div class="col-7">
+                        <select id="customer-select" class="form-select form-select-sm"></select>
+                    </div>
+                    <div class="col-5">
+                        <button class="btn btn-sm btn-outline-secondary w-100" id="scan-qr-btn"><i class="fas fa-qrcode"></i> Scan QR</button>
+                    </div>
+                </div>
+
+                <div class="input-group input-group-sm mb-3">
+                    <select id="voucher-code-select" class="form-control"></select>
+
+                    <!-- Nút Áp dụng (Giữ nguyên) -->
+                    <button class="btn btn-outline-primary" type="button" id="apply-voucher-btn">Áp dụng</button>
+
+                    <!-- === THÊM NÚT HỦY VOUCHER VÀO ĐÂY === -->
+                    <button class="btn btn-outline-danger" type="button" id="remove-voucher-btn" style="display: none;">
+                        <i class="fas fa-times"></i> Bỏ mã
+                    </button>
+                    <!-- ==================================== -->
+                </div>
+                <div id="voucher-status-message" class="small mb-2"></div>
+
+                <!-- Tổng tiền -->
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span class="fw-bold"><span id="subtotal-amount">0</span></span>
+                    </div>
+                    <div class="summary-row text-success">
+                        <span>Giảm giá:</span>
+                        <span>- <span id="discount-amount">0</span></span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Khách phải trả:</span>
+                        <span><span id="total-amount">0</span> đ</span>
+                    </div>
+                </div>
+
+                <!-- Phương thức thanh toán -->
+                <div class="mb-3">
+                    <div class="d-flex gap-2 mb-2">
+                        <select id="payment-method-select" class="form-select">
+                            <option value="Tiền mặt">Tiền mặt</option>
+                            <option value="Chuyển khoản">Chuyển khoản</option>
+                        </select>
+                    </div>
+
+                    <div id="cash-payment-section">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Khách đưa:</span>
+                            <input type="text" id="cash-received-input" class="form-control" style="width: 150px;" placeholder="0">
+                        </div>
+                        <!-- Trong file Index.cshtml -->
+                        <div class="d-flex justify-content-between text-muted" id="change-due-section">
+                            <!-- Thêm id vào đây -->
+                            <span id="change-due-label">Tiền thừa:</span>
+                            <span class="fw-bold"><span id="change-due-amount">0</span> đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút bấm -->
+                <div class="actions d-flex gap-2">
+                    <button id="save-order-btn" class="btn btn-outline-primary flex-grow-1">Lưu </button>
+                    <button id="checkout-btn" class="btn btn-success flex-grow-1">THANH TOÁN </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL ĐỂ HIỂN THỊ CAMERA QUÉT MÃ -->
+<div class="modal fade" id="qrScannerModal" tabindex="-1" aria-labelledby="qrScannerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrScannerModalLabel">Đưa mã QR vào trong khung quét</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="qr-reader" style="width: 100%;"></div>
+                <div class="text-center my-2">
+                    <!-- THÊM MỚI PHẦN NÀY -->
+                    <span>HOẶC</span>
+                    <label for="qr-input-file" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-upload"></i> Tải ảnh lên
+                    </label>
+                    <input type="file" id="qr-input-file" accept="image/*" style="display: none;">
+                    <div id="qr-scan-status" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        var apiUrls = {
+            getInitialData: '@Url.Action("GetInitialData", "BanHang", new { area = "Admin" })',
+            getProductDetails: '@Url.Action("GetProductDetails", "BanHang", new { area = "Admin" })',
+            createPendingOrder: '@Url.Action("CreatePendingOrder", "BanHang", new { area = "Admin" })',
+            updateOrder: '@Url.Action("UpdateOrder", "BanHang", new { area = "Admin" })',
+            cancelOrder: '@Url.Action("CancelOrder", "BanHang", new { area = "Admin" })',
+              getProductByQr: '@Url.Action("GetProductDetailByQrCode", "BanHang", new { area = "Admin" })',
+               getPromotions: '@Url.Action("GetActiveOrderPromotions", "BanHang", new { area = "Admin" })',
+                 getVouchers: '@Url.Action("GetAvailableVouchers", "BanHang", new { area = "Admin" })',
+            applyVoucher: '@Url.Action("ApplyVoucher", "BanHang", new { area = "Admin" })',
+             printReceipt: '@Url.Action("PrintReceipt", "BanHang", new { area = "Admin" })'
+        };
+    </script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="~/js/pos.js" asp-append-version="true"></script>
+
+}

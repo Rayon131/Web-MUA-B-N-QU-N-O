@@ -1,0 +1,52 @@
+﻿.container_profile {
+    max-width: 960px;
+    padding-top: 100px;
+}
+
+.custom-card_profile {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+    .custom-card_profile h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .custom-card_profile p {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+.btn-custom-primary_profile {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: #fff;
+}
+
+    .btn-custom-primary_profile:hover {
+        background-color: #ee4d2d;
+        border-color: #ee4d2d;
+        color: #fff;
+    }
+
+.form-label_profile {
+    color: #6c757d;
+    text-align: right;
+}
+
+.form-control_profile, .form-select_profile {
+    border-radius: 4px;
+}
+
+.form-text_profile {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.change-link_profile {
+    text-decoration: none;
+}

@@ -1,0 +1,44 @@
+﻿@model DATNN.Models.XuatXu
+
+@{
+    ViewData["Title"] = "Thêm xuất xứ";
+}
+
+<h2 class="mb-4 text-center">Thêm xuất xứ mới</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow rounded-3">
+            <div class="card-body">
+
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="TenXuatXu" class="form-label">Tên xuất xứ</label>
+                        <input asp-for="TenXuatXu" class="form-control" placeholder="Nhập tên xuất xứ..." />
+                        <span asp-validation-for="TenXuatXu" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MoTa" class="form-label">Mô tả</label>
+                        <textarea asp-for="MoTa" class="form-control" rows="3" placeholder="Nhập mô tả..."></textarea>
+                        <span asp-validation-for="MoTa" class="text-danger"></span>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary px-4">Lưu</button>
+                        <a asp-action="Index" class="btn btn-secondary px-4">Trở lại</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

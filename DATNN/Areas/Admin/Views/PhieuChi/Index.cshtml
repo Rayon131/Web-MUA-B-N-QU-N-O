@@ -1,0 +1,78 @@
+﻿@using DATNN.Models
+@model IEnumerable<DATNN.Models.PhieuChi>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="text-uppercase">Quản Lý Chi Tiêu</h3>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fa fa-plus"></i> Tạo Phiếu Chi Mới
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover shadow-sm bg-white">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Ngày tạo</th>
+                <th>Số tiền</th>
+                <th>Phân loại</th>
+                <th>Nội dung</th>
+                <th>Liên kết</th> <!-- Cột hiển thị mã đơn/mã đổi trả -->
+                <th>Người lập</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@item.NgayTao.ToString("dd/MM/yyyy HH:mm")</td>
+
+                    <td class="text-end fw-bold text-danger">
+                        @item.SoTien.ToString("N0") đ
+                    </td>
+
+                    <td class="text-center">
+                        @if (item.LoaiChiPhi == LoaiPhieuChi.ChiPhiChung)
+                        {
+                            <span class="badge bg-secondary">Chi phí chung</span>
+                        }
+                        else if (item.LoaiChiPhi == LoaiPhieuChi.LienQuanDonHang)
+                        {
+                            <span class="badge bg-warning text-dark">Đơn hàng</span>
+                        }
+                        else if (item.LoaiChiPhi == LoaiPhieuChi.LienQuanDoiTra)
+                        {
+                            <span class="badge bg-info text-dark">Đổi trả</span>
+                        }
+                    </td>
+
+                    <td>
+                        @item.NoiDung
+                        @if (!string.IsNullOrEmpty(item.GhiChu))
+                        {
+                            <br />
+
+                            <small class="text-muted">Note: @item.GhiChu</small>
+                        }
+                    </td>
+
+                    <td class="text-center">
+                        @if (item.MaDonHang != null)
+                        {
+                            <a href="#" class="text-decoration-none fw-bold">Đơn #@item.MaDonHang</a>
+                        }
+                        else if (item.MaYeuCauDoiTra != null)
+                        {
+                            <a href="#" class="text-decoration-none fw-bold text-info">YC #@item.MaYeuCauDoiTra</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+
+                    <td class="text-center">@item.NguoiDung?.HoTen</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,356 @@
+﻿@model DATNN.ViewModel.SanPhamChiTietCreatesViewModel
+
+@{
+    ViewData["Title"] = "Thêm nhiều phiên bản";
+}
+<style>
+    table.table td, table.table th {
+        vertical-align: middle !important;
+    }
+
+    #tableCT tbody tr:hover {
+        background-color: #f6f9ff;
+        transition: 0.2s;
+    }
+
+</style>
+<h3 class="fw-bold text-primary mb-4">
+    <i class="bi bi-tags-fill me-2"></i>Thêm nhiều Phiên Bản cho:
+    <span class="text-dark">@Model.TenSanPham</span>
+</h3>
+
+<form asp-action="CreateMulti" method="post" enctype="multipart/form-data" class="shadow p-4 rounded bg-white">
+
+    <input type="hidden" asp-for="MaSanPham" />
+    <div class="table-responsive">
+        <table class="table table-hover align-middle text-center" id="tableCT">
+            <thead class="table-primary">
+                <tr>
+                    <th>Màu</th>
+                    <th>Size</th>
+                    <th>Giá (VNĐ)</th>
+                    <th>Số lượng</th>
+                    <th>Ảnh</th>
+                    <th>Trạng thái</th>
+                    <th style="width: 70px;">Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody id="ct-body" class="table-group-divider">
+                @if (Model.Items != null && Model.Items.Count > 0)
+                {
+                    for (int i = 0; i < Model.Items.Count; i++)
+                    {
+                        <tr class="align-middle">
+                            <!-- MÀU -->
+                            <td>
+                                <div class="input-group">
+                                    <select name="Items[@i].MaMauSac" class="form-select" asp-for="Items[i].MaMauSac" asp-items="ViewBag.MaMauSac"></select>
+                                    <button type="button" class="btn btn-outline-primary" onclick="openModal('mau')"><i class="bi bi-plus-lg"></i></button>
+                                </div>
+                                <span asp-validation-for="Items[i].MaMauSac" class="text-danger small"></span>
+                            </td>
+
+                            <!-- SIZE -->
+                            <td>
+                                <div class="input-group">
+                                    <select name="Items[@i].MaSize" class="form-select" asp-for="Items[i].MaSize" asp-items="ViewBag.MaSize"></select>
+                                    <button type="button" class="btn btn-outline-primary" onclick="openModal('size')"><i class="bi bi-plus-lg"></i></button>
+                                </div>
+                                <span asp-validation-for="Items[i].MaSize" class="text-danger small"></span>
+                            </td>
+
+                            <!-- GIÁ BÁN (Hiển thị lại giá trị cũ) -->
+                            <td>
+                                <input name="Items[@i].GiaBan" value="@Model.Items[i].GiaBan" class="form-control" type="number" min="0" placeholder="0" />
+                                <span asp-validation-for="Items[i].GiaBan" class="text-danger small"></span>
+                            </td>
+
+                            <!-- SỐ LƯỢNG (Hiển thị lại giá trị cũ) -->
+                            <td>
+                                <input name="Items[@i].SoLuong" value="@Model.Items[i].SoLuong" class="form-control" type="number" min="0" placeholder="0" />
+                                <span asp-validation-for="Items[i].SoLuong" class="text-danger small"></span>
+                            </td>
+
+                            <!-- ẢNH (Lưu ý: Input File không thể giữ lại giá trị cũ vì bảo mật, phải chọn lại) -->
+                            <td>
+                                <input type="file" name="Items[@i].file" class="form-control" />
+                                <span asp-validation-for="Items[i].file" class="text-danger small"></span>
+                            </td>
+
+                            <!-- TRẠNG THÁI -->
+                            <td>
+                                <select name="Items[@i].TrangThai" class="form-select" asp-for="Items[i].TrangThai">
+                                    <option value="1">Đang kinh doanh</option>
+                                    <option value="2">Chưa kinh doanh</option>
+                                </select>
+                            </td>
+
+                            <!-- NÚT XÓA -->
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="bi bi-x-lg"></i></button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between mt-3">
+        <button type="button" class="btn btn-outline-success px-4" onclick="addRow()">
+            <i class="bi bi-plus-circle me-1"></i>Thêm dòng
+        </button>
+
+        <button type="submit" class="btn btn-primary px-5 fw-bold">
+            <i class="bi bi-save2 me-1"></i>Lưu tất cả
+        </button>
+    </div>
+</form>
+<div class="modal fade" id="modal-mau" tabindex="-1" aria-labelledby="modalMauLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalMauLabel">Thêm nhanh màu sắc</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newMauTen" class="form-label">Tên màu</label>
+                    <input type="text" id="newMauTen" class="form-control" placeholder="Nhập tên màu" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Chọn màu sắc</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <input type="color" id="colorPicker" class="form-control form-control-color" value="#ff0000" />
+                        <div id="colorPreview" style="width: 40px; height: 40px; border: 1px solid #ccc; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <input type="hidden" id="newMauMoTa" />
+              
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="addMau()">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-size" tabindex="-1" aria-labelledby="modalSizeLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalSizeLabel">Thêm nhanh Size</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newSizeTen" class="form-label">Tên size</label>
+                    <input type="text" id="newSizeTen" class="form-control" placeholder="VD: S, M, L..." />
+                </div>
+                <div class="mb-3">
+                    <label for="newSizeMoTa" class="form-label">Mô tả (tuỳ chọn)</label>
+                    <textarea id="newSizeMoTa" class="form-control" rows="3"></textarea>
+                </div>
+              
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="addSize()">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 1. KHAI BÁO BIẾN TOÀN CỤC (Lấy dữ liệu ban đầu từ Server)
+        var globalMauOptions = `@Html.Raw(string.Join("", (ViewBag.MaMauSac as SelectList).Select(m => $"<option value='{m.Value}'>{m.Text}</option>")))`;
+        var globalSizeOptions = `@Html.Raw(string.Join("", (ViewBag.MaSize as SelectList).Select(s => $"<option value='{s.Value}'>{s.Text}</option>")))`;
+
+        // Biến đếm số dòng
+        let index = @(Model.Items != null ? Model.Items.Count : 0);
+
+        // 2. CÁC HÀM XỬ LÝ GIAO DIỆN CHÍNH
+        function addRow() {
+            // Sử dụng biến toàn cục để render dòng mới
+            let row = `
+            <tr class="align-middle">
+                <td>
+                    <div class="input-group">
+                        <select name="Items[${index}].MaMauSac" class="form-select">
+                            ${globalMauOptions}
+                        </select>
+                        <button type="button" class="btn btn-outline-primary" onclick="openModal('mau')" title="Thêm màu">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <select name="Items[${index}].MaSize" class="form-select">
+                            ${globalSizeOptions}
+                        </select>
+                        <button type="button" class="btn btn-outline-primary" onclick="openModal('size')" title="Thêm size">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                </td>
+                <td><input name="Items[${index}].GiaBan" class="form-control" type="number" min="0" /></td>
+                <td><input name="Items[${index}].SoLuong" class="form-control" type="number" min="0" /></td>
+                <td style="max-width:160px;"><input type="file" name="Items[${index}].file" class="form-control" /></td>
+                <td>
+                    <select name="Items[${index}].TrangThai" class="form-select">
+                        <option value="1">Đang kinh doanh</option>
+                        <option value="2">Chưa kinh doanh</option>
+                    </select>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="bi bi-x-lg"></i></button>
+                </td>
+            </tr>`;
+
+            document.getElementById("ct-body").insertAdjacentHTML("beforeend", row);
+            index++;
+        }
+
+        function removeRow(btn) {
+            btn.closest("tr").remove();
+        }
+
+        function openModal(type) {
+            $('#modal-' + type).modal('show');
+        }
+
+        // 3. XỬ LÝ AJAX THÊM MỚI (MÀU & SIZE)
+        $(document).ready(function () {
+                     $('form').on('submit', function (e) {
+            // 1. Kiểm tra bảng trống
+            var rowCount = $('#ct-body tr').length;
+            if (rowCount === 0) {
+                e.preventDefault();
+                alert("⚠️ Vui lòng tạo ít nhất 1 phiên bản trước khi lưu!");
+                return false;
+            }
+
+            // 2. Kiểm tra trùng lặp trên bảng hiện tại (MỚI THÊM)
+            var uniqueKeys = [];
+            var hasDuplicate = false;
+
+            $('#ct-body tr').each(function () {
+                // Lấy giá trị Màu và Size của dòng hiện tại
+                var mauId = $(this).find('select[name*=".MaMauSac"]').val();
+                var sizeId = $(this).find('select[name*=".MaSize"]').val();
+                var key = mauId + '-' + sizeId; // Tạo khóa duy nhất: "1-2" (Màu 1, Size 2)
+
+                if (uniqueKeys.includes(key)) {
+                    hasDuplicate = true;
+                    // Highlight dòng bị trùng (tùy chọn)
+                    $(this).css('background-color', '#ffe6e6');
+                    return false; // Thoát vòng lặp
+                }
+                uniqueKeys.push(key);
+            });
+
+            if (hasDuplicate) {
+                e.preventDefault();
+                alert("⚠️ Có các phiên bản trùng lặp (Cùng Màu và Size) trên bảng. Vui lòng kiểm tra lại!");
+                return false;
+            }
+        });
+            // --- Logic Color Picker ---
+            const picker = document.getElementById('colorPicker');
+            const preview = document.getElementById('colorPreview');
+            const hiddenInput = document.getElementById('newMauMoTa');
+
+            if (picker) {
+                picker.addEventListener('input', function () {
+                    if (preview) preview.style.backgroundColor = this.value;
+                    if (hiddenInput) hiddenInput.value = this.value;
+                });
+                // Set giá trị mặc định
+                if (preview) preview.style.backgroundColor = picker.value;
+                if (hiddenInput) hiddenInput.value = picker.value;
+            }
+
+            // --- HÀM THÊM MÀU ---
+            window.addMau = function () {
+                const ten = $('#newMauTen').val().trim();
+                const moTa = $('#newMauMoTa').val().trim();
+                // Nếu modal không có input trạng thái thì mặc định là 1
+                const trangThai = $('#newMauTrangThai').length ? $('#newMauTrangThai').val() : 1;
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                if (!ten) { alert("⚠️ Vui lòng nhập tên màu!"); return; }
+
+                $.ajax({
+                    url: '/Admin/MauSac/CreateQuick',
+                    type: 'POST',
+                    data: { TenMau: ten, MoTa: moTa, TrangThai: trangThai, __RequestVerificationToken: token },
+                    success: function (data) {
+                        if (data.success) {
+                            // Tạo HTML option
+                            let newOptionHTML = `<option value="${data.id}">${data.ten}</option>`;
+                            let newOptionHTMLSelected = `<option value="${data.id}" selected>${data.ten}</option>`;
+
+                            // A. Cập nhật biến toàn cục (cho các dòng thêm mới sau này)
+                            globalMauOptions += newOptionHTML;
+
+                            // B. Cập nhật các dropdown đang hiển thị
+                            $('select[name*=".MaMauSac"]').each(function() {
+                                $(this).append(newOptionHTMLSelected);
+                            });
+
+                            // Reset & Đóng modal
+                            $('#newMauTen').val('');
+                            $('#modal-mau').modal('hide');
+                            alert("✅ Thêm màu thành công!");
+                        } else {
+                            alert(data.message || "Lỗi thêm màu.");
+                        }
+                    },
+                    error: function () { alert("Lỗi kết nối server!"); }
+                });
+            };
+
+            // --- HÀM THÊM SIZE (Đã sửa lại cho giống Logic Màu) ---
+            window.addSize = function () {
+                const ten = $('#newSizeTen').val().trim();
+                const moTa = $('#newSizeMoTa').val().trim();
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                if (!ten) { alert("Vui lòng nhập tên size."); return; }
+
+                $.ajax({
+                    url: '/Admin/Size/CreateQuick',
+                    type: 'POST',
+                    data: { TenSize: ten, MoTa: moTa, TrangThai: 1, __RequestVerificationToken: token },
+                    success: function (data) {
+                        if (data.success) {
+                            // Tạo HTML option
+                            let newOptionHTML = `<option value="${data.id}">${data.ten}</option>`;
+                            let newOptionHTMLSelected = `<option value="${data.id}" selected>${data.ten}</option>`;
+
+                            // A. Cập nhật biến toàn cục => QUAN TRỌNG
+                            globalSizeOptions += newOptionHTML;
+
+                            // B. Cập nhật các dropdown đang hiển thị
+                            $('select[name*=".MaSize"]').each(function () {
+                                $(this).append(newOptionHTMLSelected);
+                            });
+
+                            // Reset & Đóng modal
+                            $('#newSizeTen').val('');
+                            $('#newSizeMoTa').val('');
+                            $('#modal-size').modal('hide');
+                            alert("✅ Thêm size thành công!");
+                        } else {
+                            alert(data.message || "Lỗi thêm size.");
+                        }
+                    },
+                    error: function () { alert("Lỗi kết nối server!"); }
+                });
+            };
+        });
+    </script>
+}

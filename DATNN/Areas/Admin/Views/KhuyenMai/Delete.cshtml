@@ -1,0 +1,23 @@
+﻿@model DATNN.Models.KhuyenMai
+
+@{
+    ViewData["Title"] = "Xóa Khuyến mãi";
+}
+
+<h1>Xóa Khuyến mãi</h1>
+
+<h3>Bạn có chắc chắn muốn xóa chương trình này?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Tên Khuyến mãi</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.TenKhuyenMai)</dd>
+        @* Thêm các thông tin khác nếu bạn muốn *@
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="MaKhuyenMai" />
+        <input type="submit" value="Xóa" class="btn btn-danger" /> |
+        <a asp-action="Index">Quay lại danh sách</a>
+    </form>
+</div>

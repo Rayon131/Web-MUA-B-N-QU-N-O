@@ -1,0 +1,27 @@
+﻿@model DATNN.Models.NguoiDung
+@{
+    ViewData["Title"] = "Xóa Nhân viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+<h3 class="text-danger">Bạn có chắc chắn muốn xóa nhân viên này?</h3>
+<div>
+    <h4>@Model.HoTen</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Họ và Tên</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.HoTen)</dd>
+
+        <dt class="col-sm-2">Tên đăng nhập</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.TenDangNhap)</dd>
+
+        <dt class="col-sm-2">Vai trò</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Quyen.Ten)</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="MaNguoiDung" />
+        <input type="submit" value="Xác nhận Xóa" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

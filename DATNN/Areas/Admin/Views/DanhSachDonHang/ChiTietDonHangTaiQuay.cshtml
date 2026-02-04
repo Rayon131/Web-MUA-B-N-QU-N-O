@@ -1,0 +1,130 @@
+﻿@model DATNN.Models.DonHang
+@{
+    ViewData["Title"] = "Chi tiết Đơn hàng Tại quầy";
+}
+
+<link rel="stylesheet" href="~/css/ctdh_admin.css" />
+<div class="container container_cthd_admin">
+    <article class="card card_cthd_admin">
+        <h3 class="card-header card-header_cthd_admin">CHI TIẾT ĐƠN HÀNG TẠI QUẦY</h3>
+        <div class="card-body card-body_cthd_admin">
+            <h6>Mã đơn hàng: @Model.MaDonHang</h6>
+
+            <!-- THÔNG TIN TỔNG QUAN ĐƠN HÀNG -->
+            <article class="card card_cthd_admin mb-4">
+                <div class="card-body card-body_cthd_admin row">
+                    <div class="col-md-3">
+                        <strong>Khách hàng:</strong> <br /> @(Model.KhachHang?.HoTen ?? "Khách vãng lai")
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Nhân viên:</strong> <br /> @(Model.NguoiDung?.HoTen ?? "N/A")
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Thời gian tạo:</strong> <br /> @Model.ThoiGianTao.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Trạng thái ĐH:</strong> <br />
+                        @switch (Model.TrangThaiDonHang)
+                        {
+                            case 0:
+                                <span class="badge bg-warning text-dark">Chờ</span>
+                                break;
+                            case 1:
+                                <span class="badge bg-info text-dark">Chờ thanh toán</span>
+                                break;
+                            case 2:
+                                <span class="badge bg-success">Đã thanh toán</span>
+                                break;
+                            case 3:
+                                <span class="badge bg-danger">Đã hủy</span>
+                                break;
+                            default:
+                                <span class="badge bg-secondary">Không xác định</span>
+                                break;
+                        }
+                    </div>
+                </div>
+            </article>
+
+
+            <!-- BẢNG CHI TIẾT SẢN PHẨM -->
+            <h5 class="mt-4">Các sản phẩm trong đơn</h5>
+            <div class="table-responsive table-responsive_cthd_admin">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Size - Màu</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detail in Model.DonHangChiTiets)
+                        {
+                            <tr>
+                                <td>@(detail.TenSanPham_Luu ?? detail.SanPhamChiTiet?.SanPham?.TenSanPham ?? "Sản phẩm đã xóa")</td>
+                                <td>
+                                    @(detail.TenSize_Luu ?? detail.SanPhamChiTiet?.Size?.TenSize ?? "N/A") -
+                                    @(detail.TenMau_Luu ?? detail.SanPhamChiTiet?.MauSac?.TenMau ?? "N/A")
+                                </td>
+                                <td class="text-center">@detail.SoLuong</td>
+                                <td class="text-end">@detail.DonGia.ToString("N0") đ</td>
+                                <td class="text-end fw-bold">@((detail.DonGia * detail.SoLuong).ToString("N0")) đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <hr />
+
+            <!-- THÔNG TIN THANH TOÁN -->
+            <div class="row mt-3 d-flex justify-content-end">
+                <div class="col-md-5">
+                    <div class="bg-light rounded p-4">
+                        <h4 class="mb-4">Thông tin thanh toán</h4>
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6 class="mb-0">Trạng thái:</h6>
+                            <span class="badge bg-success">Tại quầy</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6 class="mb-0">Phương thức:</h6>
+                            <strong>@Model.PhuongThucThanhToan</strong>
+                        </div>
+                        <hr />
+                        @{
+                            // Lấy giá trị từ Model, nếu null thì bằng 0
+                            decimal thucTra = Model.TongTien;
+                            decimal giamGia = Model.SoTienDuocGiam ?? 0;
+
+                            // Tính lại Tạm tính (Giá gốc trước khi giảm)
+                            decimal tamTinh = thucTra + giamGia;
+                        }
+
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-0">Tạm tính:</h6>
+                            <!-- Hiển thị Tạm tính đã tính toán lại -->
+                            <p class="mb-0">@tamTinh.ToString("N0") đ</p>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-0 text-danger">Giảm giá:</h6>
+                            <p class="mb-0 text-danger">-@giamGia.ToString("N0") đ</p>
+                        </div>
+
+                        <div class="py-3 mt-3 border-top d-flex justify-content-between">
+                            <h5 class="mb-0">Tổng cộng:</h5>
+                            <!-- Hiển thị Tổng tiền thực trả từ Database -->
+                            <h5 class="mb-0">@thucTra.ToString("N0") đ</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <a asp-action="Index" class="btn btn-secondary mt-4">
+                <i class="fa fa-chevron-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </article>
+</div>

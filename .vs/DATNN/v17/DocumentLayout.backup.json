@@ -1,0 +1,570 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\models\\diachinguoidung.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\models\\diachinguoidung.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\controllers\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\controllers\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\models\\thongtincuahang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\models\\thongtincuahang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\models\\thongtingiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\models\\thongtingiaohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\cuahang\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\cuahang\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\controllers\\cuahangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\controllers\\cuahangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\controllers\\diachinguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\controllers\\diachinguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\views\\diachinguoidung\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\views\\diachinguoidung\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\viewmodel\\giohangviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\viewmodel\\giohangviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\danhsachdonhang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\danhsachdonhang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\controllers\\danhsachdonhangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\controllers\\danhsachdonhangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\controllers\\banhangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\controllers\\banhangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\danhsachdonhang\\chitietdonhangtaiquay.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\danhsachdonhang\\chitietdonhangtaiquay.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\danhsachdonhang\\chitietdonhangadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\danhsachdonhang\\chitietdonhangadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\views\\sanpham\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\views\\sanpham\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\controllers\\sanphamcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\controllers\\sanphamcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\controllers\\sanphamchitietcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\controllers\\sanphamchitietcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\banhang\\printreceipt.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\banhang\\printreceipt.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\controllers\\chatlieucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\controllers\\chatlieucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\models\\diachicuahang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\models\\diachicuahang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\models\\donhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\models\\donhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\wwwroot\\js\\pos.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\wwwroot\\js\\pos.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\wwwroot\\js\\main.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\wwwroot\\js\\main.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\banhang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\banhang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\chatlieu\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\chatlieu\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\chatlieu\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\chatlieu\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\views\\chatlieu\\delete.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\views\\chatlieu\\delete.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\controllers\\mausaccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\controllers\\mausaccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\controllers\\chinhsachcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\controllers\\chinhsachcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|c:\\users\\dattb\\onedrive\\desktop\\datn\\datnn\\areas\\admin\\controllers\\danhmuccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5242EA59-3C2C-46BE-B5E6-DF349B481BDA}|DATNN\\DATNN.csproj|solutionrelative:datnn\\areas\\admin\\controllers\\danhmuccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DiaChiNguoiDung.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\DiaChiNguoiDung.cs",
+              "RelativeDocumentMoniker": "DATNN\\Models\\DiaChiNguoiDung.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\DiaChiNguoiDung.cs",
+              "RelativeToolTip": "DATNN\\Models\\DiaChiNguoiDung.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAuwBUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-23T14:15:18.523Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\CuaHang\\Edit.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\CuaHang\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\CuaHang\\Edit.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\CuaHang\\Edit.cshtml",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-23T13:52:17.963Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DiaChiNguoiDungController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\DiaChiNguoiDungController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Controllers\\DiaChiNguoiDungController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\DiaChiNguoiDungController.cs",
+              "RelativeToolTip": "DATNN\\Controllers\\DiaChiNguoiDungController.cs",
+              "ViewState": "AgIAAMsAAAAAAAAAAAAwwOIAAACyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-23T13:34:39.108Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\appsettings.json",
+              "RelativeDocumentMoniker": "DATNN\\appsettings.json",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\appsettings.json",
+              "RelativeToolTip": "DATNN\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAB8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-12-09T14:09:11.739Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ThongTinGiaoHang.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\ThongTinGiaoHang.cs",
+              "RelativeDocumentMoniker": "DATNN\\Models\\ThongTinGiaoHang.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\ThongTinGiaoHang.cs",
+              "RelativeToolTip": "DATNN\\Models\\ThongTinGiaoHang.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-23T13:55:54.335Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ThongTinCuaHang.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\ThongTinCuaHang.cs",
+              "RelativeDocumentMoniker": "DATNN\\Models\\ThongTinCuaHang.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\ThongTinCuaHang.cs",
+              "RelativeToolTip": "DATNN\\Models\\ThongTinCuaHang.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAwBoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T12:01:28.116Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GioHangController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\GioHangController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Controllers\\GioHangController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\GioHangController.cs",
+              "RelativeToolTip": "DATNN\\Controllers\\GioHangController.cs",
+              "ViewState": "AgIAAOYDAAAAAAAAAAAuwDUFAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-23T13:21:44.191Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Views\\DiaChiNguoiDung\\Index.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Views\\DiaChiNguoiDung\\Index.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Views\\DiaChiNguoiDung\\Index.cshtml",
+              "RelativeToolTip": "DATNN\\Views\\DiaChiNguoiDung\\Index.cshtml",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAACIAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-23T13:35:48.089Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "DATNN\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAHoAAAAAAAAAAAAnwI8AAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T12:08:08.492Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CuaHangController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\CuaHangController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Controllers\\CuaHangController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\CuaHangController.cs",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Controllers\\CuaHangController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABUAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T09:24:22.275Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "GioHangViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\ViewModel\\GioHangViewModel.cs",
+              "RelativeDocumentMoniker": "DATNN\\ViewModel\\GioHangViewModel.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\ViewModel\\GioHangViewModel.cs",
+              "RelativeToolTip": "DATNN\\ViewModel\\GioHangViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T13:49:42.272Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\Index.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\Index.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\Index.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T09:12:45.178Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "DanhSachDonHangController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\DanhSachDonHangController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Controllers\\DanhSachDonHangController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\DanhSachDonHangController.cs",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Controllers\\DanhSachDonHangController.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAmwDAAAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T09:14:18.783Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ChiTietDonHangTaiQuay.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\ChiTietDonHangTaiQuay.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\ChiTietDonHangTaiQuay.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\ChiTietDonHangTaiQuay.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\ChiTietDonHangTaiQuay.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T09:11:36.524Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "BanHangController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\BanHangController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Controllers\\BanHangController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\BanHangController.cs",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Controllers\\BanHangController.cs",
+              "ViewState": "AgIAACwCAAAAAAAAAAAIwGoCAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T09:24:23.463Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ChiTietDonHangAdmin.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\ChiTietDonHangAdmin.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\ChiTietDonHangAdmin.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\ChiTietDonHangAdmin.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\DanhSachDonHang\\ChiTietDonHangAdmin.cshtml",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABUAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T09:09:27.949Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "DATNN\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAmwC8AAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T12:14:38.902Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Views\\SanPham\\Index.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Views\\SanPham\\Index.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Views\\SanPham\\Index.cshtml",
+              "RelativeToolTip": "DATNN\\Views\\SanPham\\Index.cshtml",
+              "ViewState": "AgIAAIkAAAAAAAAAAAAuwJcAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T12:18:55.577Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "SanPhamChiTietController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\SanPhamChiTietController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Controllers\\SanPhamChiTietController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\SanPhamChiTietController.cs",
+              "RelativeToolTip": "DATNN\\Controllers\\SanPhamChiTietController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T12:14:58.422Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "SanPhamController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\SanPhamController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Controllers\\SanPhamController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Controllers\\SanPhamController.cs",
+              "RelativeToolTip": "DATNN\\Controllers\\SanPhamController.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAYwDUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T12:14:59.083Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "DATNN\\Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAKAAAAAAAAAAAAAuwLcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T12:23:28.125Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ChatLieuController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\ChatLieuController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Controllers\\ChatLieuController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\ChatLieuController.cs",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Controllers\\ChatLieuController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T12:01:49.84Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "PrintReceipt.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\BanHang\\PrintReceipt.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\BanHang\\PrintReceipt.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\BanHang\\PrintReceipt.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\BanHang\\PrintReceipt.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T09:27:28.611Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "DiaChiCuaHang.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\DiaChiCuaHang.cs",
+              "RelativeDocumentMoniker": "DATNN\\Models\\DiaChiCuaHang.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\DiaChiCuaHang.cs",
+              "RelativeToolTip": "DATNN\\Models\\DiaChiCuaHang.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T09:51:54.468Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "DonHang.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\DonHang.cs",
+              "RelativeDocumentMoniker": "DATNN\\Models\\DonHang.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Models\\DonHang.cs",
+              "RelativeToolTip": "DATNN\\Models\\DonHang.cs",
+              "ViewState": "AgIAACsAAAAAAAAAAAAwwD4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T09:47:00.885Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\ChatLieu\\Index.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\ChatLieu\\Index.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\ChatLieu\\Index.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\ChatLieu\\Index.cshtml",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAAEcAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T09:23:07.174Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "Delete.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\ChatLieu\\Delete.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\ChatLieu\\Delete.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\ChatLieu\\Delete.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\ChatLieu\\Delete.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T09:30:14.9Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\ChatLieu\\Edit.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\ChatLieu\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\ChatLieu\\Edit.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\ChatLieu\\Edit.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T09:30:15.507Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\BanHang\\Index.cshtml",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Views\\BanHang\\Index.cshtml",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Views\\BanHang\\Index.cshtml",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Views\\BanHang\\Index.cshtml",
+              "ViewState": "AgIAAJsAAAAAAAAAAAAswK8AAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-10T09:32:22.769Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "pos.js",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\wwwroot\\js\\pos.js",
+              "RelativeDocumentMoniker": "DATNN\\wwwroot\\js\\pos.js",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\wwwroot\\js\\pos.js",
+              "RelativeToolTip": "DATNN\\wwwroot\\js\\pos.js",
+              "ViewState": "AgIAAJ4AAAAAAAAAAAAswK4AAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-12-10T09:42:01.661Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "main.js",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\wwwroot\\js\\main.js",
+              "RelativeDocumentMoniker": "DATNN\\wwwroot\\js\\main.js",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\wwwroot\\js\\main.js",
+              "RelativeToolTip": "DATNN\\wwwroot\\js\\main.js",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAAA8AAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-12-10T09:41:58.206Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "DanhMucController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\DanhMucController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Controllers\\DanhMucController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\DanhMucController.cs",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Controllers\\DanhMucController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T09:24:21.603Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "MauSacController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\MauSacController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Controllers\\MauSacController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\MauSacController.cs",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Controllers\\MauSacController.cs",
+              "ViewState": "AgIAAJAAAAAAAAAAAAAuwJIAAABeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-09T13:48:28.757Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "ChinhSachController.cs",
+              "DocumentMoniker": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\ChinhSachController.cs",
+              "RelativeDocumentMoniker": "DATNN\\Areas\\Admin\\Controllers\\ChinhSachController.cs",
+              "ToolTip": "C:\\Users\\dattb\\OneDrive\\Desktop\\DATN\\DATNN\\Areas\\Admin\\Controllers\\ChinhSachController.cs",
+              "RelativeToolTip": "DATNN\\Areas\\Admin\\Controllers\\ChinhSachController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T09:24:22.897Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+﻿@model IEnumerable<DATNN.Models.DonHang>
+@{
+    ViewData["Title"] = "Lịch sử mua hàng";
+}
+
+<!-- Page Header -->
+<div class="container-fluid page-header py-5" style="margin-top: 100px;">
+    <h1 class="text-center text-white display-6">Lịch Sử Mua Hàng</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item active text-white">Lịch sử mua hàng</li>
+    </ol>
+</div>
+
+<div class="container-fluid py-5">
+    <div class="container py-5">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-3">
+                <h4 class="mb-0">Các đơn hàng của bạn</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Mã Đơn Hàng</th>
+                                <!-- THÊM CỘT MỚI -->
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Ngày Đặt</th>
+                                <th scope="col" class="text-end">Tổng Tiền</th>
+                                <th scope="col" class="text-center">Trạng Thái</th>
+                                <th scope="col" class="text-center">Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var donHang in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">#@donHang.MaDonHang</td>
+                                        <!-- HIỂN THỊ DANH SÁCH SẢN PHẨM -->
+                                        <td>
+                                            @if (donHang.DonHangChiTiets != null && donHang.DonHangChiTiets.Any())
+                                            {
+                                                <ul class="list-unstyled mb-0">
+                                                    @foreach (var chiTiet in donHang.DonHangChiTiets)
+                                                    {
+                                                        <li>
+                                                            <!-- Hiển thị tên lưu cứng -->
+                                                            @(chiTiet.TenSanPham_Luu ?? chiTiet.SanPhamChiTiet?.SanPham?.TenSanPham ?? "Sản phẩm đã xóa")
+
+                                                            <!-- Hiển thị thêm chi tiết Màu/Size lưu cứng -->
+                                                            <span class="small text-dark d-block">
+                                                                @(chiTiet.TenSize_Luu ?? chiTiet.SanPhamChiTiet?.Size?.TenSize ?? "N/A") -
+                                                                @(chiTiet.TenMau_Luu ?? chiTiet.SanPhamChiTiet?.MauSac?.TenMau ?? "N/A")
+                                                            </span>
+
+                                                            <span class="text-muted">(SL: @chiTiet.SoLuong)</span>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                        </td>
+                                        <td>@donHang.ThoiGianTao.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="text-end">@donHang.TongTien.ToString("N0") đ</td>
+                                        <td class="text-center">
+                                            @switch (donHang.TrangThaiDonHang)
+                                            {
+                                                case 1:
+                                                    <span class="badge rounded-pill bg-warning text-dark">Chờ xác nhận</span>
+                                                    ; break;
+                                                case 2:
+                                                    <span class="badge rounded-pill bg-info text-dark">Đã xác nhận</span>
+                                                    ; break;
+                                                case 3:
+                                                    <span class="badge rounded-pill" style="background-color: #6f42c1; color: white;">Đang chuẩn bị</span>
+                                                    ; break;
+                                                case 4:
+                                                    <span class="badge rounded-pill bg-primary">Đang giao</span>
+                                                    ; break;
+                                                case 5:
+                                                    <span class="badge rounded-pill bg-success">Hoàn thành</span>
+                                                    ; break;
+                                                case 6: // Đã hủy
+                                                    if (donHang.PhuongThucThanhToan == "VnPay")
+                                                    {
+                                                        <span class="badge rounded-pill bg-danger">Đã hủy & Hoàn tiền</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge rounded-pill bg-danger">Đã hủy</span>
+                                                    }
+                                                    break;
+                                                case 7:
+                                                    <span class="badge rounded-pill bg-success">Đã Thanh toán</span>
+                                                    ; break;
+                                                case 8: // THÊM CASE MỚI
+                                                    <span class="badge rounded-pill bg-warning text-dark">Chờ duyệt hủy</span>
+                                                    ; break;
+                                                default:
+                                                    <span class="badge rounded-pill bg-secondary">Không xác định</span>
+                                                    ; break;
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-controller="GioHang" asp-action="ChiTietDonHang" asp-route-id="@donHang.MaDonHang"
+                                               class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                                <i class="fa fa-eye"></i> Xem chi tiết
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <!-- SỬA LẠI COLSPAN -->
+                                    <td colspan="6" class="text-center py-4">
+                                        <p class="mb-0">Bạn chưa có đơn hàng nào.</p>
+                                        <a asp-controller="SanPham" asp-action="Index" class="btn btn-primary mt-2">Bắt đầu mua sắm</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,432 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using static DATNN.Models.YeuCauDoiTra
+@model DATNN.Models.YeuCauDoiTra
+@{
+    ViewData["Title"] = "Chi tiết Yêu cầu #" + Model.Id;
+    var _context = Context.RequestServices.GetService<DATNN.MyDbContext>();
+    DATNN.Models.SanPhamChiTiet sanPhamMoi = null;
+    if (Model.MaSanPhamChiTietMoi.HasValue)
+    {
+        sanPhamMoi = await _context.SanPhamChiTiets
+            .Include(spct => spct.SanPham)
+            .Include(spct => spct.MauSac)
+            .Include(spct => spct.Size)
+            .FirstOrDefaultAsync(spct => spct.MaSanPhamChiTiet == Model.MaSanPhamChiTietMoi.Value);
+    }
+}
+<link rel="stylesheet" href="~/css/ctdh.css" />
+
+<div class="container container_cthd">
+    <article class="card card_cthd">
+        <h3 class="card-header card-header_cthd">CHI TIẾT YÊU CẦU ĐỔI/TRẢ</h3>
+
+        <div class="card-body card-body_cthd">
+            <div class="d-flex justify-content-between">
+                <h6>Mã yêu cầu: #@Model.Id</h6>
+                <h6>Ngày tạo: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</h6>
+            </div>
+            @{
+                var donHangGoc = Model.DonHangChiTiet.DonHang;
+            }
+            <article class="card card_cthd mt-3">
+                <div class="card-body card-body_cthd">
+                    <div class="d-flex justify-content-between">
+                        <h5>Từ đơn hàng gốc <a asp-controller="GioHang" asp-action="ChiTietDonHang" asp-route-id="@donHangGoc.MaDonHang" target="_blank">#@donHangGoc.MaDonHang</a></h5>
+                        <h6>Ngày đặt: @donHangGoc.ThoiGianTao.ToString("dd/MM/yyyy")</h6>
+                    </div>
+                    <hr />
+                    <div class="table-responsive" style="max-height: 150px; overflow-y: auto;">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Sản phẩm</th>
+                                    <th scope="col" class="text-end">Đơn giá</th>
+                                    <th scope="col" class="text-end">Số lượng</th>
+                                    <th scope="col" class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in donHangGoc.DonHangChiTiets)
+                                {
+                                    bool isCurrentItem = item.MaDonHangChiTiet == Model.MaDonHangChiTiet;
+                                    <tr class="@(isCurrentItem ? "table-info" : "")">
+                                        <td>
+                                            <small>
+                                                @(item.TenSanPham_Luu ?? item.SanPhamChiTiet.SanPham.TenSanPham) <br />
+                                                <span class="text-muted">
+                                                    (@(item.TenMau_Luu ?? item.SanPhamChiTiet.MauSac.TenMau) -
+                                                    @(item.TenSize_Luu ?? item.SanPhamChiTiet.Size.TenSize))
+                                                </span>
+                                            </small>
+                                        </td>
+                                        <td class="text-end align-middle"><small>@item.DonGia.ToString("N0") ₫</small></td>
+                                        <td class="text-end"><small>x @item.SoLuong</small></td>
+                                        <td class="text-end"><small>@((item.DonGia * item.SoLuong).ToString("N0")) ₫</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </article>
+            <article class="card card_cthd">
+                <div class="card-body card-body_cthd">
+                    <h5>Thông tin sản phẩm trả lại</h5>
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                          @{
+                                        string imgSrc = "~/img/placeholder.jpg";
+                                        if(!string.IsNullOrEmpty(Model.DonHangChiTiet.HinhAnh_Luu))
+                                        imgSrc = $"~/images/{Model.DonHangChiTiet.HinhAnh_Luu}";
+                                        else if(!string.IsNullOrEmpty(Model.DonHangChiTiet.SanPhamChiTiet?.HinhAnh))
+                                        imgSrc = $"~/images/{Model.DonHangChiTiet.SanPhamChiTiet.HinhAnh}";
+                                        }
+                                        <img src="@Url.Content(!string.IsNullOrEmpty(Model.DonHangChiTiet.SanPhamChiTiet.HinhAnh) ? $"~/images/{Model.DonHangChiTiet.SanPhamChiTiet.HinhAnh}" : $"~/images/{Model.DonHangChiTiet.SanPhamChiTiet.SanPham.AnhSanPham}")"
+                                             class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;" alt="Ảnh sản phẩm" />
+                                            
+                                    </td>
+                                    <td>
+                                        <!-- TÊN SP -->
+                                        <strong>@(Model.DonHangChiTiet.TenSanPham_Luu ?? Model.DonHangChiTiet.SanPhamChiTiet.SanPham.TenSanPham)</strong>
+                                        <br />
+                                        <!-- MÀU & SIZE -->
+                                        <small class="text-muted">
+                                            Màu: @(Model.DonHangChiTiet.TenMau_Luu ?? Model.DonHangChiTiet.SanPhamChiTiet.MauSac.TenMau),
+                                            Size: @(Model.DonHangChiTiet.TenSize_Luu ?? Model.DonHangChiTiet.SanPhamChiTiet.Size.TenSize)
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <strong>Số lượng trả</strong> <br />
+                                        @Model.SoLuongYeuCau
+                                    </td>
+                                    <td>
+                                        <strong>Loại yêu cầu</strong> <br />
+                                        @Html.DisplayFor(m => m.LoaiYeuCau)
+                                    </td>
+                                    <td>
+                                        <strong>Loại yêu cầu</strong> <br />
+                                        @Html.DisplayFor(m => m.TongTienThanhToan)
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </article>
+
+            @if (Model.MaSanPhamChiTietMoi.HasValue)
+            {
+                <article class="card card_cthd mt-3">
+                    <div class="card-body card-body_cthd">
+                        <h5>Thông tin sản phẩm muốn đổi</h5>
+                        <div class="table-responsive">
+                            <table class="table table-borderless align-middle">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @{
+                                                string imgMoi = "~/img/placeholder.jpg";
+                                                // 1. Ưu tiên ảnh lưu cứng
+                                                if (!string.IsNullOrEmpty(Model.HinhAnhMoi_Luu))
+                                                {
+                                                    imgMoi = $"~/images/{Model.HinhAnhMoi_Luu}";
+                                                }
+                                                // 2. Fallback về dữ liệu hiện tại (nếu là đơn cũ chưa có lưu cứng)
+                                                else if (sanPhamMoi != null)
+                                                {
+                                                    imgMoi = !string.IsNullOrEmpty(sanPhamMoi.HinhAnh)
+                                                    ? $"~/images/{sanPhamMoi.HinhAnh}"
+                                                    : $"~/images/{sanPhamMoi.SanPham.AnhSanPham}";
+                                                }
+                                            }
+                                            <img src="@Url.Content(imgMoi)"
+                                                 class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;" alt="Ảnh sản phẩm mới" />
+                                        </td>
+                                        <td>
+                                            <!-- TÊN LƯU CỨNG -->
+                                            <strong>@(Model.TenSanPhamMoi_Luu ?? sanPhamMoi?.SanPham?.TenSanPham ?? "Sản phẩm không xác định")</strong>
+                                            <br />
+                                            <!-- MÀU / SIZE LƯU CỨNG -->
+                                            <small class="text-muted">
+                                                Màu: @(Model.TenMauMoi_Luu ?? sanPhamMoi?.MauSac?.TenMau ?? "N/A"),
+                                                Size: @(Model.TenSizeMoi_Luu ?? sanPhamMoi?.Size?.TenSize ?? "N/A")
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <strong>Số lượng đổi</strong> <br />
+                                            @Model.SoLuongYeuCau
+                                        </td>
+                                        <td>
+                                            <strong>Giá sản phẩm mới</strong> <br />
+                                            <!-- GIÁ LƯU CỨNG -->
+                                            @(Model.GiaSanPhamMoi_Luu?.ToString("N0") ?? sanPhamMoi?.GiaBan.ToString("N0") ?? "0") ₫
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </article>
+            }
+
+            @{
+                var paymentMethod = Model.DonHangChiTiet.DonHang.PhuongThucThanhToan;
+            }
+
+            <!-- Kịch bản 1: Hiển thị thông tin ngân hàng cho đơn COD -->
+            @if (paymentMethod == "COD" && Model.LoaiYeuCau == LoaiYeuCau.TraHang && !string.IsNullOrEmpty(Model.SoTaiKhoan))
+            {
+                <article class="card card_cthd mt-3">
+                    <div class="card-body card-body_cthd">
+                        <h5 class="mb-3">Thông tin nhận hoàn tiền </h5>
+                        <div class="row">
+                            <div class="col-md-3"><strong>Ngân hàng:</strong><br />@Model.TenNganHang</div>
+                            <div class="col-md-3"><strong>Chủ tài khoản:</strong><br />@Model.TenChuTaiKhoan</div>
+                            <div class="col-md-3"><strong>Số tài khoản:</strong><br /><strong>@Model.SoTaiKhoan</strong></div>
+                            <div class="col-md-3"><strong>Chi nhánh:</strong><br />@Model.ChiNhanh</div>
+                        </div>
+                    </div>
+                </article>
+            }
+
+            <!-- Kịch bản 2: Hiển thị thông tin hoàn tiền cho đơn VNPAY -->
+            @if (paymentMethod == "VnPay" && Model.LoaiYeuCau == LoaiYeuCau.TraHang && Model.HinhThucHoanTien.HasValue)
+            {
+                <article class="card card_cthd mt-3">
+                    <div class="card-body card-body_cthd">
+                        <h5 class="mb-3">Thông tin hoàn tiền </h5>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <strong>Hình thức nhận tiền:</strong>
+                                <span class="text-primary fw-bold">@Html.DisplayFor(m => m.HinhThucHoanTien)</span>
+                            </div>
+                        </div>
+                        @if (Model.HinhThucHoanTien == HinhThucHoanTien.NganHangKhac)
+                        {
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-3"><strong>Ngân hàng:</strong><br />@Model.TenNganHang</div>
+                                <div class="col-md-3"><strong>Chủ tài khoản:</strong><br />@Model.TenChuTaiKhoan</div>
+                                <div class="col-md-3"><strong>Số tài khoản:</strong><br /><strong>@Model.SoTaiKhoan</strong></div>
+                                <div class="col-md-3"><strong>Chi nhánh:</strong><br />@Model.ChiNhanh</div>
+                            </div>
+                        }
+                    </div>
+                </article>
+            }
+            @if (Model.LoaiYeuCau == LoaiYeuCau.DoiHang && (Model.TrangThai != TrangThaiYeuCauDoiTra.ChoXacNhan && Model.TrangThai != TrangThaiYeuCauDoiTra.DaTuChoi))
+            {
+                <article class="card card_cthd mt-3">
+                    <div class="card-body card-body_cthd">
+                        <h5 class="mb-3">Bảng tổng kết tài chính</h5>
+                        <dl class="row mb-0">
+                            <dt class="col-8">Chênh lệch giá trị sản phẩm:</dt>
+                            <dd class="col-4 text-end">@Model.TienChenhLech?.ToString("N0") đ</dd>
+                            <dt class="col-8">Phí vận chuyển:</dt>
+                            <dd class="col-4 text-end">
+                                @if (Model.BenChiuPhiShip == BenChiuPhi.CuaHang)
+                                {
+                                    <span>0 đ (Cửa hàng hỗ trợ)</span>
+                                }
+                                else
+                                {
+                                    <span>@Model.ChiPhiShip?.ToString("N0") đ</span>
+                                }
+                            </dd>
+                            <hr class="my-2" />
+                            @if (Model.TongTienThanhToan < 0)
+                            {
+                                <dt class="col-8 fs-5"><strong>Cửa hàng sẽ hoàn lại cho bạn:</strong></dt>
+                                <dd class="col-4 text-end fs-5 fw-bold text-success">@Math.Abs(Model.TongTienThanhToan ?? 0).ToString("N0") đ</dd>
+                            }
+                            else
+                            {
+                                <dt class="col-8 fs-5"><strong>Bạn cần thanh toán thêm:</strong></dt>
+                                <dd class="col-4 text-end fs-5 fw-bold text-danger">@Model.TongTienThanhToan?.ToString("N0") đ</dd>
+                            }
+                        </dl>
+                    </div>
+                </article>
+            }
+            @if (Model.TongTienThanhToan < 0) // Chỉ hiển thị nếu có tiền cần hoàn
+            {
+                // Kịch bản 1: Chưa chọn hình thức -> Hiển thị Form để chọn
+                if (Model.HinhThucHoanTien == null)
+                {
+                    <article class="card card_cthd mt-3 border-primary">
+                        <div class="card-body card-body_cthd">
+                            <h5 class="mb-3 text-primary">Chọn hình thức nhận hoàn tiền</h5>
+                            <p>Cửa hàng sẽ hoàn lại cho bạn <strong>@Math.Abs(Model.TongTienThanhToan ?? 0).ToString("N0") đ</strong>. Vui lòng chọn cách bạn muốn nhận lại tiền.</p>
+                            <form asp-action="CapNhatHinhThucHoanTien" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@Model.Id" />
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="hinhThucHoanTien" value="1" id="refundTienMat" checked>
+                                    <label class="form-check-label" for="refundTienMat">Nhận tiền mặt (Khi shipper đến lấy hàng)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="hinhThucHoanTien" value="2" id="refundChuyenKhoan">
+                                    <label class="form-check-label" for="refundChuyenKhoan">Nhận qua Chuyển khoản ngân hàng</label>
+                                </div>
+
+                                <div id="bankInfoSection_details" style="display: none;" class="mt-3 p-3 border rounded">
+                                    <div class="mb-2"><input name="tenNganHang" class="form-control" placeholder="Tên Ngân hàng *" required /></div>
+                                    <div class="mb-2"><input name="tenChuTaiKhoan" class="form-control" placeholder="Tên chủ tài khoản *" required /></div>
+                                    <div class="mb-2"><input name="soTaiKhoan" class="form-control" placeholder="Số tài khoản *" required /></div>
+                                    <div class="mb-2"><input name="chiNhanh" class="form-control" placeholder="Chi nhánh" /></div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary mt-3">Xác nhận hình thức</button>
+                            </form>
+                        </div>
+                    </article>
+                }
+                // Kịch bản 2: Đã chọn hình thức -> Chỉ hiển thị thông tin đã chọn
+                else
+                {
+                    <article class="card card_cthd mt-3">
+                        <div class="card-body card-body_cthd">
+                            <h5 class="mb-3">Thông tin hoàn tiền</h5>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <strong>Hình thức nhận tiền:</strong>
+                                    <span class="text-primary fw-bold">@Html.DisplayFor(m => m.HinhThucHoanTien)</span>
+                                </div>
+                            </div>
+                            @if (Model.HinhThucHoanTien == HinhThucHoanTien.ChuyenKhoan)
+                            {
+                                <hr />
+                                <div class="row">
+                                    <div class="col-md-3"><strong>Ngân hàng:</strong><br />@Model.TenNganHang</div>
+                                    <div class="col-md-3"><strong>Chủ tài khoản:</strong><br />@Model.TenChuTaiKhoan</div>
+                                    <div class="col-md-3"><strong>Số tài khoản:</strong><br /><strong>@Model.SoTaiKhoan</strong></div>
+                                    <div class="col-md-3"><strong>Chi nhánh:</strong><br />@Model.ChiNhanh</div>
+                                </div>
+                            }
+                        </div>
+                    </article>
+                }
+            }
+            <!-- Thanh tiến trình trạng thái -->
+            <div class="track_cthd">
+                @{
+                    var isRejected = Model.TrangThai == TrangThaiYeuCauDoiTra.DaTuChoi;
+                    var isCompleted = Model.TrangThai == TrangThaiYeuCauDoiTra.HoanThanh;
+                }
+                <div class="step_cthd active_cthd"> <span class="icon_cthd"> <i class="fa fa-receipt"></i> </span> <span class="text_cthd">Chờ xác nhận</span> </div>
+                <div class="step_cthd @(Model.TrangThai >= TrangThaiYeuCauDoiTra.DaDuyet && !isRejected ? "active_cthd" : "")"> <span class="icon_cthd"> <i class="fa fa-check"></i> </span> <span class="text_cthd">Đã duyệt</span> </div>
+                <div class="step_cthd @(Model.TrangThai >= TrangThaiYeuCauDoiTra.DaNhanHang && !isRejected ? "active_cthd" : "")"> <span class="icon_cthd"> <i class="fa fa-box"></i> </span> <span class="text_cthd">Đã nhận hàng</span> </div>
+
+                @if (Model.LoaiYeuCau == LoaiYeuCau.DoiHang)
+                {
+                    <div class="step_cthd @(Model.TrangThai >= TrangThaiYeuCauDoiTra.DangGiaoHangDoi && !isRejected ? "active_cthd" : "")"> <span class="icon_cthd"> <i class="fa fa-truck"></i> </span> <span class="text_cthd">Đang giao hàng đổi</span> </div>
+                }
+
+                @if (isRejected)
+                {
+                    <div class="step_cthd active_cthd" style="color: red;"> <span class="icon_cthd"> <i class="fa fa-times"></i> </span> <span class="text_cthd">Đã từ chối</span> </div>
+                }
+                else
+                {
+                    <div class="step_cthd @(isCompleted ? "active_cthd" : "")"> <span class="icon_cthd"> <i class="fa fa-star"></i> </span> <span class="text_cthd">Hoàn thành</span> </div>
+                }
+            </div>
+            <hr />
+            @if (Model.LoaiYeuCau == LoaiYeuCau.TraHang && Model.TrangThai == TrangThaiYeuCauDoiTra.HoanThanh && ViewBag.TongTienHoanThucTe != null)
+            {
+                <article class="card card_cthd mt-3 border-success">
+                    <div class="card-body card-body_cthd">
+                        <h5 class="mb-3 text-success">
+                            <i class="fas fa-check-circle"></i> Đã hoàn tiền thành công
+                        </h5>
+                        <div class="alert alert-success mb-0">
+                            <p class="mb-1 fs-5">
+                                Tổng số tiền bạn đã nhận được:
+                                <strong>@(((decimal)ViewBag.TongTienHoanThucTe).ToString("N0")) đ</strong>
+                            </p>
+                            <small>
+                                (Bao gồm: Tiền hàng <strong>@(((decimal)ViewBag.TienHangHoan).ToString("N0")) đ</strong>
+                                @if ((decimal)ViewBag.TienShipHoan > 0)
+                                {
+                                    <span> + Hoàn phí vận chuyển <strong>@(((decimal)ViewBag.TienShipHoan).ToString("N0")) đ</strong></span>
+                                })
+                            </small>
+                        </div>
+                    </div>
+                </article>
+            }
+            <!-- Thông tin lý do và ghi chú -->
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Lý do của bạn</h5>
+                    <div class="alert alert-light" style="white-space: pre-wrap;">
+                        <em>"@Model.LyDo"</em>
+                       
+                        @if (!string.IsNullOrEmpty(Model.GhiChuKhachHang))
+                        {
+                            <hr />
+                            <p class="mb-0"><strong>Ghi chú thêm:</strong> @Model.GhiChuKhachHang</p>
+                           
+                        }
+                    </div>
+                    <div class="alert alert-light" style="white-space: pre-wrap;">
+                        <h5>Hình ảnh chứng minh</h5>
+                         <a href="~/images/returns/@Model.HinhAnhBangChung" target="_blank">
+                            <img src="~/images/returns/@Model.HinhAnhBangChung" style="max-width: 200px; max-height: 200px;" class="img-thumbnail" />
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5>Ghi chú từ Cửa hàng</h5>
+                    @if (!string.IsNullOrEmpty(Model.GhiChuAdmin))
+                    {
+                        <div class="alert alert-info" style="white-space: pre-wrap;">
+                            @Model.GhiChuAdmin
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary">
+                            Chưa có phản hồi nào từ cửa hàng.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <a asp-action="LichSuYeuCau" class="btn-warning_cthd btn mt-3" data-abc="true">
+                <i class="fa fa-chevron-left"></i> Quay lại Lịch sử
+            </a>
+        </div>
+    </article>
+</div>
+@section Scripts {
+    <!-- Thêm đoạn script này để điều khiển form mới -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const refundTienMatRadio = document.getElementById('refundTienMat');
+            const refundChuyenKhoanRadio = document.getElementById('refundChuyenKhoan');
+            const bankInfoSection = document.getElementById('bankInfoSection_details');
+
+            function toggleBankInfo() {
+                if (bankInfoSection) {
+                    const isChuyenKhoan = refundChuyenKhoanRadio && refundChuyenKhoanRadio.checked;
+                    bankInfoSection.style.display = isChuyenKhoan ? 'block' : 'none';
+                    bankInfoSection.querySelectorAll('input').forEach(input => {
+                        input.required = isChuyenKhoan;
+                    });
+                }
+            }
+
+            if(refundTienMatRadio && refundChuyenKhoanRadio) {
+                refundTienMatRadio.addEventListener('change', toggleBankInfo);
+                refundChuyenKhoanRadio.addEventListener('change', toggleBankInfo);
+            }
+
+            toggleBankInfo();
+        });
+    </script>
+}

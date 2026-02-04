@@ -1,0 +1,91 @@
+﻿@model IEnumerable<DATNN.Models.NguoiDung>
+@{
+    ViewData["Title"] = "Quản lý Khách hàng";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="mb-3">
+    <form asp-action="Index" method="get" class="row g-2">
+
+        <div class="col-md-4">
+            <input type="text" name="searchString"
+                   value="@ViewBag.SearchString"
+                   class="form-control"
+                   placeholder="Tìm tên, username, email, số điện thoại..." />
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+        </div>
+
+    </form>
+</div>
+
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>Họ và Tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+                <th style="width: 120px;">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.HoTen)</td>
+                    <td>@Html.DisplayFor(modelItem => item.TenDangNhap)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                    <td>@Html.DisplayFor(modelItem => item.SoDienThoai)</td>
+                    <td>@item.NgaySinh?.ToString("dd/MM/yyyy")</td>
+                    <td>@Html.DisplayFor(modelItem => item.GioiTinh)</td>
+                    <td>@item.NgayTao?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @if (item.TrangThai == 1)
+                        {
+                            <span class="badge bg-success">Hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Đã khóa</span>
+                        }
+                    </td>
+                    <td>
+                        @* <a asp-action="Edit" asp-route-id="@item.MaNguoiDung" class="btn btn-sm btn-info" title="Sửa"><i class="fa fa-pencil"></i></a> *@
+                        <a asp-action="Details" asp-route-id="@item.MaNguoiDung" class="btn btn-sm btn-secondary" title="Chi tiết"><i class="fa fa-eye"></i></a>
+                        @* <a asp-action="Delete" asp-route-id="@item.MaNguoiDung" class="btn btn-sm btn-danger" title="Xóa"><i class="fa fa-trash"></i></a> *@
+                        @* === NÚT THAY ĐỔI TRẠNG THÁI ĐỘNG === *@
+                        @if (item.Quyen.MaVaiTro == "KHACHHANG")
+                        {
+                            <form asp-action="ToggleStatus" asp-route-id="@item.MaNguoiDung" method="post" class="d-inline">
+                                @if (item.TrangThai == 1)
+                                {
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Khóa tài khoản"
+                                            onclick="return confirm('Bạn có chắc muốn vô hiệu hóa khách hàng @item.HoTen?')">
+                                        <i class="fa fa-lock"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Kích hoạt lại tài khoản"
+                                            onclick="return confirm('Bạn có chắc muốn kích hoạt lại kháchh hàng @item.HoTen?')">
+                                        <i class="fa fa-unlock"></i>
+                                    </button>
+                                }
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

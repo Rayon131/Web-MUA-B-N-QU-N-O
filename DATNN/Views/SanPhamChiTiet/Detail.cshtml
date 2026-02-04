@@ -1,0 +1,366 @@
+﻿@model DATNN.Models.SanPham
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions {
+    // Hàm này sẽ lấy token bí mật từ server
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+@if (Model != null)
+{
+    ViewData["Title"] = Model.TenSanPham;
+
+    <!-- Single Page Header start -->
+    <div class="container-fluid page-header py-5" style="margin-top: 100px;">
+        <h1 class="text-center text-white display-6">Chi Tiết Sản Phẩm</h1>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item active text-white">@Model.TenSanPham</li>
+        </ol>
+    </div>
+    <!-- Single Page Header End -->
+    <!-- Single Product Start -->
+    <div class="container-fluid py-5 mt-5">
+        <div class="container py-5">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger mb-4" role="alert">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success mb-4" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            <div class="row g-5">
+                <div class="col-lg-6">
+                    <div class="border rounded">
+                        <!-- Ảnh chính của sản phẩm, sẽ được cập nhật bằng JavaScript -->
+                        <img id="main-product-image"
+                             src="@Url.Content(!string.IsNullOrEmpty(Model.AnhSanPham) ? $"~/images/{Model.AnhSanPham}" : "~/img/placeholder.jpg")"
+                             class="img-fluid rounded" alt="Ảnh sản phẩm">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="fw-bold mb-3">@Model.TenSanPham</h2>
+                    <div class="d-flex mb-3">
+                        <p class="mb-0 me-3"><strong>Chất liệu:</strong> @Model.ChatLieu?.TenChatLieu</p>
+                        <p class="mb-0"><strong>Xuất xứ:</strong> @Model.XuatXu?.TenXuatXu</p>
+                    </div>
+
+                    <!-- Giá sản phẩm, sẽ được cập nhật bằng JavaScript -->
+                    <div class="price-container mb-3 d-flex align-items-center">
+                        <!-- Giá cuối cùng (sau khuyến mãi) -->
+                        <h3 id="product-price" class="fw-bold text-primary me-3 mb-0">
+                            Chọn màu và size để xem giá
+                        </h3>
+                        <!-- Giá gốc (chỉ hiển thị khi có giảm giá) -->
+                        <h5 id="original-price" class="text-muted text-decoration-line-through mb-0" style="display: none;">
+                        </h5>
+                    </div>
+
+                    <p class="mb-4">@Model.MoTa</p>
+
+                    <!-- Lựa chọn MÀU SẮC (dưới dạng các nút bấm) -->
+                    <div class="mb-3">
+                        <strong class="d-block mb-2">Màu sắc:</strong>
+                        <div class="d-flex flex-wrap" id="color-options">
+                            @* Dùng GroupBy để đảm bảo mỗi màu chỉ xuất hiện một lần *@
+                            @foreach (var colorGroup in Model.SanPhamChiTiets.Where(ct => ct.TrangThai == 1).GroupBy(ct => ct.MauSac.MaMauSac).Select(g => g.First()))
+                            {
+                                <button class="btn btn-outline-secondary me-2 mb-2 color-btn" data-color-id="@colorGroup.MauSac.MaMauSac">
+                                    @colorGroup.MauSac.TenMau
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Lựa chọn SIZE (sẽ được JavaScript điền vào sau khi chọn màu) -->
+                    <div class="mb-4">
+                        <strong class="d-block mb-2">Size:</strong>
+                        <div class="d-flex flex-wrap" id="size-options" style="min-height: 40px;">
+                            @* Dùng GroupBy để lấy và hiển thị mỗi size duy nhất một lần *@
+                            @foreach (var sizeGroup in Model.SanPhamChiTiets.Where(ct => ct.TrangThai == 1).GroupBy(ct => ct.Size.MaSize).Select(g => g.First()))
+                            {
+                                <button class="btn btn-outline-secondary me-2 mb-2 size-btn" data-size-id="@sizeGroup.Size.MaSize">
+                                    @sizeGroup.Size.TenSize
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Số lượng và các nút hành động -->
+                    <div class="d-flex align-items-center flex-wrap">
+                        <div class="input-group quantity me-3 mb-3" style="width: 120px;">
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-minus rounded-circle bg-light border">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <input type="text" id="quantity-input" class="form-control form-control-sm text-center border-0" value="1">
+                            <div class="input-group-btn">
+                                <button class="btn btn-sm btn-plus rounded-circle bg-light border">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button id="add-to-cart-btn" class="btn border border-secondary rounded-pill px-4 py-2 text-primary mb-3 me-2" disabled>
+                            <i class="fa fa-shopping-bag me-2"></i> Thêm vào giỏ
+                        </button>
+                        <button id="buy-now-btn" class="btn btn-primary rounded-pill px-4 py-2 mb-3" disabled>Mua ngay</button>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 py-2 mb-3">
+                            <i class="fa fa-arrow-left me-2"></i> Quay lại
+                        </a>
+                    </div>
+                    <!-- Thông báo tình trạng (hết hàng, v.v.) -->
+                    <div id="availability-message" class="mt-2 text-danger fw-bold"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Single Product End -->
+    @section Scripts {
+    <script>
+        // --- KHAI BÁO BIẾN TOÀN CỤC ---
+        // Dữ liệu sản phẩm chi tiết từ Controller
+        const sanPhamChiTiets = JSON.parse('@Html.Raw(ViewData["SanPhamChiTietsJson"])');
+        // Ảnh mặc định của sản phẩm cha
+        const defaultImage = "@Url.Content(!string.IsNullOrEmpty(Model.AnhSanPham) ? $"~/images/{Model.AnhSanPham}" : "~/img/placeholder.jpg")";
+
+        // --- SỰ KIỆN KHI TRANG TẢI XONG ---
+        document.addEventListener("DOMContentLoaded", function() {
+
+            // --- LẤY CÁC PHẦN TỬ TRÊN TRANG ---
+            const colorOptionsContainer = document.getElementById('color-options');
+            const sizeOptionsContainer = document.getElementById('size-options');
+            const mainImage = document.getElementById('main-product-image');
+            const productPrice = document.getElementById('product-price');
+            const originalPrice = document.getElementById('original-price');
+            const availabilityMessage = document.getElementById('availability-message');
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
+            const buyNowBtn = document.getElementById('buy-now-btn');
+            const quantityInput = document.getElementById('quantity-input'); // Đã thêm
+            const btnMinus = document.querySelector('.btn-minus');
+            const btnPlus = document.querySelector('.btn-plus');
+            // --- BIẾN LƯU TRẠNG THÁI LỰA CHỌN ---
+            let selectedColorId = null;
+            let selectedSizeId = null;
+            let selectedVariant = null;
+         // 3. Sự kiện click nút TRỪ (-)
+        btnMinus.addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value, 10);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+                updateUI(); // Gọi updateUI để cập nhật giá
+            }
+        });
+
+        // 4. Sự kiện click nút CỘNG (+)
+        btnPlus.addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value, 10);
+            if (selectedVariant && (currentValue + 1) > selectedVariant.soLuong) {
+                alert(`Số lượng tồn kho của phiên bản này chỉ còn ${selectedVariant.soLuong} sản phẩm.`);
+            } else {
+                quantityInput.value = currentValue + 1;
+                updateUI(); // Gọi updateUI để cập nhật giá
+            }
+        });
+
+        // 5. Sự kiện khi người dùng tự nhập số lượng
+        quantityInput.addEventListener('change', function() {
+            let enteredValue = parseInt(quantityInput.value, 10);
+            if (isNaN(enteredValue) || enteredValue < 1) {
+                quantityInput.value = 1;
+            }
+            if (selectedVariant && enteredValue > selectedVariant.soLuong) {
+                alert(`Số lượng tồn kho của phiên bản này chỉ còn ${selectedVariant.soLuong} sản phẩm.`);
+                quantityInput.value = selectedVariant.soLuong;
+            }
+            updateUI(); // Gọi updateUI để cập nhật giá
+        });
+
+            // 1. Sự kiện khi click chọn MÀU
+            colorOptionsContainer.addEventListener('click', function(e) {
+                const button = e.target.closest('.color-btn');
+                if (button) {
+                    const clickedColorId = button.getAttribute('data-color-id');
+                    selectedColorId = (selectedColorId === clickedColorId) ? null : clickedColorId;
+
+                    colorOptionsContainer.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('btn-primary', 'text-white'));
+                    if(selectedColorId) button.classList.add('btn-primary', 'text-white');
+
+                    updateUI();
+                }
+            });
+
+            // 2. Sự kiện khi click chọn SIZE
+            sizeOptionsContainer.addEventListener('click', function(e) {
+                const button = e.target.closest('.size-btn');
+                if (button) {
+                    const clickedSizeId = button.getAttribute('data-size-id');
+                    selectedSizeId = (selectedSizeId === clickedSizeId) ? null : clickedSizeId;
+
+                    sizeOptionsContainer.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('btn-primary', 'text-white'));
+                    if(selectedSizeId) button.classList.add('btn-primary', 'text-white');
+
+                    updateUI();
+                }
+            });
+
+            // 3. Sự kiện khi click nút "THÊM VÀO GIỎ"
+            addToCartBtn.addEventListener('click', function() {
+                if (selectedVariant) {
+                    const sanPhamChiTietId = selectedVariant.maSanPhamChiTiet;
+                    const soLuong = parseInt(quantityInput.value, 10);
+
+                    if (soLuong > 0 && soLuong <= selectedVariant.soLuong) {
+                        fetch('/GioHang/AddToCart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'RequestVerificationToken': '@GetAntiXsrfRequestToken()'
+                            },
+                            body: `sanPhamChiTietId=${sanPhamChiTietId}&soLuong=${soLuong}`
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Lỗi mạng: ${response.statusText}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                // TODO: Cập nhật số lượng trên icon giỏ hàng ở header
+                            } else {
+                                alert('Lỗi: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi thêm vào giỏ:', error);
+                            alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+                        });
+                    } else {
+                        alert('Số lượng không hợp lệ hoặc vượt quá số lượng tồn kho.');
+                    }
+                } else {
+                     alert('Vui lòng chọn đầy đủ màu sắc và size.');
+                }
+            });
+
+           buyNowBtn.addEventListener('click', function() {
+            if (selectedVariant) {
+                const sanPhamChiTietId = selectedVariant.maSanPhamChiTiet;
+                const soLuong = parseInt(quantityInput.value, 10);
+
+                if (soLuong > 0 && soLuong <= selectedVariant.soLuong) {
+                    // Tạo một form ảo
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '@Url.Action("BuyNowDirect", "GioHang")';
+
+                    // Thêm AntiForgeryToken
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = '@GetAntiXsrfRequestToken()';
+                    form.appendChild(tokenInput);
+
+                    // Thêm ID sản phẩm chi tiết
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'sanPhamChiTietId';
+                    idInput.value = sanPhamChiTietId;
+                    form.appendChild(idInput);
+
+                    // Thêm số lượng
+                    const qtyInput = document.createElement('input');
+                    qtyInput.type = 'hidden';
+                    qtyInput.name = 'soLuong';
+                    qtyInput.value = soLuong;
+                    form.appendChild(qtyInput);
+
+                    // Thêm form vào trang và submit
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    alert('Số lượng không hợp lệ hoặc vượt quá số lượng tồn kho.');
+                }
+            } else {
+                 alert('Vui lòng chọn đầy đủ màu sắc và size.');
+            }
+        });
+            // --- HÀM CẬP NHẬT GIAO DIỆN CHÍNH ---
+            function updateUI() {
+                availabilityMessage.textContent = '';
+                originalPrice.style.display = 'none';
+                mainImage.src = defaultImage;
+
+                if (selectedColorId && selectedSizeId) {
+                    const variant = sanPhamChiTiets.find(ct => ct.maMauSac == selectedColorId && ct.maSize == selectedSizeId);
+                    selectedVariant = variant;
+
+                    if (variant) {
+                    // Lấy số lượng hiện tại
+                    const currentQuantity = parseInt(quantityInput.value, 10) || 1;
+
+                    // Tính giá cuối cùng dựa trên số lượng
+                    const finalPrice = variant.giaKhuyenMai * currentQuantity;
+                    const finalPriceText = new Intl.NumberFormat('vi-VN').format(finalPrice) + ' VNĐ';
+                    productPrice.textContent = finalPriceText;
+
+                    // Tính giá gốc dựa trên số lượng nếu có khuyến mãi
+                    if (variant.giaKhuyenMai < variant.giaBan) {
+                        const basePrice = variant.giaBan * currentQuantity;
+                        const basePriceText = new Intl.NumberFormat('vi-VN').format(basePrice) + ' VNĐ';
+                        originalPrice.textContent = basePriceText;
+                        originalPrice.style.display = 'inline-block';
+                    }
+
+                        if (variant.hinhAnh) {
+                            mainImage.src = `/images/${variant.hinhAnh}`;
+                        }
+
+                        if (variant.soLuong > 0) {
+                            addToCartBtn.disabled = false;
+                            buyNowBtn.disabled = false;
+                            availabilityMessage.textContent = `Còn lại ${variant.soLuong} sản phẩm.`;
+                            availabilityMessage.classList.remove('text-danger');
+                            availabilityMessage.classList.add('text-success');
+                        } else {
+                            availabilityMessage.textContent = 'Phiên bản này đã hết hàng.';
+                            availabilityMessage.classList.remove('text-success');
+                            availabilityMessage.classList.add('text-danger');
+                            addToCartBtn.disabled = true;
+                            buyNowBtn.disabled = true;
+                        }
+                    } else {
+                        productPrice.textContent = 'Phiên bản không có sẵn';
+                        availabilityMessage.textContent = 'Vui lòng chọn một sự kết hợp khác.';
+                        availabilityMessage.classList.add('text-danger');
+                        addToCartBtn.disabled = true;
+                        buyNowBtn.disabled = true;
+                    }
+                } else {
+                    productPrice.textContent = "Chọn màu và size để xem giá";
+                    addToCartBtn.disabled = true;
+                    buyNowBtn.disabled = true;
+                    selectedVariant = null;
+                }
+            }
+        }); // Kết thúc DOMContentLoaded
+    </script>
+}
+}
+else
+{
+    ViewData["Title"] = "Không tìm thấy sản phẩm";
+    <div class="container text-center py-5">
+        <h1 class="display-4">Lỗi: Không Tìm Thấy Sản Phẩm</h1>
+        <p class="lead">Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">Quay về Trang chủ</a>
+    </div>
+}

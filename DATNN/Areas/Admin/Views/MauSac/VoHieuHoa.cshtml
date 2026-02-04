@@ -1,0 +1,66 @@
+﻿@model List<DATNN.Models.MauSac>
+@{
+    ViewData["Title"] = "Danh sách màu sắc";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">🎨 Danh sách màu sắc</h3>
+        <a asp-action="Create" class="btn btn-primary">➕ Thêm màu mới</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Tên màu</th>
+                    <th>Mã màu</th>
+                    <th>Hiển thị</th>
+                    <th>Trạng thái</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.TenMau</td>
+                        <td>@item.MoTa</td>
+                        <td>
+                            <div style="width: 30px; height: 30px; background-color: @item.MoTa; border: 1px solid #ccc; border-radius: 4px;"></div>
+                        </td>
+                        <td>
+                            @if (item.TrangThai == 1)
+                            {
+                                <span class="badge bg-success">Hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Không hoạt động</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.MaMauSac" class="btn btn-sm btn-warning me-1">✏️ Sửa</a>
+                            <a asp-action="Details" asp-route-id="@item.MaMauSac" class="btn btn-sm btn-info me-1">🔍 Xem</a>
+                            <a asp-action="Delete" asp-route-id="@item.MaMauSac" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa màu này không?')">🗑️ Xóa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Phân trang thủ công -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>

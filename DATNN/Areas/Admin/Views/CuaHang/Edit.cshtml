@@ -1,0 +1,235 @@
+﻿@using DATNN.Areas.Admin.Models
+@model CuaHangViewModel
+
+
+
+<h2 class="mb-4">Cập nhật thông tin cửa hàng</h2>
+<form asp-action="Edit" method="post">
+    <div class="row g-4">
+        <!-- Thông tin cơ bản -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white fw-bold">Thông tin cơ bản</div>
+                <div class="card-body">
+                    <div class="form-floating mb-3">
+                        <input asp-for="ThongTinCuaHang.TenCuaHang"
+                               class="form-control" placeholder="Tên cửa hàng" />
+                        <label asp-for="ThongTinCuaHang.TenCuaHang">Tên cửa hàng</label>
+                        <span asp-validation-for="ThongTinCuaHang.TenCuaHang"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="ThongTinCuaHang.SoDienThoai"
+                               class="form-control" placeholder="Số điện thoại" />
+                        <label asp-for="ThongTinCuaHang.SoDienThoai">Số điện thoại</label>
+                        <span asp-validation-for="ThongTinCuaHang.SoDienThoai"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="ThongTinCuaHang.Gmail"
+                               class="form-control" placeholder="Gmail" />
+                        <label asp-for="ThongTinCuaHang.Gmail">Gmail</label>
+                        <span asp-validation-for="ThongTinCuaHang.Gmail"
+                              class="text-danger small"></span>
+                    </div>
+
+                    @* <div class="row"> *@
+                    @*     <div class="col-md-6 mb-3"> *@
+                    @*         <label asp-for="ThongTinCuaHang.MoCua" class="form-label">Giờ mở cửa</label> *@
+                    @*         <input asp-for="ThongTinCuaHang.MoCua" type="time" class="form-control" /> *@
+                    @*     </div> *@
+                    @*     <div class="col-md-6 mb-3"> *@
+                    @*         <label asp-for="ThongTinCuaHang.DongCua" class="form-label">Giờ đóng cửa</label> *@
+                    @*         <input asp-for="ThongTinCuaHang.DongCua" type="time" class="form-control" /> *@
+                    @*     </div> *@
+                    @* </div> *@
+                </div>
+            </div>
+        </div>
+
+        <!-- Địa chỉ và vị trí -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white fw-bold">Địa chỉ và vị trí</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="city" class="form-label">Tỉnh/Thành phố</label>
+                        <select class="form-select" id="city" data-value="@Model.DiaChiCuaHang.ThanhPho">
+                            <option value="">Chọn tỉnh thành</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="district" class="form-label">Quận/Huyện</label>
+                        <select class="form-select" id="district" data-value="@Model.DiaChiCuaHang.Quan">
+                            <option value="">Chọn quận huyện</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ward" class="form-label">Phường/Xã</label>
+                        <select class="form-select" id="ward" data-value="@Model.DiaChiCuaHang.Phuong">
+                            <option value="">Chọn phường xã</option>
+                        </select>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="DiaChiCuaHang.ChiTietDiaChi" class="form-control" placeholder="Chi tiết địa chỉ" />
+                        <label asp-for="DiaChiCuaHang.ChiTietDiaChi">Chi tiết địa chỉ</label>
+                    </div>
+
+                    <input type="hidden" name="DiaChiCuaHang.ThanhPho" id="TenThanhPho" value="@Model.DiaChiCuaHang.ThanhPho" />
+                    <input type="hidden" name="DiaChiCuaHang.Quan" id="TenQuan" value="@Model.DiaChiCuaHang.Quan" />
+                    <input type="hidden" name="DiaChiCuaHang.Phuong" id="TenPhuong" value="@Model.DiaChiCuaHang.Phuong" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin giao hàng -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark fw-bold">Thông tin giao hàng</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Bán kính giao hàng -->
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-for="ThongTinGiaoHang.BanKinhGiaoHang"
+                                       class="form-control"
+                                       type="number"
+                                       step="0.1"
+                                       min="0"
+                                       placeholder=" " />
+                                <label asp-for="ThongTinGiaoHang.BanKinhGiaoHang">
+                                    Bán kính giao hàng (km)
+                                </label>
+                            </div>
+                            <span asp-validation-for="ThongTinGiaoHang.BanKinhGiaoHang" class="text-danger"></span>
+                        </div>
+
+                        <!-- Phí giao hàng -->
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-format="{0:0}" asp-for="ThongTinGiaoHang.PhiGiaoHang"
+                                       class="form-control"
+                                       type="number"
+                                       step="1"
+                                       min="0"
+                                       inputmode="numeric"
+                                       placeholder=" " />
+                                <label asp-for="ThongTinGiaoHang.PhiGiaoHang">
+                                    Phí giao hàng (VNĐ)
+                                </label>
+                            </div>
+
+                            <span asp-validation-for="ThongTinGiaoHang.PhiGiaoHang" class="text-danger"></span>
+                        </div>
+
+                        <!-- Bán kính miễn phí ship -->
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input asp-for="ThongTinGiaoHang.BanKinhfree"
+                                       class="form-control"
+                                       type="number"
+                                       step="0.1"
+                                       min="0"
+                                       placeholder=" " />
+                                <label asp-for="ThongTinGiaoHang.BanKinhfree">
+                                    Bán kính miễn phí ship (km)
+                                </label>
+                            </div>
+                            <span asp-validation-for="ThongTinGiaoHang.BanKinhfree" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Nút cập nhật -->
+        <div class="col-12 text-end mt-3">
+            <button type="submit" class="btn btn-lg btn-primary px-5">Cập nhật</button>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+    const city = document.getElementById("city");
+    const district = document.getElementById("district");
+    const ward = document.getElementById("ward");
+
+    axios.get("/json/data.json").then(function (response) {
+        const data = response.data;
+
+        // Render danh sách tỉnh/thành
+        for (const c of data) {
+            city.options[city.options.length] = new Option(c.Name, c.Id);
+        }
+
+        // Gán giá trị mặc định từ DB
+        const defaultCityName = city.getAttribute("data-value");
+        const defaultDistrictName = district.getAttribute("data-value");
+        const defaultWardName = ward.getAttribute("data-value");
+
+        const cityObj = data.find(c => c.Name === defaultCityName);
+        if (cityObj) {
+            city.value = cityObj.Id;
+            document.getElementById("TenThanhPho").value = cityObj.Name;
+
+            for (const d of cityObj.Districts) {
+                district.options[district.options.length] = new Option(d.Name, d.Id);
+            }
+
+            const districtObj = cityObj.Districts.find(d => d.Name === defaultDistrictName);
+            if (districtObj) {
+                district.value = districtObj.Id;
+                document.getElementById("TenQuan").value = districtObj.Name;
+
+                for (const w of districtObj.Wards) {
+                    ward.options[ward.options.length] = new Option(w.Name, w.Id);
+                }
+
+                const wardObj = districtObj.Wards.find(w => w.Name === defaultWardName);
+                if (wardObj) {
+                    ward.value = wardObj.Id;
+                    document.getElementById("TenPhuong").value = wardObj.Name;
+                }
+            }
+        }
+
+        // Khi người dùng chọn lại
+        city.onchange = function () {
+            district.length = 1;
+            ward.length = 1;
+            const selectedCity = data.find(c => c.Id === this.value);
+            document.getElementById("TenThanhPho").value = selectedCity?.Name || "";
+
+            for (const d of selectedCity.Districts) {
+                district.options[district.options.length] = new Option(d.Name, d.Id);
+            }
+        };
+
+        district.onchange = function () {
+            ward.length = 1;
+            const selectedCity = data.find(c => c.Id === city.value);
+            const selectedDistrict = selectedCity.Districts.find(d => d.Id === this.value);
+            document.getElementById("TenQuan").value = selectedDistrict?.Name || "";
+
+            for (const w of selectedDistrict.Wards) {
+                ward.options[ward.options.length] = new Option(w.Name, w.Id);
+            }
+        };
+
+        ward.onchange = function () {
+            const selectedWard = ward.options[ward.selectedIndex].text;
+            document.getElementById("TenPhuong").value = selectedWard;
+        };
+    });
+</script>
+

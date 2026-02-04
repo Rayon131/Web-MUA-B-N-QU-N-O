@@ -1,0 +1,68 @@
+﻿@model IEnumerable<DATNN.Models.DiaChiNguoiDung>
+
+@{
+    ViewData["Title"] = "Địa chỉ của tôi";
+}
+
+<link rel="stylesheet" href="~/css/address.css" />
+
+<div class="container container_address mt-5">
+    <div class="custom-card_address">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>ĐỊA CHỈ CỦA TÔI</h2>
+            <a asp-action="Create" class="btn btn-custom-primary_address">+ Thêm địa chỉ mới</a>
+        </div>
+        <hr>
+
+        <div class="address-section">
+            <h3 class="h6 fw-bold mb-3">Địa chỉ</h3>
+
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="address-card d-flex justify-content-between align-items-start mb-3">
+                        <div class="address-info">
+                            <div>
+                                <span class="name_address">@item.Ten</span>
+                                <span class="phone_address ms-3">(+84) @item.SoDienThoai</span>
+                            </div>
+                            <div class="address-details mt-2">
+                                @item.ChiTietDiaChi, @item.Phuong, @item.Quan, @item.ThanhPho
+                            </div>
+                            <div class="mt-2">
+                                @if (item.TrangThai == 1)
+                                {
+                                    <span class="default-badge">Mặc định</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="actions text-end">
+                            <div class="action-links_address mb-2">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Cập nhật</a>
+                                <form asp-action="SetHidden" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                </form>
+
+                            </div>
+                            @if (item.TrangThai != 1)
+                            {
+                                <form asp-action="SetDefault" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-set-default_address">Thiết lập mặc định</button>
+                                </form>
+    
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Bạn chưa có địa chỉ nào.</p>
+            }
+        </div>
+    </div>
+</div>

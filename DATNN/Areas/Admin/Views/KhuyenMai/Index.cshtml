@@ -1,0 +1,513 @@
+﻿@model IEnumerable<DATNN.Models.KhuyenMai>
+
+@{
+    ViewData["Title"] = "Quản lý Khuyến mãi";
+    var now = DateTime.Now.Date;
+    var sanPhamInfoDict = ViewBag.SanPhamInfoDict as Dictionary<int, string> ?? new Dictionary<int, string>();
+}
+
+<style>
+    .promo-container {
+        padding: 2rem 1rem;
+    }
+
+    .promo-header {
+        margin-bottom: 2rem;
+    }
+
+    .promo-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 1.5rem;
+    }
+
+    .promo-toolbar {
+        background: #f8f9fa;
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .toolbar-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .toolbar-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4b5563;
+        margin: 0;
+    }
+
+    .btn-create {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .btn-create:hover {
+            background: #1d4ed8;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+    .btn-filter {
+        padding: 0.4rem 1rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid;
+    }
+
+        .btn-filter.active-filter {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+    .btn-toggle-rule {
+        padding: 0.4rem 1rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 500;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .promo-table-wrapper {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    .promo-table {
+        margin-bottom: 0;
+        font-size: 0.875rem;
+    }
+
+        .promo-table thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+            .promo-table thead th {
+                padding: 0.875rem 1rem;
+                font-weight: 600;
+                color: #374151;
+                font-size: 0.813rem;
+                text-transform: uppercase;
+                letter-spacing: 0.025em;
+                border-bottom: none;
+            }
+
+        .promo-table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.15s;
+        }
+
+            .promo-table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        .promo-table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #1f2937;
+        }
+
+    .promo-name {
+        font-weight: 600;
+        color: #111827;
+        font-size: 0.938rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .promo-badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .badge-primary {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-info {
+        background: #e0f2fe;
+        color: #075985;
+    }
+
+    .badge-secondary {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .badge-success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .badge-warning {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-danger {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-dark {
+        background: #e5e7eb;
+        color: #1f2937;
+    }
+
+    .discount-value {
+        font-weight: 600;
+        color: #dc2626;
+        font-size: 0.938rem;
+    }
+
+    .product-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 0.813rem;
+        transition: color 0.2s;
+    }
+
+        .product-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+    .date-text {
+        color: #6b7280;
+        font-size: 0.813rem;
+    }
+
+    .btn-action {
+        padding: 0.375rem 0.875rem;
+        border-radius: 5px;
+        font-size: 0.813rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid;
+        margin-right: 0.375rem;
+    }
+
+    .btn-edit {
+        background: white;
+        color: #2563eb;
+        border-color: #2563eb;
+    }
+
+        .btn-edit:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    .btn-deactivate {
+        background: #fbbf24;
+        color: #78350f;
+        border-color: #fbbf24;
+    }
+
+        .btn-deactivate:hover {
+            background: #f59e0b;
+            border-color: #f59e0b;
+        }
+
+    .btn-activate {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+    }
+
+        .btn-activate:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+
+    .modal-content {
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 1.25rem;
+    }
+
+    .modal-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .modal-body {
+        padding: 1.25rem;
+    }
+
+    .list-group-item {
+        border-color: #e5e7eb;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    @@media (max-width: 768px) {
+        .promo-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .toolbar-section {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+
+<div class="promo-container">
+    <div class="promo-header">
+        <h1 class="promo-title">Quản lý Khuyến mãi</h1>
+    </div>
+
+    <div class="promo-toolbar">
+        <div class="toolbar-section">
+            <a asp-action="Create" class="btn btn-create">+ Tạo chương trình mới</a>
+        </div>
+
+        <div class="toolbar-section">
+            <span class="toolbar-label">Chế độ áp dụng:</span>
+            @{
+                bool isStackable = ViewBag.CurrentPromotionRule == "Stackable";
+                var buttonClass = isStackable ? "btn-success" : "btn-warning";
+                var buttonText = isStackable ? "Cộng dồn" : "KM cao nhất";
+            }
+            <button id="toggleRuleBtn" class="btn btn-toggle-rule @buttonClass" data-current-rule="@ViewBag.CurrentPromotionRule">
+                @buttonText
+            </button>
+        </div>
+
+        <div class="toolbar-section">
+            <span class="toolbar-label">Lọc theo:</span>
+            <a asp-action="Index" asp-route-statusFilter="active" class="btn btn-filter @(ViewBag.CurrentStatusFilter == "active" ? "btn-success active-filter" : "btn-outline-success")">Đang diễn ra</a>
+            <a asp-action="Index" asp-route-statusFilter="upcoming" class="btn btn-filter @(ViewBag.CurrentStatusFilter == "upcoming" ? "btn-info active-filter" : "btn-outline-info")">Sắp diễn ra</a>
+            <a asp-action="Index" asp-route-statusFilter="expired" class="btn btn-filter @(ViewBag.CurrentStatusFilter == "expired" ? "btn-dark active-filter" : "btn-outline-dark")">Đã hết hạn</a>
+            <a asp-action="Index" asp-route-statusFilter="inactive" class="btn btn-filter @(ViewBag.CurrentStatusFilter == "inactive" ? "btn-danger active-filter" : "btn-outline-danger")">Vô hiệu hóa</a>
+        </div>
+    </div>
+
+    <div class="promo-table-wrapper">
+        <table class="table promo-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Chương trình</th>
+                    <th>Mức giảm & Đối tượng</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th style="width: 200px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr id="row-@item.MaKhuyenMai">
+                        <td>
+                            <div class="promo-name">@item.TenKhuyenMai</div>
+                            <div>
+                                @if (item.KenhApDung == "TaiQuay")
+                                {
+                                    <span class="promo-badge badge-primary">Tại quầy</span>
+                                }
+                                else if (item.KenhApDung == "Online")
+                                {
+                                    <span class="promo-badge badge-info">Online</span>
+                                }
+                                else if (item.KenhApDung == "TatCa")
+                                {
+                                    <span class="promo-badge badge-secondary">Tất cả kênh</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            @{
+                                var appliedItemCount = item.DanhSachSanPhamApDung?.Split(',').Length ?? 0;
+                                <div class="discount-value">-@item.GiaTriGiamGia.ToString("N0")@(item.LoaiGiamGia == "PhanTram" ? "%" : "đ")</div>
+                                <a href="#" class="product-link" data-bs-toggle="modal" data-bs-target="#sanPhamModal-@item.MaKhuyenMai">
+                                    @appliedItemCount sản phẩm áp dụng
+                                </a>
+                            }
+                        </td>
+                        <td>
+                            <div class="date-text">@item.NgayBatDau.ToString("dd/MM/yyyy")</div>
+                            <div class="date-text">đến @item.NgayKetThuc.ToString("dd/MM/yyyy")</div>
+                        </td>
+                        <td>
+                            @if (item.NgayKetThuc < now)
+                            {
+                                @* 1. Ưu tiên kiểm tra hết hạn trước *@
+                                <span class="promo-badge badge-dark">Đã hết hạn</span>
+                            }
+                            else if (item.TrangThai == 0)
+                            {
+                                @* 2. Sau đó mới kiểm tra Vô hiệu hóa *@
+                                <span class="promo-badge badge-danger">Vô hiệu hóa</span>
+                            }
+                            else if (item.NgayBatDau > now)
+                            {
+                                <span class="promo-badge badge-info">Sắp diễn ra</span>
+                            }
+                            else
+                            {
+                                <span class="promo-badge badge-success">Đang diễn ra</span>
+                            }
+                        </td>
+                        <td>
+                            @if (ViewBag.CurrentStatusFilter == "upcoming")
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.MaKhuyenMai" class="btn btn-action btn-edit">Sửa</a>
+                            }
+
+                            @*<a asp-action="Delete" asp-route-id="@item.MaKhuyenMai" class="btn btn-sm btn-outline-danger">Xóa</a>*@
+                            @if (item.NgayKetThuc >= now)
+                            {
+                                <button class="btn btn-action @(item.TrangThai == 1 ? "btn-deactivate" : "btn-activate") toggle-status-btn" data-id="@item.MaKhuyenMai">
+                                    @(item.TrangThai == 1 ? "Vô hiệu hóa" : "Kích hoạt")
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form id="antiForgeryForm" method="post" style="display:none;">@Html.AntiForgeryToken()</form>
+
+@foreach (var item in Model.Where(km => !string.IsNullOrEmpty(km.DanhSachSanPhamApDung)))
+{
+    var appliedItems = item.DanhSachSanPhamApDung.Split(',');
+    var parentIds = appliedItems.Where(x => x.StartsWith("p-")).Select(x => int.Parse(x.Substring(2))).ToList();
+    var variantIds = appliedItems.Where(x => x.StartsWith("v-")).Select(x => int.Parse(x.Substring(2))).ToList();
+
+    <div class="modal fade" id="sanPhamModal-@item.MaKhuyenMai" tabindex="-1" aria-labelledby="modalLabel-@item.MaKhuyenMai" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel-@item.MaKhuyenMai">Sản phẩm áp dụng - @item.TenKhuyenMai</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        @foreach (var productId in parentIds)
+                        {
+                            if (sanPhamInfoDict.ContainsKey(productId))
+                            {
+                                <li class="list-group-item">
+                                    <strong>@sanPhamInfoDict[productId]</strong> <span class="text-muted">(Toàn bộ sản phẩm)</span>
+                                </li>
+                            }
+                        }
+                        @if (variantIds.Any())
+                        {
+                            <li class="list-group-item list-group-item-secondary"><strong>Các phiên bản riêng lẻ:</strong></li>
+                            @foreach (var variantId in variantIds)
+                            {
+                                <li class="list-group-item">Phiên bản ID: @variantId</li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.querySelector('.promo-table tbody');
+            if (tbody) {
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.reverse().forEach(row => tbody.appendChild(row));
+            }
+        });
+
+        document.querySelectorAll('.toggle-status-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const khuyenMaiId = this.getAttribute('data-id');
+                const token = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value;
+
+                fetch(`/Admin/KhuyenMai/ToggleStatus?id=${khuyenMaiId}`, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cập nhật trạng thái thành công!');
+                        window.location.reload();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Lỗi AJAX:', error));
+            });
+        });
+
+        document.getElementById('toggleRuleBtn').addEventListener('click', function() {
+            const button = this;
+            const token = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value;
+
+            fetch('/Admin/KhuyenMai/TogglePromotionRule', {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.newRule === 'Stackable') {
+                        button.classList.remove('btn-warning');
+                        button.classList.add('btn-success');
+                        button.textContent = 'Cộng dồn';
+                    } else {
+                        button.classList.remove('btn-success');
+                        button.classList.add('btn-warning');
+                        button.textContent = 'KM cao nhất';
+                    }
+                    alert('Đã thay đổi chế độ áp dụng khuyến mãi thành công!');
+                } else {
+                    alert('Có lỗi xảy ra!');
+                }
+            })
+            .catch(error => console.error('Lỗi AJAX:', error));
+        });
+    </script>
+}

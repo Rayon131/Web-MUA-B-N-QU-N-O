@@ -1,0 +1,81 @@
+﻿.container_address {
+    max-width: 960px;
+    padding-top: 100px
+}
+
+.custom-card_address {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+    .custom-card_address h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .custom-card_address p {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+.btn-custom-primary_address {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: #fff;
+}
+
+    .btn-custom-primary_address:hover {
+        background-color: #ee4d2d;
+        border-color: #ee4d2d;
+        color: #fff;
+    }
+
+.address-card {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1.5rem 0;
+}
+
+    .address-card:last-child {
+        border-bottom: none;
+    }
+
+.address-info .name_address {
+    font-weight: bold;
+    color: #333;
+}
+
+.address-info .phone_address {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.address-info .address-details {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.default-badge {
+    color: green;
+    border: 1px solid green;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+.action-links_address a {
+    text-decoration: none;
+    color: #fff;
+    margin-left: 1rem;
+    font-size: 0.9rem;
+}
+
+.btn-set-default_address {
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    padding: 0.375rem 0.75rem;
+}

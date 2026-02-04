@@ -1,0 +1,67 @@
+﻿@model DATNN.Models.MauSac
+
+@{
+    ViewData["Title"] = "Thêm màu sắc";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">🎨 Thêm màu sắc mới</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="TenMau" class="form-label">Tên màu</label>
+                            <input asp-for="TenMau" class="form-control" placeholder="Ví dụ: Đỏ, Xanh dương..." />
+                            <span asp-validation-for="TenMau" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Chọn màu sắc</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <input type="color" id="colorPicker" class="form-control form-control-color" value="#FF0000" title="Chọn màu" />
+                                <div id="colorPreview" style="width: 40px; height: 40px; border: 1px solid #ccc; border-radius: 4px;"></div>
+                            </div>
+                            <input type="hidden" asp-for="MoTa" id="MoTa" />
+                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary">⬅ Quay lại</a>
+                            <button type="submit" class="btn btn-success">✅ Thêm màu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const picker = document.getElementById('colorPicker');
+        const preview = document.getElementById('colorPreview');
+        const hiddenInput = document.getElementById('MoTa');
+
+        function updateColor(value) {
+            preview.style.backgroundColor = value;
+            hiddenInput.value = value;
+        }
+
+        picker.addEventListener('input', function () {
+            updateColor(this.value);
+        });
+
+        // Khởi tạo màu mặc định
+        updateColor(picker.value);
+    </script>
+}

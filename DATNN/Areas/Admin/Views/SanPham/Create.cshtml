@@ -1,0 +1,611 @@
+﻿@model DATNN.ViewModel.SanPhamCreateViewModel
+
+@{
+    ViewData["Title"] = "Tạo Sản Phẩm";
+    // Lấy SelectLists từ ViewData để dùng trong JavaScript
+    var mauSacItems = (ViewData["MauSacItems"] as IEnumerable<object>) ?? Enumerable.Empty<object>();
+    var sizeItems = (ViewData["SizeItems"] as IEnumerable<object>) ?? Enumerable.Empty<object>();
+}
+
+<h1>Tạo mới sản phẩm</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form id="createProductForm" asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* PHẦN I: THÔNG TIN SẢN PHẨM CHA *@
+            <h4>Thông tin chung</h4>
+            <div class="row p-3 mb-3 border rounded">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="TenSanPham" class="control-label"></label>
+                        <input asp-for="TenSanPham" class="form-control" />
+                        <span asp-validation-for="TenSanPham" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaDanhMuc" class="control-label"></label>
+                        <div class="input-group">
+                            <select asp-for="MaDanhMuc" class="form-control" asp-items="ViewBag.MaDanhMuc">
+                                <option value="">-- Chọn danh mục --</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" onclick="openModal('danhMuc')">+</button>
+                        </div>
+                        <span asp-validation-for="MaDanhMuc" class="text-danger"></span>
+                    </div>
+                   
+                    <!-- Modal thêm nhanh danh mục -->
+                    <div class="modal fade" id="modal-danhMuc" tabindex="-1" aria-labelledby="modalDanhMucLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalDanhMucLabel">Thêm nhanh danh mục</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="newDanhMucTen" class="form-label">Tên danh mục</label>
+                                        <input type="text" id="newDanhMucTen" class="form-control" placeholder="Nhập tên danh mục..." />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newDanhMucMoTa" class="form-label">Mô tả (tuỳ chọn)</label>
+                                        <textarea id="newDanhMucMoTa" class="form-control" rows="3"></textarea>
+                                    </div>
+                                   
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary" onclick="addDanhMuc()">Thêm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal thêm nhanh chất liệu -->
+                    <!-- Chất liệu -->
+                    <div class="form-group">
+                        <label asp-for="MaChatLieu" class="control-label"></label>
+                        <div class="input-group">
+                            <select asp-for="MaChatLieu" class="form-control" asp-items="ViewBag.MaChatLieu">
+                                <option value="">-- Chọn chất liệu --</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" onclick="openModal('chatLieu')">+</button>
+                        </div>
+                        <span asp-validation-for="MaChatLieu" class="text-danger"></span>
+                    </div>
+
+                    <!-- Modal thêm nhanh chất liệu -->
+                    <div class="modal fade" id="modal-chatLieu" tabindex="-1" aria-labelledby="modalChatLieuLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalChatLieuLabel">Thêm nhanh chất liệu</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="newChatLieuTen" class="form-label">Tên chất liệu</label>
+                                        <input type="text" id="newChatLieuTen" class="form-control" placeholder="Nhập tên chất liệu..." />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newChatLieuMoTa" class="form-label">Mô tả (tuỳ chọn)</label>
+                                        <textarea id="newChatLieuMoTa" class="form-control" rows="3"></textarea>
+                                    </div>
+                                   
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary" onclick="addChatLieu()">Thêm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="MaXuatXu" class="control-label"></label>
+                        <div class="input-group">
+                            <select asp-for="MaXuatXu" class="form-control" asp-items="ViewBag.MaXuatXu">
+                                <option value="">-- Chọn xuất xứ --</option>
+                            </select>
+                            <button type="button" class="btn btn-outline-primary" onclick="openModal('xuatXu')">+</button>
+                        </div>
+                        <span asp-validation-for="MaXuatXu" class="text-danger"></span>
+                    </div>
+
+                    <!-- Modal thêm nhanh xuất xứ -->
+                    <div class="modal fade" id="modal-xuatXu" tabindex="-1" aria-labelledby="modalXuatXuLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalXuatXuLabel">Thêm nhanh xuất xứ</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="newXuatXuTen" class="form-label">Tên xuất xứ</label>
+                                        <input type="text" id="newXuatXuTen" class="form-control" placeholder="Nhập tên xuất xứ..." />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newXuatXuMoTa" class="form-label">Mô tả (tuỳ chọn)</label>
+                                        <textarea id="newXuatXuMoTa" class="form-control" rows="3"></textarea>
+                                    </div>
+                                  
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary" onclick="addXuatXu()">Thêm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="MoTa" class="control-label"></label>
+                        <textarea asp-for="MoTa" class="form-control" rows="5"></textarea>
+                        <span asp-validation-for="MoTa" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="file" class="control-label">Ảnh đại diện sản phẩm</label>
+                        <input asp-for="file" type="file" name="file" class="form-control" />
+                        <span asp-validation-for="file" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TrangThai" class="control-label">Trạng thái</label>
+                        <select asp-for="TrangThai" class="form-control" asp-items="ViewBag.TrangThaiList"></select>
+                        <span asp-validation-for="TrangThai" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            @* PHẦN II: THÔNG TIN CÁC PHIÊN BẢN (SẢN PHẨM CON) *@
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4>Các phiên bản sản phẩm</h4>
+                <button type="button" id="add-variant-btn" class="btn btn-success">Thêm phiên bản</button>
+            </div>
+
+            <div id="product-variants-container">
+                @* === ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT === *@
+                @* Dùng vòng lặp để vẽ lại các phiên bản đã nhập khi có lỗi *@
+                @for (int i = 0; i < Model.SanPhamChiTiets.Count; i++)
+                {
+                    <div class="variant-row row align-items-end mb-3 p-3 border rounded">
+                        <div class="col-md-2">
+                            <label class="form-label">Màu sắc</label>
+                            <div class="input-group">
+                                <select asp-for="SanPhamChiTiets[i].MaMauSac" class="form-control" asp-items='new SelectList(mauSacItems, "value", "text")'>
+                                    <option value="">-- Chọn màu --</option>
+                                </select>
+                                <button type="button" class="btn btn-outline-primary" onclick="openModal('mau')">+</button>
+                            </div>
+                            <span asp-validation-for="SanPhamChiTiets[i].MaMauSac" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Size</label>
+                            <div class="input-group">
+                                <select asp-for="SanPhamChiTiets[i].MaSize" class="form-control" asp-items='new SelectList(sizeItems, "value", "text")'>
+                                    <option value="">-- Chọn size --</option>
+                                </select>
+                                <button type="button" class="btn btn-outline-primary" onclick="openModal('size')">+</button>
+                            </div>
+                            <span asp-validation-for="SanPhamChiTiets[i].MaSize" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Giá bán (VND)</label>
+                            <input type="number" asp-for="SanPhamChiTiets[i].GiaBan" class="form-control" />
+                            <span asp-validation-for="SanPhamChiTiets[i].GiaBan" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Số lượng</label>
+                            <input type="number" asp-for="SanPhamChiTiets[i].SoLuong" class="form-control" />
+                            <span asp-validation-for="SanPhamChiTiets[i].SoLuong" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Ảnh phiên bản</label>
+                            <input type="file" asp-for="SanPhamChiTiets[i].file" class="form-control" />
+                            @* === THÊM DÒNG BÊN DƯỚI ĐỂ HIỂN THỊ LỖI === *@
+                            <span asp-validation-for="SanPhamChiTiets[i].file" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-danger remove-variant-btn w-100">Xóa</button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <hr />
+            <div class="form-group mt-4">
+                <input type="submit" value="Tạo Sản Phẩm" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-light">Quay lại danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal Thêm Nhanh Màu Sắc -->
+<div class="modal fade" id="modal-mau" tabindex="-1" aria-labelledby="modalMauLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalMauLabel">Thêm nhanh màu sắc</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newMauTen" class="form-label">Tên màu</label>
+                    <input type="text" id="newMauTen" class="form-control" placeholder="Nhập tên màu" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Chọn màu sắc</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <input type="color" id="colorPicker" class="form-control form-control-color" value="#ff0000" />
+                        <div id="colorPreview" style="width: 40px; height: 40px; border: 1px solid #ccc; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <input type="hidden" id="newMauMoTa" />
+              
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="addMau()">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal thêm nhanh Size -->
+<div class="modal fade" id="modal-size" tabindex="-1" aria-labelledby="modalSizeLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalSizeLabel">Thêm nhanh Size</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newSizeTen" class="form-label">Tên size</label>
+                    <input type="text" id="newSizeTen" class="form-control" placeholder="VD: S, M, L..." />
+                </div>
+                <div class="mb-3">
+                    <label for="newSizeMoTa" class="form-label">Mô tả (tuỳ chọn)</label>
+                    <textarea id="newSizeMoTa" class="form-control" rows="3"></textarea>
+                </div>
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="addSize()">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function () {
+            // Lấy chỉ số bắt đầu từ số lượng phiên bản đã được render bởi server
+            let variantIndex = @Model.SanPhamChiTiets.Count;
+           
+            $("#add-variant-btn").click(function () {
+                var container = $("#product-variants-container");
+
+                // Lấy dữ liệu dropdown từ ViewData mà chúng ta đã chuẩn bị ở đầu file
+                const mauSacData = @Html.Raw(Json.Serialize(mauSacItems));
+                const sizeData = @Html.Raw(Json.Serialize(sizeItems));
+
+                let mauSacHtmlOptions = '<option value="">-- Chọn màu --</option>';
+                mauSacData.forEach(option => {
+                    mauSacHtmlOptions += `<option value="${option.value}">${option.text}</option>`;
+                });
+
+                let sizeHtmlOptions = '<option value="">-- Chọn size --</option>';
+                sizeData.forEach(option => {
+                    sizeHtmlOptions += `<option value="${option.value}">${option.text}</option>`;
+                });
+
+                // Chuỗi HTML này không cần các thuộc tính data-val nữa, vì Razor sẽ xử lý
+                var variantHtml = `
+                    <div class="variant-row row align-items-end mb-3 p-3 border rounded">
+                        <div class="col-md-2">
+                            <label class="form-label">Màu sắc</label>
+                            <div class="input-group">
+                                <select name="SanPhamChiTiets[${variantIndex}].MaMauSac" class="form-control">
+                                    ${mauSacHtmlOptions}
+                                </select>
+                                <button type="button" class="btn btn-outline-primary" onclick="openModal('mau')">+</button>
+                            </div>
+                            <span class="text-danger field-validation-valid" data-valmsg-for="SanPhamChiTiets[${variantIndex}].MaMauSac" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Size</label>
+                            <div class="input-group">
+                                <select name="SanPhamChiTiets[${variantIndex}].MaSize" class="form-control">
+                                    ${sizeHtmlOptions}
+                                </select>
+                               <button type="button" class="btn btn-outline-primary" onclick="openModal('size')">+</button>
+                            </div>
+                            <span class="text-danger field-validation-valid" data-valmsg-for="SanPhamChiTiets[${variantIndex}].MaSize" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Giá bán (VND)</label>
+                            <input type="number" name="SanPhamChiTiets[${variantIndex}].GiaBan" class="form-control" />
+                            <span class="text-danger field-validation-valid" data-valmsg-for="SanPhamChiTiets[${variantIndex}].GiaBan" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Số lượng</label>
+                            <input type="number" name="SanPhamChiTiets[${variantIndex}].SoLuong" class="form-control" />
+                            <span class="text-danger field-validation-valid" data-valmsg-for="SanPhamChiTiets[${variantIndex}].SoLuong" data-valmsg-replace="true"></span>
+                        </div>
+                           <div class="col-md-2">
+            <label class="form-label">Ảnh phiên bản</label>
+            <input type="file" name="SanPhamChiTiets[${variantIndex}].file" class="form-control" />
+            <span class="text-danger field-validation-valid" data-valmsg-for="SanPhamChiTiets[${variantIndex}].file" data-valmsg-replace="true"></span>
+        </div>
+                        <div class="col-md-1">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-danger remove-variant-btn w-100">Xóa</button>
+                        </div>
+                    </div>`;
+
+                container.append(variantHtml);
+
+                // Kích hoạt lại validation cho toàn bộ form
+                var form = $("#createProductForm");
+                form.removeData("validator");
+                form.removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse(form);
+
+                variantIndex++;
+            });
+
+            // Sự kiện xóa phiên bản (không thay đổi)
+            $("#product-variants-container").on("click", ".remove-variant-btn", function () {
+                $(this).closest(".variant-row").remove();
+            });
+        });
+    </script>
+    <script>
+        function addChatLieu() {
+            const ten = $('#newChatLieuTen').val().trim();
+            const moTa = $('#newChatLieuMoTa').val().trim();
+            const trangThai = $('#newChatLieuTrangThai').val();
+
+            if (!ten) {
+                alert("Vui lòng nhập tên chất liệu.");
+                return;
+            }
+
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '/Admin/ChatLieu/CreateQuick',
+                type: 'POST',
+                data: {
+                    TenChatLieu: ten,
+                    MoTa: moTa,
+                    TrangThai: trangThai,
+                    __RequestVerificationToken: token
+                },
+                success: function (data) {
+                    if (data.success) {
+                        const select = $('select[name="MaChatLieu"]');
+                        select.append(`<option value="${data.id}" selected>${data.ten}</option>`);
+                        $('#modal-chatLieu').modal('hide');
+                        $('#newChatLieuTen, #newChatLieuMoTa').val('');
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function () {
+                    alert("Lỗi khi thêm chất liệu.");
+                }
+            });
+        }
+
+        function addXuatXu() {
+            const ten = $('#newXuatXuTen').val().trim();
+            const moTa = $('#newXuatXuMoTa').val().trim();
+            const trangThai = $('#newXuatXuTrangThai').val();
+
+            if (!ten) {
+                alert("Vui lòng nhập tên xuất xứ.");
+                return;
+            }
+
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '/Admin/XuatXu/CreateQuick',
+                type: 'POST',
+                data: {
+                    TenXuatXu: ten,
+                    MoTa: moTa,
+                    TrangThai: trangThai,
+                    __RequestVerificationToken: token
+                },
+                success: function (data) {
+                    if (data.success) {
+                        const select = $('select[name="MaXuatXu"]');
+                        select.append(`<option value="${data.id}" selected>${data.ten}</option>`);
+                        $('#modal-xuatXu').modal('hide');
+                        $('#newXuatXuTen, #newXuatXuMoTa').val('');
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function () {
+                    alert("Lỗi khi thêm xuất xứ.");
+                }
+            });
+        }
+    </script>
+    <script>
+        function openModal(type) {
+            $('#modal-' + type).modal('show');
+        }
+
+               function addDanhMuc() {
+            const ten = $('#newDanhMucTen').val().trim();
+            const moTa = $('#newDanhMucMoTa').val().trim();
+            const trangThai = $('#newDanhMucTrangThai').val();
+
+            if (!ten) {
+                alert("Vui lòng nhập tên danh mục.");
+                return;
+            }
+
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+               url: '/Admin/DanhMuc/CreateQuick',
+
+                type: 'POST',
+                data: {
+                    TenDanhMuc: ten,
+                    MoTa: moTa,
+                    TrangThai: trangThai,
+                    __RequestVerificationToken: token
+                },
+                success: function (data) {
+                    if (data.success) {
+                        const select = $('select[name="MaDanhMuc"]');
+                        select.append(`<option value="${data.id}" selected>${data.ten}</option>`);
+                        $('#modal-danhMuc').modal('hide');
+                        $('#newDanhMucTen').val('');
+                        $('#newDanhMucMoTa').val('');
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: function () {
+                    alert("Lỗi khi thêm danh mục.");
+                }
+            });
+        }
+
+    </script>
+    <script>
+              // ==== Mở modal thêm nhanh chung ====
+        function openModal(type) {
+            $('#modal-' + type).modal('show');
+        }
+
+        // ==== Thêm nhanh Size ====
+        function addSize() {
+            const ten = $('#newSizeTen').val().trim();
+            const moTa = $('#newSizeMoTa').val().trim();
+            const trangThai = $('#newSizeTrangThai').val();
+
+            if (!ten) {
+                alert("Vui lòng nhập tên size.");
+                return;
+            }
+
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '/Admin/Size/CreateQuick',
+                type: 'POST',
+                data: {
+                    TenSize: ten,
+                    MoTa: moTa,
+                    TrangThai: trangThai,
+                    __RequestVerificationToken: token
+                },
+                success: function (data) {
+                    if (data.success) {
+                        // Cập nhật tất cả dropdown size hiện có
+                        $('select[name*="MaSize"]').each(function () {
+                            $(this).append(`<option value="${data.id}">${data.ten}</option>`);
+                        });
+
+                        // Reset và ẩn modal
+                        $('#modal-size').modal('hide');
+                        $('#newSizeTen').val('');
+                        $('#newSizeMoTa').val('');
+                        $('#newSizeTrangThai').val('1');
+
+                        alert("Thêm size thành công!");
+                    } else {
+                        alert(data.message || "Lỗi khi thêm size.");
+                    }
+                },
+                error: function () {
+                    alert("Lỗi khi thêm size.");
+                }
+            });
+        }
+
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const picker = document.getElementById('colorPicker');
+          const preview = document.getElementById('colorPreview');
+          const hiddenInput = document.getElementById('newMauMoTa');
+
+          function updateColor(value) {
+            if (preview) preview.style.backgroundColor = value;
+            if (hiddenInput) hiddenInput.value = value;
+          }
+
+          if (picker) {
+            picker.addEventListener('input', function () {
+              updateColor(this.value);
+            });
+            updateColor(picker.value);
+          }
+
+          window.openModal = function (type) {
+            $('#modal-' + type).modal('show');
+          };
+
+          window.addMau = function () {
+            const ten = $('#newMauTen').val().trim();
+            const moTa = $('#newMauMoTa').val().trim();
+            const trangThai = $('#newMauTrangThai').val();
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            if (!ten) {
+              alert("⚠️ Vui lòng nhập tên màu!");
+              return;
+            }
+
+            $.ajax({
+              url: '/Admin/MauSac/CreateQuick',
+              type: 'POST',
+              data: {
+                TenMau: ten,
+                MoTa: moTa,
+                TrangThai: trangThai,
+                __RequestVerificationToken: token
+              },
+              success: function (data) {
+                if (data.success) {
+                  const select = $('select[name^="SanPhamChiTiets"][name$=".MaMauSac"]').last();
+                  select.append(`<option value="${data.id}" selected>${data.ten}</option>`);
+
+                  $('#newMauTen').val('');
+                  $('#newMauMoTa').val('');
+                  $('#newMauTrangThai').val('1');
+                  $('#colorPicker').val('#000000');
+                  updateColor('#000000');
+
+                  $('#modal-mau').modal('hide');
+                  alert("✅ Thêm màu thành công!");
+                } else {
+                  alert(data.message || "❌ Lỗi khi thêm màu sắc!");
+                }
+              },
+              error: function () {
+                alert("❌ Lỗi kết nối khi thêm màu!");
+              }
+            });
+          };
+        });
+    </script>
+
+}

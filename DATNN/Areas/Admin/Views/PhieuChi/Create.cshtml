@@ -1,0 +1,128 @@
+﻿@using DATNN.Models
+@model DATNN.ViewModel.PhieuChiViewModel
+
+@{
+    ViewData["Title"] = "Tạo Phiếu Chi";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Tạo Phiếu Chi Mới</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+
+                        <div class="row">
+                            <!-- CỘT TRÁI: Thông tin cơ bản -->
+                            <div class="col-md-6 border-end">
+                                <div class="form-group mb-3">
+                                    <label asp-for="SoTien" class="form-label fw-bold">Số tiền chi (VNĐ) <span class="text-danger">*</span></label>
+                                    <input asp-for="SoTien" class="form-control form-control-lg" type="number" placeholder="Nhập số tiền..." />
+                                    <span asp-validation-for="SoTien" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="NoiDung" class="form-label fw-bold">Nội dung chi <span class="text-danger">*</span></label>
+                                    <textarea asp-for="NoiDung" class="form-control" rows="3" placeholder="Ví dụ: Tiền điện T8, Phí hoàn đơn..."></textarea>
+                                    <span asp-validation-for="NoiDung" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="GhiChu" class="form-label">Ghi chú thêm</label>
+                                    <input asp-for="GhiChu" class="form-control" placeholder="Ghi chú nội bộ..." />
+                                </div>
+                            </div>
+
+                            <!-- CỘT PHẢI: Phân loại & Liên kết -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="LoaiChiPhi" class="form-label fw-bold">Loại chi phí <span class="text-danger">*</span></label>
+                                    <!-- Dropdown chọn loại (Tự động render từ Enum) -->
+                                    <select asp-for="LoaiChiPhi" class="form-select form-select-lg"
+                                            asp-items="Html.GetEnumSelectList<LoaiPhieuChi>()" id="ddlLoaiChiPhi">
+                                    </select>
+                                </div>
+
+                                <!-- Khu vực chọn Đơn Hàng (Mặc định ẩn) -->
+                                <div class="alert alert-warning mt-3" id="groupDonHang" style="display:none;">
+                                    <label class="form-label fw-bold">Chọn Đơn Hàng liên quan:</label>
+                                    <select asp-for="MaDonHang" class="form-select" asp-items="Model.DSDonHang">
+                                        <option value="">-- Chọn đơn hàng --</option>
+                                    </select>
+                                    <small class="text-muted">Dùng cho trường hợp: Bom hàng, Đền bù đơn...</small>
+                                </div>
+
+                                <!-- Khu vực chọn Đổi Trả (Mặc định ẩn) -->
+                                <div class="alert alert-info mt-3" id="groupDoiTra" style="display:none;">
+                                    <label class="form-label fw-bold">Chọn Yêu Cầu Đổi Trả:</label>
+                                    <select asp-for="MaYeuCauDoiTra" class="form-select" asp-items="Model.DSYeuCauDoiTra">
+                                        <option value="">-- Chọn yêu cầu --</option>
+                                    </select>
+                                    <small class="text-muted">Dùng cho trường hợp: Shop chịu phí lỗi, Sửa hàng...</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-success px-4">Lưu Phiếu Chi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Phần Script xử lý ẩn hiện -->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Giá trị của Enum:
+            // 0: ChiPhiChung
+            // 1: LienQuanDonHang
+            // 2: LienQuanDoiTra
+
+            const TYPE_DON_HANG = '1';
+            const TYPE_DOI_TRA = '2';
+
+            function toggleUI() {
+                var selectedType = $('#ddlLoaiChiPhi').val();
+
+                // 1. Ẩn hết trước
+                $('#groupDonHang').hide();
+                $('#groupDoiTra').hide();
+
+                // 2. Hiện cái tương ứng
+                if (selectedType === TYPE_DON_HANG) {
+                    $('#groupDonHang').fadeIn();
+                }
+                else if (selectedType === TYPE_DOI_TRA) {
+                    $('#groupDoiTra').fadeIn();
+                }
+            }
+
+            // Sự kiện khi thay đổi dropdown
+            $('#ddlLoaiChiPhi').change(function () {
+                toggleUI();
+
+                // (Tùy chọn) Reset giá trị khi ẩn đi để tránh gửi dữ liệu thừa
+                var val = $(this).val();
+                if(val !== TYPE_DON_HANG) $('#MaDonHang').val('');
+                if(val !== TYPE_DOI_TRA) $('#MaYeuCauDoiTra').val('');
+            });
+
+            // Chạy 1 lần khi load trang (để giữ trạng thái nếu form reload do lỗi validate)
+            toggleUI();
+        });
+    </script>
+}

@@ -1,0 +1,155 @@
+﻿@model DATNN.Models.DiaChiNguoiDung
+
+@{
+	ViewData["Title"] = "Create";
+}
+
+
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-6 col-md-8">
+        <h3 class="text-center mb-4 fw-bold">📦 Thêm địa chỉ giao hàng</h3>
+        <form asp-action="Create" method="post" class="p-4 bg-light rounded shadow diachi-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Ten" class="control-label fw-bold">Họ và tên</label>
+                <input asp-for="Ten" class="form-control diachi-input" />
+                <span asp-validation-for="Ten" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="SoDienThoai" class="control-label fw-bold">Số điện thoại</label>
+                <input asp-for="SoDienThoai" class="form-control diachi-input" />
+                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ThanhPho" class="fw-bold">Tỉnh/Thành phố</label>
+                <select class="form-select diachi-select" id="city">
+                    <option value="" selected>Chọn tỉnh thành</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Quan" class="fw-bold">Quận/Huyện</label>
+                <select class="form-select diachi-select" id="district">
+                    <option value="" selected>Chọn quận huyện</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Phuong" class="fw-bold">Phường/Xã</label>
+                <select class="form-select diachi-select" id="ward">
+                    <option value="" selected>Chọn phường xã</option>
+                </select>
+            </div>
+
+            <!-- Hidden inputs để lưu tên địa phương -->
+            <input type="hidden" name="TenThanhPho" id="TenThanhPho" />
+            <input type="hidden" name="TenQuan" id="TenQuan" />
+            <input type="hidden" name="TenPhuong" id="TenPhuong" />
+
+            <div class="form-group mb-3">
+                <label asp-for="ChiTietDiaChi" class="control-label fw-bold">Chi tiết địa chỉ</label>
+                <input asp-for="ChiTietDiaChi" class="form-control diachi-input" />
+                <span asp-validation-for="ChiTietDiaChi" class="text-danger"></span>
+            </div>
+
+            <div class="form-group text-center">
+                <input type="submit" value="Create" class="btn btn-primary px-4 diachi-btn" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .diachi-form { 
+        margin-top:100px;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    .diachi-input, .diachi-select {
+        font-size: 1rem;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+    }
+
+    .diachi-btn {
+        font-weight: bold;
+        font-size: 1rem;
+        width: 120px;
+    }
+
+   
+
+
+
+
+</style>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+<script>
+   
+
+    var citis = document.getElementById("city");
+    var district = document.getElementById("district");
+    var ward = document.getElementById("ward");
+
+        var Parameter = {
+        url: "/json/data.json", 
+        method: "GET",
+        responseType: "application/json",
+    };
+     
+
+    axios(Parameter).then(function (result) {
+        renderCity(result.data);
+    });
+
+    function renderCity(data) {
+        for (const x of data) {
+            citis.options[citis.options.length] = new Option(x.Name, x.Id);
+        }
+
+        citis.onchange = function () {
+            district.length = 1;
+            ward.length = 1;
+            document.getElementById("TenThanhPho").value = citis.options[citis.selectedIndex].text;
+
+            const result = data.filter(n => n.Id === this.value);
+            for (const k of result[0].Districts) {
+                district.options[district.options.length] = new Option(k.Name, k.Id);
+            }
+        };
+
+        district.onchange = function () {
+            ward.length = 1;
+            document.getElementById("TenQuan").value = district.options[district.selectedIndex].text;
+
+            const dataCity = data.filter((n) => n.Id === citis.value);
+            const dataWards = dataCity[0].Districts.filter(n => n.Id === this.value)[0].Wards;
+            for (const w of dataWards) {
+                ward.options[ward.options.length] = new Option(w.Name, w.Id);
+            }
+        };
+
+        ward.onchange = function () {
+            document.getElementById("TenPhuong").value = ward.options[ward.selectedIndex].text;
+        };
+
+    }
+</script>
+
+

@@ -1,0 +1,197 @@
+﻿@model DATNN.Models.NguoiDung
+
+@{
+    ViewData["Title"] = "Chỉnh sửa hồ sơ";
+}
+
+<link rel="stylesheet" href="~/css/profile.css" />
+
+<style>
+    body {
+        background-color: #f5f7fa;
+    }
+
+    .container_profile {
+        max-width: 750px;
+        background: #fff;
+        border-radius: 15px;
+        padding: 40px 50px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .custom-card_profile h2 {
+        font-weight: 700;
+        color: #007bff;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .custom-card_profile p {
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .form-label_profile {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control_profile {
+        border-radius: 8px;
+        border: 1px solid #dcdfe3;
+        transition: all 0.3s ease;
+    }
+
+        .form-control_profile:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.15rem rgba(0,123,255,0.25);
+        }
+
+    .btn-custom-primary_profile {
+        background: linear-gradient(90deg, #007bff, #00b4ff);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        padding: 10px 24px;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+        .btn-custom-primary_profile:hover {
+            background: linear-gradient(90deg, #0056b3, #0095ff);
+            transform: translateY(-1px);
+        }
+
+    .btn-secondary_profile {
+        background: #f1f3f5;
+        color: #333;
+        font-weight: 600;
+        padding: 10px 24px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        transition: all 0.3s;
+        margin-left: 10px;
+    }
+
+        .btn-secondary_profile:hover {
+            background: #e2e6ea;
+        }
+
+    .form-text_profile {
+        font-size: 13px;
+        color: #888;
+    }
+
+    hr {
+        margin: 20px 0 30px;
+        border-top: 1px solid #ddd;
+    }
+
+    .content-home {
+        margin-top: 180px;
+    }
+
+</style>
+<div class="content-home">
+
+    <div class="container container_profile mt-5">
+        <div class="custom-card_profile">
+            <h2>HỒ SƠ CỦA TÔI</h2>
+            <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+            <hr>
+
+            <form asp-action="Edit" method="post" class="mt-4">
+                <input type="hidden" asp-for="MaNguoiDung" />
+
+                <!-- Tên đăng nhập -->
+                <div class="row mb-3 align-items-center">
+                    <label asp-for="TenDangNhap" class="col-sm-3 col-form-label form-label_profile"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="TenDangNhap" class="form-control form-control_profile" readonly />
+                     
+                    </div>
+                </div>
+
+                <!-- Họ tên -->
+                <div class="row mb-3 align-items-center">
+                    <label asp-for="HoTen" class="col-sm-3 col-form-label form-label_profile"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="HoTen" class="form-control form-control_profile" />
+                        <span asp-validation-for="HoTen" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="row mb-3 align-items-center">
+                    <label asp-for="Email" class="col-sm-3 col-form-label form-label_profile"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="Email" class="form-control form-control_profile" readonly />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Số điện thoại -->
+                <div class="row mb-3 align-items-center">
+                    <label asp-for="SoDienThoai" class="col-sm-3 col-form-label form-label_profile"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="SoDienThoai" class="form-control form-control_profile" />
+                        <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Mật khẩu -->
+                <div class="row mb-3 align-items-center">
+                    <label asp-for="MatKhau" class="col-sm-3 col-form-label form-label_profile"></label>
+                    <div class="col-sm-9">
+                        <input type="password" class="form-control form-control_profile" name="MatKhau" value="@Model.MatKhau" readonly />
+                        <span asp-validation-for="MatKhau" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Giới tính -->
+                <div class="row mb-3 align-items-center">
+                    <label class="col-sm-3 col-form-label form-label_profile">Giới tính</label>
+                    <div class="col-sm-9">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" asp-for="GioiTinh" value="Nam" checked="@((Model.GioiTinh == "Nam"))" />
+                            <label class="form-check-label">Nam</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" asp-for="GioiTinh" value="Nữ" checked="@((Model.GioiTinh == "Nữ"))" />
+                            <label class="form-check-label">Nữ</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" asp-for="GioiTinh" value="Khác" checked="@((Model.GioiTinh == "Khác"))" />
+                            <label class="form-check-label">Khác</label>
+                        </div>
+                        <span asp-validation-for="GioiTinh" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Ngày sinh -->
+                <div class="row mb-3 align-items-center">
+                    <label asp-for="NgaySinh" class="col-sm-3 col-form-label form-label_profile"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="NgaySinh" type="date" class="form-control form-control_profile" />
+                        <span asp-validation-for="NgaySinh" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="row mt-4">
+                    <div class="col-sm-9 offset-sm-3">
+                        <button type="submit" class="btn btn-custom-primary_profile">💾 Lưu</button>
+                        <a asp-action="ChangePassword" asp-controller="NguoiDung" class="btn btn-secondary_profile">🔒 Đổi mật khẩu</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

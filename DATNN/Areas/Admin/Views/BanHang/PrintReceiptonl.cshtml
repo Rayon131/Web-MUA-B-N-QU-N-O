@@ -1,0 +1,89 @@
+﻿@model DATNN.Models.DonHang
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Hóa Đơn Thanh Toán";
+
+    var store = ViewBag.Store as DATNN.Models.DiaChiCuaHang;
+    var stores = ViewBag.Stores as DATNN.Models.ThongTinCuaHang;
+
+   
+}
+
+<div style="width: 700px; margin: auto; font-family: Arial; border: 1px solid #ccc; padding: 20px;">
+
+    <!-- ========================== THÔNG TIN CỬA HÀNG ========================== -->
+    <h2 style="text-align:center;">HÓA ĐƠN BÁN HÀNG</h2>
+
+    <div>
+        <h4>🏬 THÔNG TIN CỬA HÀNG</h4>
+        <p><strong>Tên shop:</strong> @stores.TenCuaHang</p>
+        <p>
+            <strong>Địa chỉ:</strong>
+            @store.ChiTietDiaChi, @store.Phuong, @store.Quan, @store.ThanhPho
+        </p>
+        <p><strong>Hotline:</strong> 0123 456 789</p>
+    </div>
+    <hr />
+
+    <!-- ========================== THÔNG TIN KHÁCH HÀNG ========================== -->
+    <div>
+        <h4>🙍‍♂️ THÔNG TIN KHÁCH HÀNG</h4>
+        <p><strong>Họ tên:</strong> @Model.KhachHang.HoTen</p>
+        <p><strong>Số điện thoại:</strong> @Model.KhachHang.SoDienThoai</p>
+        <p><strong>Địa chỉ giao hàng:</strong> @Model.DiaChi</p>
+    </div>
+    <hr />
+
+    <!-- ========================== THÔNG TIN ĐƠN HÀNG ========================== -->
+    <div>
+        <h4>📄 THÔNG TIN ĐƠN HÀNG</h4>
+        <p><strong>Mã đơn hàng:</strong> @Model.MaDonHang</p>
+    </div>
+    <hr />
+
+    <!-- ========================== DANH SÁCH SẢN PHẨM ========================== -->
+    <h4>🛍️ SẢN PHẨM ĐÃ ĐẶT</h4>
+    <table style="width:100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 1px solid #ccc;">
+                <th align="left">Sản phẩm</th>
+                <th align="center">SL</th>
+                <th align="right">Đơn giá</th>
+                <th align="right">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.DonHangChiTiets)
+            {
+               
+
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td>
+                        @item.SanPhamChiTiet.SanPham.TenSanPham <br />
+                        <small>Màu: @item.SanPhamChiTiet.MauSac.TenMau – Size: @item.SanPhamChiTiet.Size.TenSize</small>
+                    </td>
+                    <td align="center">@item.SoLuong</td>
+                    <td align="right">@item.DonGia.ToString("N0") đ</td>
+                    <td align="right">@((item.SoLuong * item.DonGia).ToString("N0"))đ</td>
+                   
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <hr />
+
+    <!-- ========================== TÍNH TIỀN ========================== -->
+    <div style="text-align: right;">
+        <p><strong>Tổng tiền hàng:</strong> @Model.TongTien.ToString("N0") đ</p>
+        <p><strong>Phí vận chuyển:</strong> @Model.PhiVanChuyen?.ToString("N0") đ</p>
+    </div>
+
+    <hr />
+
+    <p style="text-align:center;">
+        Cảm ơn bạn đã mua hàng tại <strong>SHOP THỜI TRANG @stores.TenCuaHang</strong> ❤️
+    </p>
+    <script> window.onload = function() { window.print(); } </script>
+</div>

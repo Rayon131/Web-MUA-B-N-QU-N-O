@@ -1,0 +1,320 @@
+﻿@model DATNN.Models.MaGiamGia
+
+@{
+    ViewData["Title"] = "Tạo mới Mã Giảm Giá";
+}
+
+<style>
+    .discount-create-container {
+        padding: 2rem 1rem;
+    }
+
+    .discount-form-card {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+        .form-group label.control-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+    .form-control, .form-select {
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-submit {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.625rem 2rem;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    .btn-back {
+        background: #6b7280;
+        color: white;
+        border: none;
+        padding: 0.625rem 2rem;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    .text-danger {
+        color: #dc2626;
+        font-size: 0.813rem;
+        margin-top: 0.25rem;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+        .radio-group input[type="radio"] {
+            margin-right: 0.375rem;
+        }
+
+    .action-buttons {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+
+<div class="discount-create-container">
+    <div class="discount-create-header">
+        <h1 class="discount-create-title">Tạo mã giảm giá mới</h1>
+    </div>
+
+    <div class="discount-form-card">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-section-title">Thông tin cơ bản</div>
+
+            <div class="row">
+                <!-- CỘT BÊN TRÁI -->
+                <div class="col-md-6">
+                    <!-- 1. Mã Voucher -->
+                    <div class="form-group">
+                        <label asp-for="MaCode" class="control-label" id="LabelMaCode">Mã Voucher *</label>
+                        <input asp-for="MaCode" class="form-control" placeholder="Nhập mã voucher (VD: SUMMER2025)" />
+                        <span asp-validation-for="MaCode" class="text-danger"></span>
+                        <small class="text-muted" id="NoteMaCode" style="display:none;">Mã định danh hệ thống (Khách không cần nhập).</small>
+                    </div>
+
+                    <!-- 2. Tên Chương trình -->
+                    <div class="form-group">
+                        <label asp-for="TenChuongTrinh" class="control-label">Tên Chương trình</label>
+                        <input asp-for="TenChuongTrinh" class="form-control" placeholder="Nhập tên chương trình" />
+                        <span asp-validation-for="TenChuongTrinh" class="text-danger"></span>
+                    </div>
+
+                    <!-- 3. Ngày tháng -->
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="NgayBatDau" class="control-label">Ngày bắt đầu</label>
+                                <input asp-for="NgayBatDau" type="date" class="form-control" />
+                                <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label asp-for="NgayKetThuc" class="control-label">Ngày kết thúc</label>
+                                <input asp-for="NgayKetThuc" type="date" class="form-control" />
+                                <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. LOẠI CHƯƠNG TRÌNH (Quan trọng: ID để bắt sự kiện) -->
+                    <div class="form-group" style="margin-top: 10px;">
+                        <label asp-for="LoaiApDung" class="control-label fw-bold text-primary">Loại chương trình</label>
+                        <select asp-for="LoaiApDung" class="form-control" id="LoaiApDungSelect">
+                            <option value="DonHang">Voucher giảm giá đơn hàng (Nhập mã)</option>
+                            <option value="FreeShip">Chương trình Freeship tự động</option>
+                        </select>
+                        <span asp-validation-for="LoaiApDung" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+
+                    <!-- 1. TÙY CHỌN CHẾ ĐỘ FREESHIP (Mới thêm) -->
+                    <div class="form-group p-3 mb-3 border rounded bg-light" id="FreeshipModeOptions" style="display:none;">
+                        <label class="control-label fw-bold text-success mb-2">Chế độ Freeship:</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="FreeshipMode" id="fs_partial" value="partial" checked>
+                                <label class="form-check-label" for="fs_partial">
+                                    Giảm phí ship theo số tiền
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="FreeshipMode" id="fs_full" value="full">
+                                <label class="form-check-label" for="fs_full">
+                                    Miễn phí vận chuyển 100%
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. LOẠI GIẢM GIÁ (Dropdown cũ) -->
+                    <div class="form-group" id="GroupLoaiGiamGia">
+                        <label asp-for="LoaiGiamGia" class="control-label">Loại giảm giá</label>
+                        <select asp-for="LoaiGiamGia" class="form-control" id="LoaiGiamGiaSelect">
+                            <option value="PhanTram">Phần trăm (%)</option>
+                            <option value="SoTien">Số tiền cố định (VNĐ)</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. GIÁ TRỊ GIẢM (Input nhập tiền) -->
+                    <div class="form-group" id="GroupGiaTriGiam">
+                        <label asp-for="GiaTriGiamGia" class="control-label" id="LabelGiaTri">Giá trị giảm</label>
+                        <input asp-for="GiaTriGiamGia" class="form-control" type="number" min="0" id="InputGiaTri" placeholder="Nhập giá trị" />
+                        <span asp-validation-for="GiaTriGiamGia" class="text-danger"></span>
+                        <small class="text-muted" id="NoteFreeship" style="display:none;">Nhập số tiền tối đa được hỗ trợ.</small>
+                    </div>
+
+                    <div class="form-group" id="GroupLuotDung">
+                        <label asp-for="TongLuotSuDungToiDa" class="control-label">Tổng lượt sử dụng tối đa</label>
+                        <input asp-for="TongLuotSuDungToiDa" class="form-control" type="number" min="1" id="InputLuotDung" />
+                        <span asp-validation-for="TongLuotSuDungToiDa" class="text-danger"></span>
+                    </div>
+
+                    <!-- 5. KÊNH ÁP DỤNG -->
+                    <div class="form-group" id="GroupKenhApDung">
+                        <label asp-for="KenhApDung" class="control-label">Kênh áp dụng</label>
+                        <div class="radio-group">
+                            <div>
+                                <input type="radio" asp-for="KenhApDung" value="TaiQuay" /> <label>Tại quầy</label>
+                            </div>
+                            <div>
+                                <input type="radio" asp-for="KenhApDung" value="Online" checked /> <label>Online</label>
+                            </div>
+                            <div>
+                                <input type="radio" asp-for="KenhApDung" value="TatCa" /> <label>Tất cả</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-section-title" style="margin-top: 2rem;">Điều kiện áp dụng</div>
+
+            <div class="form-group">
+                <label asp-for="DieuKienDonHangToiThieu" class="control-label">Giá trị đơn hàng tối thiểu (VNĐ) *</label>
+                <input asp-for="DieuKienDonHangToiThieu" class="form-control" type="number" min="0" placeholder="Nhập giá trị tối thiểu" required />
+                <span asp-validation-for="DieuKienDonHangToiThieu" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="GhiChu" class="control-label">Ghi chú</label>
+                <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Thêm ghi chú (tùy chọn)"></textarea>
+                <span asp-validation-for="GhiChu" class="text-danger"></span>
+            </div>
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-submit">Tạo mã giảm giá</button>
+                <a asp-action="Index" class="btn btn-back">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // DOM Elements
+            const loaiApDungSelect = document.getElementById('LoaiApDungSelect');
+            const loaiGiamGiaSelect = document.getElementById('LoaiGiamGiaSelect');
+
+            const groupFreeshipOptions = document.getElementById('FreeshipModeOptions');
+            const groupLoaiGiamGia = document.getElementById('GroupLoaiGiamGia');
+            const groupGiaTriGiam = document.getElementById('GroupGiaTriGiam');
+            const groupLuotDung = document.getElementById('GroupLuotDung'); // Nhóm lượt dùng
+            const groupKenhApDung = document.getElementById('GroupKenhApDung');
+
+            const labelGiaTri = document.getElementById('LabelGiaTri');
+            const inputGiaTri = document.getElementById('InputGiaTri');
+            const noteFreeship = document.getElementById('NoteFreeship');
+            const inputLuotDung = document.getElementById('InputLuotDung'); // Ô input lượt dùng
+
+            const radioPartial = document.getElementById('fs_partial');
+            const radioFull = document.getElementById('fs_full');
+
+            // 1. Hàm xử lý chính khi đổi Loại chương trình
+                   function handleProgramTypeChange() {
+            if (loaiApDungSelect.value === 'FreeShip') {
+                // === CHẾ ĐỘ FREESHIP ===
+                groupFreeshipOptions.style.display = 'block';
+                groupLoaiGiamGia.style.display = 'none';
+
+                // --- ẨN LƯỢT DÙNG KHI LÀ FREESHIP ---
+                groupLuotDung.style.display = 'none';        // Ẩn nhóm này đi
+                inputLuotDung.value = "";                    // Xóa giá trị trong ô nhập
+                inputLuotDung.removeAttribute('required');   // Bỏ bắt buộc nhập
+                // ------------------------------------
+
+                groupKenhApDung.style.display = 'none';
+                handleFreeshipModeChange();
+
+            } else {
+                // === CHẾ ĐỘ VOUCHER THƯỜNG ===
+                groupFreeshipOptions.style.display = 'none';
+                groupLoaiGiamGia.style.display = 'block';
+                groupGiaTriGiam.style.display = 'block';
+
+                // --- HIỆN LẠI LƯỢT DÙNG KHI LÀ VOUCHER ---
+                groupLuotDung.style.display = 'block';        // Hiện lại nhóm này
+                inputLuotDung.setAttribute('required', 'required'); // Bắt buộc phải nhập
+                // -----------------------------------------
+
+                groupKenhApDung.style.display = 'block';
+                inputGiaTri.removeAttribute('readonly');
+                loaiGiamGiaSelect.value = 'PhanTram';
+                labelGiaTri.innerText = 'Giá trị giảm';
+                noteFreeship.style.display = 'none';
+            }
+        }
+
+            // 2. Hàm xử lý khi đổi chế độ Freeship (1 phần vs Toàn bộ)
+            function handleFreeshipModeChange() {
+                if (radioFull.checked) {
+                    // --> Miễn phí 100%
+                    loaiGiamGiaSelect.value = 'PhanTram'; // Set ngầm thành %
+                    inputGiaTri.value = '100';            // Set ngầm giá trị 100%
+
+                    groupGiaTriGiam.style.display = 'none'; // Ẩn ô nhập tiền đi
+                } else {
+                    // --> Giảm theo số tiền
+                    loaiGiamGiaSelect.value = 'SoTien';   // Set ngầm thành Tiền
+                    inputGiaTri.value = '';               // Xóa giá trị cũ để nhập mới
+
+                    groupGiaTriGiam.style.display = 'block'; // Hiện ô nhập tiền
+                    labelGiaTri.innerText = 'Hỗ trợ tối đa (VNĐ)';
+                    noteFreeship.style.display = 'block';
+                    inputGiaTri.placeholder = 'VD: 30000';
+                }
+            }
+
+            // Gán sự kiện
+            loaiApDungSelect.addEventListener('change', handleProgramTypeChange);
+            radioPartial.addEventListener('change', handleFreeshipModeChange);
+            radioFull.addEventListener('change', handleFreeshipModeChange);
+
+            // Chạy lần đầu
+            handleProgramTypeChange();
+        });
+    </script>
+}

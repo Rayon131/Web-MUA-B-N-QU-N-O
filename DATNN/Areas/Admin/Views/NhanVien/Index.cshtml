@@ -1,0 +1,115 @@
+﻿@model IEnumerable<DATNN.Models.NguoiDung>
+@{
+    ViewData["Title"] = "Quản lý Nhân viên";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Create" class="btn btn-primary">Thêm mới Nhân viên</a>
+</div>
+
+<!-- FORM BỘ LỌC TRẠNG THÁI -->
+<div class="mb-3">
+    <form asp-action="Index" method="get" class="form-inline">
+        <div class="form-group">
+            <label for="statusFilter" class="me-2">Lọc theo trạng thái:</label>
+            <select name="statusFilter" id="statusFilter" class="form-control" style="width: 200px;" onchange="this.form.submit()">
+                <option value="active" selected="@(ViewBag.CurrentFilter == "active")">Đang hoạt động</option>
+                <option value="inactive" selected="@(ViewBag.CurrentFilter == "inactive")">Đã nghỉ làm</option>
+                <option value="all" selected="@(ViewBag.CurrentFilter == "all")">Tất cả</option>
+            </select>
+        </div>
+    </form>
+</div>
+
+
+<div class="table-responsive">
+    <div class="mb-3">
+        <form asp-action="Index" method="get" class="row g-2">
+
+            <!-- Ô tìm kiếm -->
+            <div class="col-md-4">
+                <input type="text"
+                       name="searchString"
+                       value="@ViewBag.SearchString"
+                       placeholder="Tìm theo tên, username, email, số điện thoại..."
+                       class="form-control" />
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+            </div>
+
+        </form>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>Họ và Tên</th>
+                <th>Tên đăng nhập</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Vai trò</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+                <th style="min-width: 140px;">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.HoTen)</td>
+                    <td>@Html.DisplayFor(modelItem => item.TenDangNhap)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                    <td>@Html.DisplayFor(modelItem => item.SoDienThoai)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Quyen.Ten)</td>
+                    <td>@item.NgaySinh?.ToString("dd/MM/yyyy")</td>
+                    <td>@Html.DisplayFor(modelItem => item.GioiTinh)</td>
+                    <td>@item.NgayTao?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @if (item.TrangThai == 1)
+                        {
+                            <span class="badge bg-success">Hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Đã nghỉ làm</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.MaNguoiDung" class="btn btn-sm btn-info" title="Sửa thông tin"><i class="fa fa-pencil"></i></a>
+                        <a asp-action="Details" asp-route-id="@item.MaNguoiDung" class="btn btn-sm btn-secondary" title="Chi tiết"><i class="fa fa-eye"></i></a>
+
+                        @* === NÚT THAY ĐỔI TRẠNG THÁI ĐỘNG === *@
+                        @if (item.Quyen.MaVaiTro == "NHANVIEN")
+                        {
+                            <form asp-action="ToggleStatus" asp-route-id="@item.MaNguoiDung" method="post" class="d-inline">
+                                @if (item.TrangThai == 1)
+                                {
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Khóa tài khoản (Nghỉ làm)"
+                                            onclick="return confirm('Bạn có chắc muốn vô hiệu hóa nhân viên @item.HoTen?')">
+                                        <i class="fa fa-lock"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Kích hoạt lại tài khoản"
+                                            onclick="return confirm('Bạn có chắc muốn kích hoạt lại nhân viên @item.HoTen?')">
+                                        <i class="fa fa-unlock"></i>
+                                    </button>
+                                }
+                            </form>
+                        }
+
+                        @* Nút Xóa (tùy chọn) *@
+                        @* <a asp-action="Delete" asp-route-id="@item.MaNguoiDung" class="btn btn-sm btn-danger" title="Xóa"><i class="fa fa-trash"></i></a>  *@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

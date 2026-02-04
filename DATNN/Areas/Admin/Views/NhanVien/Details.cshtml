@@ -1,0 +1,43 @@
+﻿@model DATNN.Models.NguoiDung
+@{
+    ViewData["Title"] = "Chi tiết Nhân viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <h4>@Model.HoTen</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Họ và Tên</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.HoTen)</dd>
+
+        <dt class="col-sm-3">Tên đăng nhập</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.TenDangNhap)</dd>
+
+        <dt class="col-sm-3">Vai trò</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Quyen.Ten)</dd>
+
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+
+        <dt class="col-sm-3">Số điện thoại</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.SoDienThoai)</dd>
+
+        <dt class="col-sm-3">Ngày sinh</dt>
+        <dd class="col-sm-9">@Model.NgaySinh?.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Giới tính</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.GioiTinh)</dd>
+
+        <dt class="col-sm-3">Ngày tạo</dt>
+        <dd class="col-sm-9">@Model.NgayTao?.ToString("dd/MM/yyyy HH:mm")</dd>
+
+        <dt class="col-sm-3">Trạng thái</dt>
+        <dd class="col-sm-9">@(Model.TrangThai == 1 ? "Hoạt động" : "Đã nghỉ làm")</dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.MaNguoiDung" class="btn btn-primary">Sửa</a>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+</div>

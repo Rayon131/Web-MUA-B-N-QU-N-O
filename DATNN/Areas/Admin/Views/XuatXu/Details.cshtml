@@ -1,0 +1,32 @@
+﻿@model DATNN.Models.XuatXu
+
+@{
+    ViewData["Title"] = "Chi tiết xuất xứ";
+}
+
+<h2 class="mb-4 text-center">Chi tiết xuất xứ</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow rounded-3">
+            <div class="card-body">
+
+                <dl class="row mb-3">
+                    <dt class="col-sm-4 fw-bold">Tên xuất xứ:</dt>
+                    <dd class="col-sm-8">@Model.TenXuatXu</dd>
+
+                    <dt class="col-sm-4 fw-bold">Mô tả:</dt>
+                    <dd class="col-sm-8">@Model.MoTa</dd>
+
+                 
+                </dl>
+
+                <div class="text-center mt-4">
+                    <a asp-action="Edit" asp-route-id="@Model.MaXuatXu" class="btn btn-warning px-4 me-2">Sửa</a>
+                    <a asp-action="Index" class="btn btn-secondary px-4">Trở lại</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

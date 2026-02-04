@@ -1,0 +1,302 @@
+﻿@model DATNN.ViewModel.SanPhamChiTietCreateViewModel
+
+@{
+    ViewData["Title"] = "Tạo Sản Phẩm Chi Tiết";
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4">
+            <h4 class="mb-0 fw-semibold">
+                <i class="bi bi-plus-circle me-2"></i> Thêm mới sản phẩm chi tiết
+            </h4>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-action="Create" enctype="multipart/form-data">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                <div class="row g-4">
+                    <!-- CỘT TRÁI -->
+                    <div class="col-md-6">
+
+                        <!-- Sản phẩm -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Sản phẩm</label>
+                            <input type="text" class="form-control" value="@Model.TenSanPham" readonly />
+                            <input type="hidden" asp-for="MaSanPham" />
+                        </div>
+
+                        <!-- Màu sắc -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Màu sắc</label>
+                            <div class="input-group">
+                                <select asp-for="MaMauSac" class="form-select" asp-items="ViewBag.MaMauSac"></select>
+                                <button type="button" class="btn btn-outline-primary" onclick="openModal('mau')">
+                                    <i class="bi bi-plus-lg">+</i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SIZE -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Size</label>
+                            <div class="input-group">
+                                <select asp-for="MaSize" class="form-select" asp-items="ViewBag.MaSize"></select>
+                                <button type="button" class="btn btn-outline-primary" onclick="openModal('size')">
+                                    <i class="bi bi-plus-lg">+</i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Giá bán -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Giá bán (VND)</label>
+                            <input asp-for="GiaBan" class="form-control" />
+                            <span asp-validation-for="GiaBan" class="text-danger"></span>
+                        </div>
+
+                        <!-- Số lượng -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Số lượng</label>
+                            <input asp-for="SoLuong" class="form-control" />
+                            <span asp-validation-for="SoLuong" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- CỘT PHẢI -->
+                    <div class="col-md-6">
+
+                        <!-- Ghi chú -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ghi chú</label>
+                            <textarea asp-for="GhiChu" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="GhiChu" class="text-danger"></span>
+                        </div>
+
+                        <!-- Ảnh -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ảnh sản phẩm</label>
+                            <input asp-for="file" type="file" class="form-control" />
+                            <span asp-validation-for="file" class="text-danger"></span>
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Trạng thái</label>
+                            <select asp-for="TrangThai" class="form-select"
+                                    asp-items="@(new SelectList(new[] {
+                                        new { Value = 1, Text = "Đang kinh doanh" },
+                                        new { Value = 2, Text = "Chưa kinh doanh" }
+                                    }, "Value", "Text"))">
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- NÚT -->
+                <div class="d-flex justify-content-between">
+                    <a asp-controller="SanPham" asp-action="Index" asp-route-openSanPhamId="@Model.MaSanPham"
+                       class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Quay lại
+                    </a>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check-circle me-1"></i> Tạo mới
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-mau" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+
+            <div class="modal-header bg-danger text-white rounded-top-4">
+                <h5 class="modal-title">
+                    <i class="bi bi-palette me-2"></i> Thêm nhanh màu sắc
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tên màu</label>
+                    <input type="text" id="newMauTen" class="form-control" placeholder="Nhập tên màu">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Chọn màu</label>
+                    <div class="d-flex gap-3">
+                        <input type="color" id="colorPicker" class="form-control form-control-color" value="#ff0000">
+                        <input type="text" id="newMauMoTa" class="form-control" readonly placeholder="Mã màu">
+                    </div>
+                </div>
+
+              
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button class="btn btn-primary" onclick="addMau()">Thêm</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-size" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h5 class="modal-title">
+                    <i class="bi bi-rulers me-2"></i> Thêm nhanh Size
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tên size</label>
+                    <input id="newSizeTen" class="form-control" placeholder="VD: S, M, L...">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Mô tả</label>
+                    <textarea id="newSizeMoTa" class="form-control" rows="3"></textarea>
+                </div>
+
+             
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button class="btn btn-primary" onclick="addSize()">Thêm</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- SCRIPT -->
+<script>
+    // ==== Mở modal thêm nhanh ====
+    function openModal(type) {
+        $('#modal-' + type).modal('show');
+    }
+
+    // ==== Thêm nhanh Size ====
+    function addSize() {
+        const ten = $('#newSizeTen').val().trim();
+        const moTa = $('#newSizeMoTa').val().trim();
+        const trangThai = $('#newSizeTrangThai').val();
+
+        if (!ten) {
+            alert("Vui lòng nhập tên size.");
+            return;
+        }
+
+        const token = $('input[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            url: '/Admin/Size/CreateQuick',
+            type: 'POST',
+            data: {
+                TenSize: ten,
+                MoTa: moTa,
+                TrangThai: trangThai,
+                __RequestVerificationToken: token
+            },
+            success: function (data) {
+                if (data.success) {
+                    $('select[name="MaSize"]').append(`<option value="${data.id}" selected>${data.ten}</option>`);
+                    $('#modal-size').modal('hide');
+                    $('#newSizeTen').val('');
+                    $('#newSizeMoTa').val('');
+                    $('#newSizeTrangThai').val('1');
+                    alert("Thêm size thành công!");
+                } else {
+                    alert(data.message || "Lỗi khi thêm size.");
+                }
+            },
+            error: function () {
+                alert("Lỗi khi thêm size.");
+            }
+        });
+    }
+</script>
+
+<script>
+          document.addEventListener("DOMContentLoaded", function () {
+        // Gán mã màu khi chọn từ color picker
+        const colorPicker = document.getElementById('colorPicker');
+        const moTaInput = document.getElementById('newMauMoTa'); // đúng ID
+
+        if (colorPicker && moTaInput) {
+            colorPicker.addEventListener('input', function () {
+                moTaInput.value = this.value;
+            });
+        }
+
+        // Gắn global để gọi từ HTML
+        window.openModal = function (type) {
+            $('#modal-' + type).modal('show');
+        };
+
+        window.addMau = function () {
+            const ten = $('#newMauTen').val().trim();
+            const moTa = $('#newMauMoTa').val().trim();
+            const trangThai = $('#newMauTrangThai').val();
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            if (!ten) {
+                alert("⚠️ Vui lòng nhập tên màu!");
+                return;
+            }
+
+            $.ajax({
+                url: '/Admin/MauSac/CreateQuick',
+                type: 'POST',
+                data: {
+                    TenMau: ten,
+                    MoTa: moTa,
+                    TrangThai: trangThai,
+                    __RequestVerificationToken: token
+                },
+                success: function (data) {
+                    if (data.success) {
+                        const select = $('#MaMauSac');
+                        select.append(`<option value="${data.id}" selected>${data.ten}</option>`);
+
+                        $('#newMauTen').val('');
+                        $('#newMauMoTa').val('');
+                        $('#newMauTrangThai').val('1');
+                        $('#colorPicker').val('#000000');
+
+                        $('#modal-mau').modal('hide');
+                        alert("✅ Thêm màu thành công!");
+                    } else {
+                        alert(data.message || "❌ Lỗi khi thêm màu sắc!");
+                    }
+                },
+                error: function () {
+                    alert("❌ Lỗi kết nối khi thêm màu!");
+                }
+            });
+        };
+    });
+
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

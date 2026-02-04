@@ -1,0 +1,41 @@
+﻿@model DATNN.Models.DanhMuc
+
+@{
+    ViewData["Title"] = "Chi tiết danh mục";
+}
+
+<h2 class="mb-4 text-center">Chi tiết danh mục</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow rounded-3">
+            <div class="card-body">
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 fw-bold">
+                        Tên danh mục:
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.TenDanhMuc)
+                    </dd>
+
+                    <dt class="col-sm-4 fw-bold">
+                        Mô tả:
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.MoTa)
+                    </dd>
+
+                  
+
+                </dl>
+
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-action="Edit" asp-route-id="@Model.MaDanhMuc" class="btn btn-warning px-4 me-2">Sửa</a>
+            <a asp-action="Index" class="btn btn-secondary px-4">Trở lại</a>
+        </div>
+    </div>
+</div>

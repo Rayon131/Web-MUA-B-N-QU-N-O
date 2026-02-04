@@ -1,0 +1,504 @@
+﻿@model IEnumerable<DATNN.Models.MaGiamGia>
+
+@{
+    ViewData["Title"] = "Quản lý Mã Giảm Giá";
+    var now = DateTime.Now.Date;
+}
+
+<style>
+    .discount-container {
+        padding: 2rem 1rem;
+    }
+
+    .discount-header {
+        margin-bottom: 2rem;
+    }
+
+    .discount-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 1.5rem;
+    }
+
+    .discount-toolbar {
+        background: #f8f9fa;
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .toolbar-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .toolbar-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4b5563;
+        margin: 0;
+    }
+
+    .btn-create {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .btn-create:hover {
+            background: #1d4ed8;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+    .btn-filter {
+        padding: 0.4rem 1rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid;
+    }
+
+        .btn-filter.active-filter {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+    .discount-table-wrapper {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    .discount-table {
+        margin-bottom: 0;
+        font-size: 0.875rem;
+    }
+
+        .discount-table thead {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+            .discount-table thead th {
+                padding: 0.875rem 1rem;
+                font-weight: 600;
+                color: #374151;
+                font-size: 0.813rem;
+                text-transform: uppercase;
+                letter-spacing: 0.025em;
+                border-bottom: none;
+            }
+
+        .discount-table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.15s;
+        }
+
+            .discount-table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        .discount-table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #1f2937;
+        }
+
+    .code-badge {
+        font-weight: 600;
+        color: #111827;
+        font-size: 0.938rem;
+        font-family: Consolas, monospace;
+        background: #f3f4f6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+
+    .discount-badge {
+        display: inline-block;
+        padding: 0.25rem 0.625rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .badge-success {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .badge-info {
+        background: #e0f2fe;
+        color: #075985;
+    }
+
+    .badge-danger {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-dark {
+        background: #e5e7eb;
+        color: #1f2937;
+    }
+
+    .discount-value {
+        font-weight: 600;
+        color: #dc2626;
+        font-size: 0.938rem;
+    }
+
+    .usage-info {
+        font-size: 0.813rem;
+        color: #6b7280;
+    }
+
+        .usage-info.used-up {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .usage-info.active {
+            color: #2563eb;
+        }
+
+    .date-text {
+        color: #6b7280;
+        font-size: 0.813rem;
+    }
+
+    .btn-action {
+        padding: 0.375rem 0.875rem;
+        border-radius: 5px;
+        font-size: 0.813rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid;
+        margin-right: 0.375rem;
+    }
+
+    .btn-edit {
+        background: white;
+        color: #2563eb;
+        border-color: #2563eb;
+    }
+
+        .btn-edit:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    .btn-deactivate {
+        background: #fbbf24;
+        color: #78350f;
+        border-color: #fbbf24;
+    }
+
+        .btn-deactivate:hover {
+            background: #f59e0b;
+            border-color: #f59e0b;
+        }
+
+    .btn-activate {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+    }
+
+        .btn-activate:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+
+    @@media (max-width: 768px) {
+        .discount-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .toolbar-section {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+
+    .type-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 8px;
+        vertical-align: middle;
+        letter-spacing: 0.5px;
+    }
+
+    .type-freeship {
+        background-color: #e0f2fe; /* Xanh dương nhạt */
+        color: #0284c7; /* Xanh dương đậm */
+        border: 1px solid #bae6fd;
+    }
+
+    .type-order {
+        background-color: #fce7f3; /* Hồng nhạt */
+        color: #be185d; /* Hồng đậm */
+        border: 1px solid #fbcfe8;
+    }
+
+    .channel-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Màu sắc riêng cho từng kênh */
+    .channel-offline {
+        background-color: #f3f4f6; /* Xám nhạt */
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    .channel-online {
+        background-color: #ecfdf5; /* Xanh lá nhạt */
+        color: #059669;
+        border: 1px solid #a7f3d0;
+    }
+
+    .channel-all {
+        background-color: #fff7ed; /* Cam nhạt */
+        color: #c2410c;
+        border: 1px solid #ffedd5;
+    }
+</style>
+
+<div class="discount-container">
+    <div class="discount-header">
+        <h1 class="discount-title">Quản lý Mã Giảm Giá</h1>
+    </div>
+
+    <div class="discount-toolbar">
+        <div class="toolbar-section">
+            <a asp-action="Create" class="btn btn-create">+ Tạo mã giảm giá mới</a>
+        </div>
+
+        <div class="toolbar-section">
+            <span class="toolbar-label">Lọc theo:</span>
+            @{
+                string currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+            }
+            <a asp-action="@currentAction" asp-route-statusFilter="active" class="btn btn-filter @(ViewBag.CurrentStatusFilter == "active" ? "btn-success active-filter" : "btn-outline-success")">Đang diễn ra</a>
+            <a asp-action="@currentAction" asp-route-statusFilter="upcoming" class="btn btn-filter @(ViewBag.CurrentStatusFilter == "upcoming" ? "btn-info active-filter" : "btn-outline-info")">Sắp diễn ra</a>
+            <a asp-action="@currentAction" asp-route-statusFilter="expired" class="btn btn-filter @(ViewBag.CurrentStatusFilter == "expired" ? "btn-dark active-filter" : "btn-outline-dark")">Đã hết hạn</a>
+            <a asp-action="@currentAction" asp-route-statusFilter="inactive" class="btn btn-filter @(ViewBag.CurrentStatusFilter == "inactive" ? "btn-danger active-filter" : "btn-outline-danger")">Vô hiệu hóa</a>
+        </div>
+    </div>
+
+    <div class="discount-table-wrapper">
+        <table class="table discount-table">
+            <thead>
+                <tr>
+                    <th>Mã Code</th>
+                    <th>Loại</th>
+                    <th>Kênh</th>
+                    <th>Tên Chương trình</th>
+                    <th>Giảm Giá</th>
+                    <th>Giới hạn</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th style="width: 200px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var rowStatus = "Đang diễn ra";
+                    var badgeClass = "badge-success";
+
+                    if (item.TrangThai == 0)
+                    {
+                        rowStatus = "Vô hiệu hóa";
+                        badgeClass = "badge-danger";
+                    }
+                    else if (item.NgayKetThuc < now)
+                    {
+                        rowStatus = "Đã hết hạn";
+                        badgeClass = "badge-dark";
+                    }
+                    else if (item.NgayBatDau > now)
+                    {
+                        rowStatus = "Sắp diễn ra";
+                        badgeClass = "badge-info";
+                    }
+
+                    <tr>
+                        <td><span class="code-badge">@item.MaCode</span></td>
+                        <td>
+                            @if (item.LoaiApDung == "FreeShip")
+                            {
+                                <span class="type-badge type-freeship"><i class="bi bi-truck"></i> FreeShip</span>
+                            }
+                            else
+                            {
+                                <span class="type-badge type-order"><i class="bi bi-tag"></i> Voucher</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.LoaiApDung != "FreeShip")
+                            {
+                                @if (item.KenhApDung == "TaiQuay")
+                                {
+                                    <span class="channel-badge channel-offline">
+                                        <i class="bi bi-shop"></i> Tại quầy
+                                    </span>
+                                }
+                                else if (item.KenhApDung == "Online")
+                                {
+                                    <span class="channel-badge channel-online">
+                                        <i class="bi bi-globe"></i> Online
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="channel-badge channel-all">
+                                        <i class="bi bi-layers"></i> Tất cả
+                                    </span>
+                                }
+                            }
+                        </td>
+                        <td>@item.TenChuongTrinh</td>
+                        <td>
+                            @if (item.LoaiApDung == "FreeShip")
+                            {
+                                if (item.LoaiGiamGia == "PhanTram" && item.GiaTriGiamGia == 100)
+                                {
+                                    <div class="discount-value text-primary">Miễn phí 100% Ship</div>
+                                }
+                                else
+                                {
+                                    <div class="discount-value text-primary">Giảm @item.GiaTriGiamGia.ToString("N0")đ Ship</div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="discount-value text-danger">-@item.GiaTriGiamGia.ToString("N0")@(item.LoaiGiamGia == "PhanTram" ? "%" : "đ")</div>
+                            }
+
+                            @if (item.DieuKienDonHangToiThieu.HasValue && item.DieuKienDonHangToiThieu > 0)
+                            {
+                                <small class="text-muted d-block">Đơn từ @item.DieuKienDonHangToiThieu?.ToString("N0")đ</small>
+                            }
+                        </td>
+                        <td>
+                            @if (item.LoaiApDung != "FreeShip")
+                            {
+                                @if (!item.TongLuotSuDungToiDa.HasValue)
+                                {
+                                    <small class="usage-info">@item.DaSuDung (Vô hạn)</small>
+                                }
+                                else
+                                {
+                                    bool isUsedUp = item.DaSuDung >= item.TongLuotSuDungToiDa.Value;
+                                    <small class="usage-info @(isUsedUp ? "used-up" : "active")">
+                                        @(isUsedUp ? "Hết lượt: " : "")@item.DaSuDung / @item.TongLuotSuDungToiDa
+                                    </small>
+                                }
+                            }
+                        </td>
+                        <td>
+                            <div class="date-text">@item.NgayBatDau.ToString("dd/MM/yyyy")</div>
+                            <div class="date-text">đến @item.NgayKetThuc.ToString("dd/MM/yyyy")</div>
+                        </td>
+                        <td>
+                            <span class="discount-badge @badgeClass">@rowStatus</span>
+                        </td>
+                        <td>
+                            @if (ViewBag.CurrentStatusFilter == "upcoming")
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.MaGiamGiaID" class="btn btn-action btn-edit">Sửa</a>
+                            }
+
+                            @if (item.NgayKetThuc >= now)
+                            {
+                                <button class="btn btn-action @(item.TrangThai == 1 ? "btn-deactivate" : "btn-activate") toggle-status-btn" data-id="@item.MaGiamGiaID" data-action="@(item.TrangThai == 1 ? "disable" : "enable")">
+                                    @(item.TrangThai == 1 ? "Vô hiệu hóa" : "Kích hoạt")
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form id="antiForgeryForm" method="post" style="display:none;">@Html.AntiForgeryToken()</form>
+
+@section Scripts {
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.querySelector('.discount-table tbody');
+            if (tbody) {
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.reverse().forEach(row => tbody.appendChild(row));
+            }
+        });
+
+        document.querySelectorAll('.toggle-status-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const maGiamGiaId = this.getAttribute('data-id');
+                const action = this.getAttribute('data-action');
+                const token = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]').value;
+
+                let confirmationMessage = `Bạn có chắc chắn muốn ${action === 'disable' ? 'VÔ HIỆU HÓA' : 'KÍCH HOẠT LẠI'} mã giảm giá này không?`;
+
+                if (!confirm(confirmationMessage)) {
+                    return;
+                }
+
+                fetch(`/Admin/MaGiamGia/ToggleStatus?id=${maGiamGiaId}`, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`Đã ${action === 'disable' ? 'vô hiệu hóa' : 'kích hoạt lại'} mã giảm giá thành công!`);
+                        window.location.reload();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi AJAX:', error);
+                    alert('Lỗi kết nối máy chủ khi cập nhật trạng thái.');
+                });
+            });
+        });
+    </script>
+}

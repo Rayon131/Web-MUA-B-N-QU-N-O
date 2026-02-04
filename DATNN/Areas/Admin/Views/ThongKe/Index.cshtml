@@ -1,0 +1,170 @@
+﻿@model DATNN.ViewModel.ThongKeViewModel
+@{
+    ViewData["Title"] = "Báo Cáo Thống Kê";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold"><i class="fas fa-chart-line"></i> TỔNG QUAN TÀI CHÍNH</h2>
+        <span class="text-muted">Dữ liệu từ @Model.TuNgay.ToString("dd/MM/yyyy") đến @Model.DenNgay.ToString("dd/MM/yyyy")</span>
+    </div>
+
+    <!-- Bộ lọc ngày -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body bg-light rounded">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-secondary">Từ ngày</label>
+                    <input type="date" name="tuNgay" class="form-control" value="@Model.TuNgay.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-secondary">Đến ngày</label>
+                    <input type="date" name="denNgay" class="form-control" value="@Model.DenNgay.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Xem báo cáo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3 Thẻ Chỉ Số Chính -->
+    <div class="row mb-4">
+        <!-- Doanh Thu -->
+        <div class="col-md-4">
+            <div class="card text-white bg-success h-100 shadow border-0">
+                <div class="card-body text-center p-4">
+                    <div class="fs-1 mb-2 opacity-50"><i class="fas fa-coins"></i></div>
+                    <h5 class="card-title text-uppercase">Tổng Doanh Thu</h5>
+                    <h2 class="display-6 fw-bold">@Model.TongDoanhThu.ToString("N0") đ</h2>
+                    <p class="mb-0 small opacity-75">Bán hàng + Thu thêm từ Đổi hàng</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chi Phí -->
+        <div class="col-md-4">
+            <div class="card text-white bg-danger h-100 shadow border-0">
+                <div class="card-body text-center p-4">
+                    <div class="fs-1 mb-2 opacity-50"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h5 class="card-title text-uppercase">Tổng Chi Phí</h5>
+                    <h2 class="display-6 fw-bold">@Model.TongChiTieu.ToString("N0") đ</h2>
+                    <p class="mb-0 small opacity-75">Tổng hợp từ Phiếu Chi (Nhập tay)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lợi Nhuận -->
+        <div class="col-md-4">
+            <div class="card text-white bg-primary h-100 shadow border-0">
+                <div class="card-body text-center p-4">
+                    <div class="fs-1 mb-2 opacity-50"><i class="fas fa-wallet"></i></div>
+                    <h5 class="card-title text-uppercase">Lợi Nhuận Ròng</h5>
+                    <h2 class="display-6 fw-bold">@Model.LoiNhuan.ToString("N0") đ</h2>
+                    <p class="mb-0 small opacity-75">Doanh thu - Chi phí</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Khu vực Biểu đồ & Chi tiết -->
+    <div class="row">
+        <!-- Biểu đồ phân tích chi phí -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fas fa-chart-pie text-primary"></i> PHÂN TÍCH KHOẢN CHI (PHIẾU CHI)
+                </div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    @if (Model.TongChiTieu > 0)
+                    {
+                        <div style="width: 70%;">
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                            <p>Chưa có dữ liệu chi tiêu trong khoảng thời gian này.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng chỉ số vận hành -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fas fa-list-alt text-primary"></i> HIỆU SUẤT VẬN HÀNH
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            <span><i class="fas fa-box text-success me-2"></i> Đơn hàng hoàn thành</span>
+                            <span class="badge bg-success rounded-pill px-3 py-2">@Model.SoDonHangThanhCong</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            <span><i class="fas fa-ban text-danger me-2"></i> Đơn hàng bị hủy</span>
+                            <span class="badge bg-danger rounded-pill px-3 py-2">@Model.SoDonHangHuy</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            <span><i class="fas fa-sync text-warning me-2"></i> Yêu cầu Đổi/Trả</span>
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2">@Model.SoYeuCauDoiTra</span>
+                        </li>
+
+                        <li class="list-group-item bg-light fw-bold mt-2 p-3 text-secondary">Chi tiết nguồn tiền ra (Theo Phiếu Chi):</li>
+
+                        <li class="list-group-item d-flex justify-content-between px-4 py-2">
+                            <span>Chi phí vận hành (Điện, nước...)</span>
+                            <span class="fw-bold">@Model.ChiPhiVanHanh.ToString("N0") đ</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-4 py-2">
+                            <span>Chi phí liên quan Đơn hàng (Bom, hủy)</span>
+                            <span class="fw-bold text-danger">@Model.ChiPhiRuiRoDonHang.ToString("N0") đ</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-4 py-2">
+                            <span>Chi phí liên quan Đổi trả (Hoàn lệch, ship)</span>
+                            <span class="fw-bold text-warning">@Model.ChiPhiRuiRoDoiTra.ToString("N0") đ</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script vẽ biểu đồ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('expenseChart');
+    if (ctx) {
+        new Chart(ctx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Vận hành', 'Đơn hàng (Hủy/Bom)', 'Đổi trả (Hoàn tiền/Ship)'],
+                datasets: [{
+                    data: [
+    @Model.ChiPhiVanHanh,
+    @Model.ChiPhiRuiRoDonHang,
+    @Model.ChiPhiRuiRoDoiTra
+                    ],
+                    backgroundColor: [
+                        '#6c757d', // Xám
+                        '#dc3545', // Đỏ
+                        '#ffc107'  // Vàng
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+</script>

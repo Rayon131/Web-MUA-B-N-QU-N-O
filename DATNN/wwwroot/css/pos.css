@@ -1,0 +1,264 @@
+﻿/* pos.css - Giao diện bán hàng chuyên nghiệp */
+:root {
+    --primary-color: #0088ff; /* Màu chủ đạo (Xanh dương) */
+    --success-color: #28a745; /* Màu nút thanh toán */
+    --danger-color: #dc3545; /* Màu nút hủy/xóa */
+    --bg-gray: #f0f2f5; /* Màu nền tổng thể */
+    --white: #ffffff;
+    --border-color: #e0e0e0;
+    --text-color: #333;
+}
+
+body {
+    background-color: var(--bg-gray);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text-color);
+    height: 100vh; /* Cố định chiều cao màn hình */
+    overflow: hidden; /* Ẩn thanh cuộn của trình duyệt */
+}
+
+/* --- BỐ CỤC CHÍNH (LAYOUT) --- */
+.container-pos {
+    display: flex;
+    height: 100vh; /* Full màn hình */
+    width: 100%;
+    padding: 10px;
+    gap: 15px; /* Khoảng cách giữa 2 cột */
+    box-sizing: border-box;
+}
+
+/* --- CỘT TRÁI: DANH SÁCH SẢN PHẨM (65%) --- */
+.left-section {
+    flex: 5.5; /* <--- SỬA SỐ NÀY */
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+    overflow: hidden;
+}
+.table-responsive::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+}
+
+/* Style cho dòng sản phẩm */
+#products-list tr {
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+    #products-list tr:hover {
+        background-color: #e9ecef; /* Màu nền khi di chuột vào */
+    }
+
+/* Ảnh nhỏ trong bảng */
+.product-thumb-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+/* Badge Sale */
+.badge-sale {
+    font-size: 10px;
+    background-color: #dc3545;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+    /* Thanh tìm kiếm */
+    .left-section .card-body {
+        background: var(--white);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .left-section input[type="text"] {
+        border-radius: 20px;
+        padding: 10px 20px;
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+        background: #f9f9f9;
+    }
+
+
+
+
+
+
+
+
+.right-section {
+    flex: 4.5; /* <--- SỬA SỐ NÀY */
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Tab hóa đơn */
+#order-tabs {
+    padding: 10px 10px 0 10px;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+    #order-tabs .btn {
+        border-radius: 8px 8px 0 0;
+        font-size: 13px;
+        border-bottom: none;
+    }
+
+/* Khu vực danh sách hàng trong giỏ */
+.cart-wrapper {
+    flex-grow: 1; /* Quan trọng: Tự động lấp đầy khoảng trống còn lại */
+    overflow-y: auto; /* Cho phép cuộn nếu danh sách dài */
+    padding: 0;
+    background-color: #fff; /* Đảm bảo nền trắng */
+}
+.table {
+    margin-bottom: 0;
+}
+
+    .table thead th {
+        position: sticky; /* Cố định tiêu đề bảng khi cuộn */
+        top: 0;
+        background: #f8f9fa;
+        z-index: 1;
+        font-size: 12px;
+        color: #666;
+        border-top: none;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        font-size: 13px;
+        padding: 8px;
+    }
+
+/* Khu vực tổng tiền & thanh toán (Cố định dưới đáy) */
+.card-body.payment-area {
+    background: #fff;
+    border-top: 1px solid var(--border-color);
+    padding: 15px;
+    flex-shrink: 0; /* Không bị co lại */
+}
+
+/* Dòng tổng tiền */
+.cart-summary {
+    background: #f8fcfc;
+    border: 1px dashed #bce0fd;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #555;
+}
+
+    .summary-row.total {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #ddd;
+    }
+
+/* Input tiền khách đưa */
+#cash-received-input {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--success-color);
+    text-align: right;
+}
+
+/* Nút bấm hành động */
+.actions button {
+    height: 45px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 6px;
+}
+
+#checkout-btn {
+    background-color: var(--success-color);
+    border: none;
+}
+
+    #checkout-btn:hover {
+        background-color: #218838;
+    }
+
+/* --- MODAL CHI TIẾT SẢN PHẨM --- */
+#productDetailBody .color-group h5 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.color-swatch {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0,0,0,0.3);
+    vertical-align: middle;
+    margin-left: 8px;
+}
+
+#productDetailBody .size-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+#productDetailBody .size-option label {
+    display: block;
+    padding: 8px 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    background: #fff;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+#productDetailBody .size-option input[type="radio"]:checked + label {
+    background-color: #e7f1ff;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: bold;
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+#productDetailBody .size-option input[type="radio"]:disabled + label {
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}

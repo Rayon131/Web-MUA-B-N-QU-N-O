@@ -1,0 +1,434 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DATNN</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DATNN.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+</head>
+<body>
+
+    <div class="container-ad">
+        <aside class="sidebar-ad hidden-ad" id="sidebar">
+            <button class="toggle-btn-ad" onclick="toggleSidebar()">☰</button>
+            <h2 class="logo-ad">ADMIN</h2>
+
+            <style>
+                /* CSS cơ bản — chỉnh màu / khoảng cách theo theme của bạn */
+                .menu-ad {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
+
+                    .menu-ad > li {
+                        margin: 6px 0;
+                    }
+
+                    .menu-ad a, .menu-ad button.toggle-btn {
+                        display: inline-block;
+                        width: 100%;
+                        text-align: left;
+                        padding: 8px 12px;
+                        color: white;
+                        text-decoration: none;
+                        background: transparent;
+                        border: none;
+                        cursor: pointer;
+                        font-size: 14px;
+                    }
+
+                        .menu-ad a:hover, .menu-ad button.toggle-btn:hover {
+                            opacity: 0.9;
+                        }
+
+                .submenu {
+                    list-style: none;
+                    padding-left: 16px;
+                    margin: 6px 0 0 0;
+                    display: none; /* ẩn mặc định */
+                }
+
+                    .submenu.open {
+                        display: block;
+                    }
+
+                    .submenu li a {
+                        padding: 6px 12px;
+                        display: block;
+                        font-size: 13px;
+                    }
+
+                .rotate-icon {
+                    float: right;
+                    transition: transform .2s ease;
+                }
+
+                    .rotate-icon.open {
+                        transform: rotate(-90deg);
+                    }
+            </style>
+            <div class="menu-wrapper-ad">
+                <ul class="menu-ad">
+                    <li>
+                        <!-- Button toggle để mở/đóng submenu Người dùng -->
+                        <button type="button"
+                                class="toggle-btn"
+                                aria-expanded="false"
+                                aria-controls="submenuNguoiDung"
+                                onclick="toggleSubmenu(event, 'submenuNguoiDung', this)">
+                            👥 Quản lý người dùng
+                            <span class="rotate-icon" aria-hidden="true">▸</span>
+                        </button>
+
+                        <!-- Submenu cho Người dùng -->
+                        <ul id="submenuNguoiDung" class="submenu" role="menu" aria-label="Quản lý người dùng submenu">
+                            <li role="none">
+                                <a role="menuitem" asp-area="Admin" asp-controller="NhanVien" asp-action="Index">Quản lý Nhân viên</a>
+                            </li>
+                            <li role="none">
+                                <a role="menuitem" asp-area="Admin" asp-controller="KhachHang" asp-action="Index">Quản lý Khách hàng</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <!-- Button toggle để mở/đóng submenu Sản phẩm -->
+                        <button type="button"
+                                class="toggle-btn"
+                                aria-expanded="false"
+                                aria-controls="submenuSanPham"
+                                onclick="toggleSubmenu(event, 'submenuSanPham', this)">
+                            📦 Sản phẩm
+                            <span class="rotate-icon" aria-hidden="true">▸</span>
+                        </button>
+
+                        <!-- Submenu — chỉnh asp-controller/asp-action theo project của bạn -->
+                        <ul id="submenuSanPham" class="submenu" role="menu" aria-label="Sản phẩm submenu">
+                            <li role="none">
+                                <a role="menuitem" asp-controller="SanPham" asp-action="Index">Sản Phẩm</a>
+                            </li>
+                            @*   <li role="none">
+                            <a role="menuitem" asp-controller="SanPhamChiTiet" asp-action="Index">Sản Phẩm Chi Tiết</a>
+                        </li> *@
+                            <li role="none">
+                                <a role="menuitem" asp-controller="DanhMuc" asp-action="Index">Danh Mục</a>
+                            </li>
+                            <li role="none">
+                                <a role="menuitem" asp-controller="ChatLieu" asp-action="Index">Chất Liệu</a>
+                            </li>
+                            <li role="none">
+                                <a role="menuitem" asp-controller="XuatXu" asp-action="Index">Xuất Sứ</a>
+                            </li>
+                            <li role="none">
+                                <a role="menuitem" asp-controller="Size" asp-action="Index">Size</a>
+                            </li>
+                            <li role="none">
+                                <a role="menuitem" asp-controller="MauSac" asp-action="Index">Màu Sắc</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a asp-area="Admin" asp-controller="KhuyenMai" asp-action="Index">🛒 Khuyến Mãi</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="MaGiamGia" asp-action="Index">🛒 Voucher</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="BanHang" asp-action="Index">🛒 Bán Hàng</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="QuanLyDoiTra" asp-action="Index">🔁 Quản lý Đổi/Trả</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="DanhSachDonHang" asp-action="Index">🛒 Đơn Hàng</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="CuaHang" asp-action="Edit">🛒 Cửa hàng</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="PhieuChi" asp-action="Index">🛒 Phiếu Chi</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="ThongKe" asp-action="Index">🛒 Thống Kê</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="ChinhSach" asp-action="Index">🛒 Chính Sách</a>
+                    </li>
+                    <li>
+                        <a asp-area="Admin" asp-controller="GiaoDichBatThuong" asp-action="Index">🛒 Giao Dịch Bất Thường</a>
+                    </li>
+                    <li class="mt-auto">
+                        @* mt-auto để đẩy nút này xuống dưới cùng nếu có thể *@
+                        <form asp-area="" asp-controller="Login" asp-action="Logout" method="post" id="adminLogoutForm">
+                            <button type="submit" class="toggle-btn" style="width: 100%; text-align: left;">
+                                <i class="fas fa-sign-out-alt"></i> <!-- Thêm icon cho đẹp -->
+                                Đăng xuất
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+          
+
+            <script>
+                function toggleSubmenu(event, submenuId, btn) {
+                    event.preventDefault();
+                    document.querySelectorAll('.submenu').forEach(s => {
+                        if (s.id !== submenuId) {
+                            s.classList.remove('open');
+                            const b = document.querySelector('[aria-controls="'+s.id+'"]');
+                            if (b) {
+                                b.setAttribute('aria-expanded', 'false');
+                                const icon = b.querySelector('.rotate-icon');
+                                if (icon) icon.classList.remove('open');
+                            }
+                        }
+                    });
+
+                    const submenu = document.getElementById(submenuId);
+                    const isOpen = submenu.classList.contains('open');
+
+                    submenu.classList.toggle('open', !isOpen);
+                    btn.setAttribute('aria-expanded', String(!isOpen));
+
+                    const icon = btn.querySelector('.rotate-icon');
+                    if (icon) icon.classList.toggle('open', !isOpen);
+                }
+
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.menu-ad')) {
+                        document.querySelectorAll('.submenu.open').forEach(s => {
+                            s.classList.remove('open');
+                            const btn = document.querySelector(`[aria-controls="${s.id}"]`);
+                            if (btn) {
+                                btn.setAttribute('aria-expanded', 'false');
+                                const icon = btn.querySelector('.rotate-icon');
+                                if (icon) icon.classList.remove('open');
+                            }
+                        });
+                    }
+                });
+            </script>
+
+        </aside>
+
+        <main role="main" class="main-content-ad pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <style>
+
+        .toast-message {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-width: 300px;
+            max-width: 400px;
+            font-size: 16px;
+            font-family: 'Segoe UI', sans-serif;
+            animation: slideIn 0.4s ease-out;
+            transition: opacity 0.3s ease;
+        }
+
+            .toast-message .close-btn {
+                background: none;
+                border: none;
+                color: #ecf0f1;
+                font-size: 20px;
+                cursor: pointer;
+                margin-left: 16px;
+            }
+
+    </style>
+
+    <!-- Toast script -->
+    <script>
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.className = "toast-message";
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            document.getElementById("toast-container").appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 10000);
+        }
+    </script>
+    <script>
+        function toggleSubmenu(event, submenuId, button) {
+            event.preventDefault();
+            var submenu = document.getElementById(submenuId);
+
+            if (submenu.style.display === "block") {
+                submenu.style.display = "none";
+                button.querySelector(".rotate-icon").style.transform = "rotate(0deg)";
+                button.setAttribute("aria-expanded", "false");
+            } else {
+                submenu.style.display = "block";
+                button.querySelector(".rotate-icon").style.transform = "rotate(90deg)";
+                button.setAttribute("aria-expanded", "true");
+            }
+        }
+    </script>
+
+    <!-- Trigger toast from TempData -->
+    @if (TempData["ToastMessage"] != null)
+    {
+        <script>
+            showToast("@TempData["ToastMessage"]");
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            showToast("@TempData["Error"]");
+        </script>
+    }
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container-ad {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar-ad {
+            background-color: #2c3e50;
+            color: white;
+            transition: width 0.3s;
+            overflow: hidden;
+            padding-top: 10px;
+            display: flex; /* Thêm flexbox */
+            flex-direction: column; /* Sắp xếp các phần tử con theo chiều dọc */
+        }
+
+        .menu-wrapper-ad {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* --- BỔ SUNG CÁC DÒNG SAU ĐỂ CUỘN --- */
+            overflow-y: auto; /* Cho phép cuộn dọc */
+            overflow-x: hidden; /* Ẩn cuộn ngang */
+            min-height: 0; /* Quan trọng: giúp flexbox tính toán chiều cao để kích hoạt cuộn */
+            height: 100%; /* Đảm bảo chiếm không gian còn lại */
+        }
+            /* Làm đẹp thanh cuộn cho menu */
+            .menu-wrapper-ad::-webkit-scrollbar {
+                width: 6px; /* Độ rộng thanh cuộn nhỏ gọn */
+            }
+
+            .menu-wrapper-ad::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .menu-wrapper-ad::-webkit-scrollbar-thumb {
+                background-color: rgba(255, 255, 255, 0.2); /* Màu thanh cuộn mờ */
+                border-radius: 4px;
+            }
+
+                .menu-wrapper-ad::-webkit-scrollbar-thumb:hover {
+                    background-color: rgba(255, 255, 255, 0.4); /* Sáng lên khi di chuột vào */
+                }
+        .logout-btn-ad {
+            width: 100%;
+            text-align: left;
+            padding: 15px 20px;
+            background-color: #34495e; /* Thêm màu nền để phân biệt */
+        }
+
+        .sidebar-ad.hidden-ad .logout-btn-ad span {
+            display: none; /* Ẩn chữ khi sidebar thu nhỏ */
+        }
+
+        .sidebar-ad.hidden-ad .logout-btn-ad {
+            text-align: center;
+        }
+            .sidebar-ad.hidden-ad {
+                width: 60px;
+            }
+
+            .sidebar-ad:not(.hidden-ad) {
+                width: 250px;
+            }
+
+            .sidebar-ad.hidden-ad .logo-ad,
+            .sidebar-ad.hidden-ad .menu-ad {
+                display: none;
+            }
+
+        .toggle-btn-ad {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .logo-ad {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        .menu-ad {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .menu-ad li {
+                padding: 15px 20px;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+
+                .menu-ad li:hover {
+                    background-color: #34495e;
+                }
+
+        .main-content-ad {
+            flex: 1;
+            padding: 20px; /* ĐÃ SỬA */
+            background-color: #ecf0f1;
+            display: flex;
+            flex-direction: column;
+            overflow: auto; /* ĐÃ SỬA */
+        }
+    </style>
+
+    <script>
+        function toggleSidebar() {
+          const sidebar = document.getElementById('sidebar');
+          sidebar.classList.toggle('hidden-ad');
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,196 @@
+﻿.container_cthd_admin {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    overflow-y: auto;
+}
+
+.card_cthd_admin {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.1rem;
+}
+
+.card-header_cthd_admin:first-child {
+    border-radius: calc(0.37rem - 1px) calc(0.37rem - 1px) 0 0;
+}
+
+.card-header_cthd_admin {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.track_cthd_admin {
+    position: relative;
+    background-color: #ddd;
+    height: 7px;
+    display: flex;
+    margin-bottom: 60px;
+    margin-top: 50px;
+}
+
+    .track_cthd_admin .step_cthd_admin {
+        flex-grow: 1;
+        width: 25%;
+        margin-top: -18px;
+        text-align: center;
+        position: relative;
+    }
+
+        .track_cthd_admin .step_cthd_admin.active_cthd_admin:before {
+            background: #2c3e50;
+        }
+
+        .track_cthd_admin .step_cthd_admin::before {
+            height: 7px;
+            position: absolute;
+            content: "";
+            width: 100%;
+            left: 0;
+            top: 18px;
+        }
+
+        .track_cthd_admin .step_cthd_admin.active_cthd_admin .icon_cthd_admin {
+            background: #2c3e50;
+            color: #fff;
+        }
+
+    .track_cthd_admin .icon_cthd_admin {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        position: relative;
+        border-radius: 100%;
+        background: #ddd;
+    }
+
+    .track_cthd_admin .step_cthd_admin.active_cthd_admin .text_cthd_admin {
+        font-weight: 400;
+        color: #000;
+    }
+
+    .track_cthd_admin .text_cthd_admin {
+        display: block;
+        margin-top: 7px;
+    }
+
+.itemside_cthd_admin {
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+
+    .itemside_cthd_admin .aside_cthd_admin {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+.img-sm_cthd_admin {
+    width: 80px;
+    height: 80px;
+    padding: 7px;
+}
+
+ul.row,
+ul.row-sm {
+    list-style: none;
+    padding: 0;
+}
+
+.itemside_cthd_admin .info_cthd_admin {
+    padding-left: 15px;
+    padding-right: 7px;
+}
+
+.itemside_cthd_admin .title_cthd_admin {
+    display: block;
+    margin-bottom: 5px;
+    color: #212529;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.btn-warning_cthd_admin {
+    color: #ffffff;
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    border-radius: 1px;
+}
+
+    .btn-warning_cthd_admin:hover {
+        color: #ffffff;
+        background-color: #ff2b00;
+        border-color: #ff2b00;
+        border-radius: 1px;
+    }
+
+/* Wrapper có scroll */
+.timeline-wrapper_cthd_admin {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Timeline items */
+.c-timeline__item_cthd_admin {
+    position: relative;
+    display: flex;
+    gap: 1rem;
+}
+
+.c-timeline__content_cthd_admin {
+    flex: 1;
+    position: relative;
+    padding-left: 1rem;
+    padding-bottom: 1rem;
+}
+
+    .c-timeline__content_cthd_admin:before {
+        content: "";
+        position: absolute;
+        left: -9px;
+        top: 0;
+        height: 100%;
+        width: 2px;
+        background-color: lightgrey;
+    }
+
+    .c-timeline__content_cthd_admin:after {
+        content: "";
+        position: absolute;
+        left: -15px;
+        top: 0;
+        width: 14px;
+        height: 14px;
+        background-color: #fff;
+        z-index: 1;
+        border: 2px solid #2c3e50;
+        border-radius: 50%;
+    }
+
+.c-timeline__title_cthd_admin {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.c-timeline__desc_cthd_admin {
+    font-size: 0.8rem;
+    color: grey;
+    margin: 0;
+}
+.table-responsive_cthd_admin {
+    max-height: 250px;
+    overflow-y: auto;
+}

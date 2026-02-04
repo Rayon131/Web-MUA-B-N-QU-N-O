@@ -1,0 +1,126 @@
+﻿@model IEnumerable<DATNN.Models.SanPhamChiTiet>
+
+@{
+    var giaDaGiamDict = ViewBag.GiaDaGiam as Dictionary<int, decimal> ?? new Dictionary<int, decimal>();
+    var currentFilter = ViewBag.CurrentChiTietStatusFilter as string;
+    var sanPhamId = ViewBag.SanPhamId;
+}
+
+<div class="p-3 bg-light border-bottom">
+    <strong>Lọc phiên bản:</strong>
+    <div class="btn-group btn-group-sm" role="group">
+        <button type="button" class="btn @(currentFilter == "active" ? "btn-primary" : "btn-outline-primary") chitiet-filter-btn" data-sanphamid="@sanPhamId" data-filter="active">
+            Đang kinh doanh
+        </button>
+        <button type="button" class="btn @(currentFilter == "not_yet_active" ? "btn-info" : "btn-outline-info") chitiet-filter-btn" data-sanphamid="@sanPhamId" data-filter="not_yet_active">
+            Chưa kinh doanh
+        </button>
+        <button type="button" class="btn @(currentFilter == "inactive" ? "btn-secondary" : "btn-outline-secondary") chitiet-filter-btn" data-sanphamid="@sanPhamId" data-filter="inactive">
+            Ngừng kinh doanh
+        </button>
+    </div>
+</div>
+
+<table class="table table-bordered mb-0">
+    <thead>
+        <tr class="table-secondary">
+            <th>Hình ảnh</th>
+            <th>Màu sắc / Size</th>
+            <th>Giá gốc</th>
+            <th>Giá đã giảm</th>
+            <th>Số lượng</th>
+            <th class="text-center">Trạng thái</th>
+            <th style="width: 200px;">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="7" class="text-center p-4">Không có phiên bản nào phù hợp.</td>
+            </tr>
+        }
+        @foreach (var item in Model)
+        {
+            <tr id="chitiet-row-@item.MaSanPhamChiTiet">
+                <td><img src="~/images/@item.HinhAnh" style="max-width:80px;" /></td>
+                <td>
+                    @item.MauSac?.TenMau - @item.Size?.TenSize<br />
+                    <small class="text-muted">@item.GhiChu</small>
+                </td>
+                <td>@item.GiaBan.ToString("N0") VNĐ</td>
+                <td>
+                    @if (giaDaGiamDict.ContainsKey(item.MaSanPhamChiTiet))
+                    {
+                        <span class="text-danger fw-bold">@giaDaGiamDict[item.MaSanPhamChiTiet].ToString("N0") VNĐ</span>
+                    }
+                    else
+                    {
+                        <span>—</span>
+                    }
+                </td>
+                <td class="d-flex justify-content-between align-items-center">
+                    <!-- Bọc số lượng trong 1 span để dễ cập nhật -->
+                    <span class="variant-stock" data-variant-id="@item.MaSanPhamChiTiet">@item.SoLuong</span>
+
+                    <!-- Nút nhập kho (+) -->
+                    <button type="button" class="btn btn-sm btn-outline-success add-stock-btn ms-2"
+                            data-id="@item.MaSanPhamChiTiet"
+                            data-name="@($"{ViewBag.TenSanPham} ({item.MauSac?.TenMau} - {item.Size?.TenSize})")"
+                            data-current-stock="@item.SoLuong"
+                            title="Nhập kho" @(item.TrangThai == 0 ? "disabled" : "")>
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </td>
+                <td class="text-center align-middle" id="status-cell-@item.MaSanPhamChiTiet">
+                    @if (item.TrangThai == 1)
+                    {
+                        <span class="badge bg-success">Đang kinh doanh</span>
+                    }
+                    else if (item.TrangThai == 2)
+                    {
+                        <span class="badge bg-info">Chưa kinh doanh</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Ngừng kinh doanh</span>
+                    }
+                </td>
+                <td class="align-middle">
+                    <div class="d-grid gap-1">
+                        <div class="btn-group btn-group-sm">
+                            <a asp-controller="SanPhamChiTiet" asp-action="Edit" asp-route-id="@item.MaSanPhamChiTiet" class="btn btn-outline-primary @(item.TrangThai == 0 ? "disabled" : "")">Sửa</a>
+                            <button type="button" class="btn btn-sm btn-outline-info adjust-stock-btn"
+                                    data-id="@item.MaSanPhamChiTiet"
+                                    data-name="@($"{ViewBag.TenSanPham} ({item.MauSac?.TenMau} - {item.Size?.TenSize})")"
+                                    data-current-stock="@item.SoLuong"
+                                    title="Kiểm kê/Điều chỉnh kho" @(item.TrangThai == 0 ? "disabled" : "")>
+                                <i class="fas fa-clipboard-check"></i>
+                            </button>
+                            <a href="@Url.Action("GenerateQrCode", "SanPhamChiTiet", new { id = item.MaSanPhamChiTiet })" target="_blank" class="btn btn-outline-secondary @(item.TrangThai == 0 ? "disabled" : "")" title="In mã QR">
+                                <i class="fas fa-qrcode"></i> QR
+                            </a>
+                        </div>
+
+                        @{
+                            string buttonClass = "btn-success";
+                            string buttonText = "Kinh Doanh Lại";
+                            if (item.TrangThai == 1)
+                            {
+                                buttonClass = "btn-warning";
+                                buttonText = "Ngừng Kinh Doanh";
+                            }
+                            else if (item.TrangThai == 2)
+                            {
+                                buttonText = "Bắt đầu Kinh Doanh";
+                            }
+                        }
+                        <button class="btn btn-sm @buttonClass toggle-chitiet-status-btn" data-id="@item.MaSanPhamChiTiet">
+                            @buttonText
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,328 @@
+﻿@model DangKyViewModel
+@{
+    ViewBag.ActiveTab = "register";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <title>Đăng ký tài khoản</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        /* BODY & BACKGROUND */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0f0ff, #f9fcff);
+            overflow-x: hidden;
+        }
+
+        .bg-effectlog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(0,123,255,0.25), rgba(255,255,255,0.05) 60%);
+            transition: background 0.2s ease;
+            z-index: 0;
+            animation: pulseGlow 6s infinite ease-in-out;
+        }
+
+        /* CONTAINER */
+        .auth-containerlog {
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+            margin: 120px auto;
+            padding: 35px 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(0, 123, 255, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeInlog 0.8s ease forwards;
+        }
+
+        /* NAV TABS */
+        .auth-navlog {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+            .auth-navlog a {
+                flex: 1;
+                text-align: center;
+                padding: 12px 0;
+                text-decoration: none;
+                color: #555;
+                font-weight: bold;
+                border-bottom: 3px solid transparent;
+                transition: all 0.3s ease;
+                border-radius: 6px;
+            }
+
+                .auth-navlog a:hover {
+                    background-color: #f2f6ff;
+                }
+
+                .auth-navlog a.active {
+                    color: #007BFF;
+                    border-bottom: 3px solid #007BFF;
+                }
+
+        /* FORM */
+        .form-grouplog {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            background-color: #fdfdfd;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 8px rgba(0,123,255,0.3);
+        }
+
+        .validation-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* CAPTCHA */
+        .captcha-wrapper {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+            box-shadow: 0 0 6px rgba(0,123,255,0.1);
+        }
+
+        /* POLICY CHECK */
+        .policy-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+            .policy-check a {
+                color: #007BFF;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+
+        /* BUTTON */
+        button.btn-index {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #007BFF, #00bfff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+
+            button.btn-index:hover {
+                background: linear-gradient(to right, #0056b3, #0099cc);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 18px rgba(0, 123, 255, 0.4);
+            }
+
+        /* MODAL */
+        #policyModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+            #policyModal .modal-inner {
+                background: #fff;
+                width: 100%;
+                max-width: 640px;
+                border-radius: 16px;
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                animation: modalFadeIn 0.3s ease;
+            }
+
+            #policyModal h3 {
+                margin: 0;
+                padding: 20px 30px;
+                background: linear-gradient(to right, #007BFF, #00bfff);
+                color: white;
+                font-size: 20px;
+                font-weight: 600;
+            }
+
+            #policyModal .modal-content {
+                padding: 24px 30px;
+                overflow-y: auto;
+                max-height: 400px;
+                font-size: 15px;
+                line-height: 1.7;
+                color: #333;
+                background-color: #f9fcff;
+            }
+
+            #policyModal .modal-footer {
+                padding: 15px 30px;
+                text-align: right;
+                background-color: #f1f5f9;
+            }
+
+                #policyModal .modal-footer button {
+                    padding: 10px 22px;
+                    background-color: #007BFF;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: background 0.3s;
+                }
+
+                    #policyModal .modal-footer button:hover {
+                        background-color: #0056b3;
+                    }
+
+        
+    </style>
+</head>
+<body>
+    <div class="bg-effectlog" id="bglog"></div>
+
+    <div class="auth-containerlog">
+        <div class="auth-navlog">
+            <a href="/Login/Index">Đăng nhập</a>
+            <a href="/Login/Register" class="active">Tạo tài khoản</a>
+            <a href="/Login/ForgotPassword">Quên mật khẩu</a>
+        </div>
+
+        <form method="post" asp-action="Register">
+            @Html.AntiForgeryToken()
+
+            <div class="form-grouplog">
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" type="email" />
+                <span asp-validation-for="Email" class="validation-message"></span>
+            </div>
+
+            <div class="form-grouplog">
+                <label asp-for="TenDangNhap">Tên đăng nhập</label>
+                <input asp-for="TenDangNhap" />
+                <span asp-validation-for="TenDangNhap" class="validation-message"></span>
+            </div>
+
+            <div class="form-grouplog">
+                <label asp-for="MatKhau">Mật khẩu</label>
+                <input asp-for="MatKhau" type="password" />
+                <span asp-validation-for="MatKhau" class="validation-message"></span>
+            </div>
+
+            <div class="form-grouplog">
+                <label asp-for="XacNhanMatKhau">Xác nhận mật khẩu</label>
+                <input asp-for="XacNhanMatKhau" type="password" />
+                <span asp-validation-for="XacNhanMatKhau" class="validation-message"></span>
+            </div>
+
+            <div class="form-grouplog captcha-wrapper">
+                <div class="g-recaptcha" data-sitekey="6LcTvvErAAAAAF3aY-ILn9YNKsdzv-UF74gDnu29"></div>
+            </div>
+
+            <div class="form-grouplog policy-check">
+                <input type="checkbox" id="agreePolicy" />
+                <label for="agreePolicy">
+                    Tôi đã đọc và đồng ý với
+                    <a href="javascript:void(0)" onclick="showPolicy()">chính sách bảo mật</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-index" id="submitBtn" disabled>Đăng ký</button>
+        </form>
+    </div>
+
+    <!-- POLICY MODAL -->
+    <div id="policyModal">
+        <div class="modal-inner">
+            <h3>🔐 Chính sách bảo mật</h3>
+            <div class="modal-content">
+                @Html.Raw(Model.NoiDungChinhSach)
+            </div>
+            <div class="modal-footer">
+                <button onclick="closePolicy()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+
+    <script>
+        function showPolicy() {
+            document.getElementById("policyModal").style.display = "flex";
+        }
+        function closePolicy() {
+            document.getElementById("policyModal").style.display = "none";
+        }
+
+        // Bật nút Đăng ký khi tích checkbox
+        const agreePolicy = document.getElementById("agreePolicy");
+        const submitBtn = document.getElementById("submitBtn");
+        agreePolicy.addEventListener("change", function () {
+            submitBtn.disabled = !this.checked;
+        });
+
+        // Nền di chuyển
+        const bg = document.getElementById('bglog');
+        document.addEventListener('mousemove', e => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            bg.style.setProperty('--x', x + '%');
+            bg.style.setProperty('--y', y + '%');
+        });
+    </script>
+</body>
+</html>

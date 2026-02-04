@@ -1,0 +1,570 @@
+﻿@model DATNN.Models.DonHang
+@{
+    ViewData["Title"] = "Chi tiết Đơn hàng Online";
+}
+
+<link rel="stylesheet" href="~/css/ctdh_admin.css" />
+<div class="container container_cthd_admin">
+    <article class="card card_cthd_admin">
+        <h3 class="card-header card-header_cthd_admin">CHI TIẾT ĐƠN HÀNG</h3>
+        <div class="card-body card-body_cthd_admin">
+            <h6>Mã đơn hàng: @Model.MaDonHang</h6>
+            <article class="card card_cthd_admin">
+                <div class="card-body card-body_cthd_admin row">
+                    <div class="col">
+                        <strong>Tên khách hàng:</strong> <br /> @(Model.KhachHang?.HoTen ?? "N/A")
+                    </div>
+                    <div class="col">
+                        <strong>Số điện thoại:</strong> <br /> @Model.SoDienThoai
+                    </div>
+                    <div class="col">
+                        <strong>Thời gian đặt:</strong> <br /> @Model.ThoiGianTao.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                    <div class="col">
+                        <strong>Hình thức thanh toán:</strong> <br /> @Model.PhuongThucThanhToan
+                    </div>
+                    <div class="col">
+                        <strong>Địa chỉ giao hàng:</strong> <br /> @Model.DiaChi
+                    </div>
+                </div>
+            </article>
+            <div class="track_cthd_admin">
+                @if (Model.PhuongThucThanhToan == "VnPay")
+                {
+                    <!-- QUY TRÌNH CHO VNPAY -->
+                    <div class="step_cthd_admin @(Model.TrangThaiDonHang == 7 || (Model.TrangThaiDonHang >=2 && Model.TrangThaiDonHang < 7) ? "active_cthd_admin" : "")"> <span class="icon_cthd_admin"> <i class="fa fa-credit-card"></i> </span> <span class="text_cthd_admin">Đã thanh toán</span> </div>
+                }
+
+
+                @if (Model.PhuongThucThanhToan != "VnPay")
+                {
+                    <div class="step_cthd_admin @(Model.TrangThaiDonHang >= 2 && Model.TrangThaiDonHang != 7 && Model.TrangThaiDonHang != 8 ? "active_cthd_admin" : "")">
+                        <span class="icon_cthd_admin"> <i class="fa fa-check"></i> </span>
+                        <span class="text_cthd_admin">Đã xác nhận</span>
+                    </div>
+                }
+                <div class="step_cthd_admin @(Model.TrangThaiDonHang >= 3 && Model.TrangThaiDonHang != 7 && Model.TrangThaiDonHang != 8 ? "active_cthd_admin" : "")"> <span class="icon_cthd_admin"> <i class="fa fa-box"></i> </span> <span class="text_cthd_admin">Đang chuẩn bị</span> </div>
+                <div class="step_cthd_admin @(Model.TrangThaiDonHang >= 4 && Model.TrangThaiDonHang != 7 && Model.TrangThaiDonHang != 8 ? "active_cthd_admin" : "")"> <span class="icon_cthd_admin"> <i class="fa fa-truck"></i> </span> <span class="text_cthd_admin">Chờ nhận hàng</span> </div>
+                <div class="step_cthd_admin @(Model.TrangThaiDonHang >= 5 && Model.TrangThaiDonHang != 7 && Model.TrangThaiDonHang != 8 ? "active_cthd_admin" : "")"> <span class="icon_cthd_admin"> <i class="fa fa-star"></i> </span> <span class="text_cthd_admin">Hoàn thành</span> </div>
+
+                @if (Model.TrangThaiDonHang == 6)
+                {
+                    // Kiểm tra nếu là đơn VNPAY đã hủy thì hiển thị thêm chữ "Hoàn tiền"
+                    var huyText = (Model.PhuongThucThanhToan == "VnPay") ? "Đã hủy & Hoàn tiền" : "Đã hủy";
+                    <div class="step_cthd_admin active_cthd_admin" style="color: red;"> <span class="icon_cthd_admin"> <i class="fa fa-times"></i> </span> <span class="text_cthd_admin">@huyText</span> </div>
+                }
+                @if (Model.TrangThaiDonHang == 8)
+                {
+                    <div class="step_cthd_admin active_cthd_admin" style="color: orange;"> <span class="icon_cthd_admin"> <i class="fa fa-question-circle"></i> </span> <span class="text_cthd_admin">Yêu cầu hủy</span> </div>
+                }
+            </div>
+            @if (Model.TrangThaiDonHang == 6 && !string.IsNullOrEmpty(Model.LyDoHuy))
+            {
+                <div class="alert alert-info mt-3">
+                    <strong>Lý do hủy (do khách hàng hoặc admin cung cấp):</strong>
+                    <p class="mb-0 fst-italic">"@Model.LyDoHuy"</p>
+                </div>
+            }
+            <hr />
+            <div class="buttons_cthd_admin">
+                @if (Model.TrangThaiDonHang < 5 || Model.TrangThaiDonHang == 7) // Thêm điều kiện "|| Model.TrangThaiDonHang == 7"
+                {
+                    <form asp-action="CapNhatTrangThai" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.MaDonHang" />
+                        <button type="submit" class="btn btn-primary"><i class="far fa-check-circle"></i> @GetNextStatusText(Model.TrangThaiDonHang)</button>
+                    </form>
+                }
+
+                <!-- ===== VÀ SỬA CẢ ĐIỀU KIỆN IF CHO NÚT HỦY ===== -->
+                @if (Model.TrangThaiDonHang < 5 || Model.TrangThaiDonHang == 7) // Thêm điều kiện "|| Model.TrangThaiDonHang == 7"
+                {
+                    <button type="button" class="btn btn-danger" onclick="openCancelModal(@Model.MaDonHang)">Hủy đơn hàng</button>
+                }
+
+                <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form id="cancelOrderForm" method="post" action="/Admin/DanhSachDonHang/HuyDonHang" onsubmit="return validateAdminCancel()">
+                                @Html.AntiForgeryToken()
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">🛑 Xác nhận hủy đơn hàng</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" id="cancelOrderId" name="id" />
+                                    <input type="hidden" id="adminLyDoFinal" name="lyDoHuy" />
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Lý do hủy:</label>
+                                        <select class="form-select" id="adminReasonSelect" onchange="handleAdminReason(this)">
+                                            <option value="">-- Chọn lý do --</option>
+                                            <option value="Hết hàng trong kho">Hết hàng trong kho</option>
+                                            <option value="Không liên lạc được với khách hàng">Không liên lạc được với khách hàng</option>
+                                            <option value="Khách hàng yêu cầu hủy">Khách hàng yêu cầu hủy</option>
+                                            <option value="Địa chỉ giao hàng không hợp lệ">Địa chỉ giao hàng không hợp lệ</option>
+                                            <option value="Sản phẩm bị lỗi/hỏng">Sản phẩm bị lỗi/hỏng</option>
+                                            <option value="Khác">Lý do khác...</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3" id="divAdminReasonOther" style="display:none;">
+                                        <textarea class="form-control" id="adminReasonOther" rows="2"
+                                                  placeholder="Nhập lý do cụ thể..."
+                                                  oninput="document.getElementById('adminLyDoFinal').value = this.value"></textarea>
+                                    </div>
+                                    <hr />
+
+                                    <!-- ======================================================= -->
+                                    <!-- THÊM CHECKBOX HOÀN KHO TẠI ĐÂY -->
+                                    <!-- ======================================================= -->
+                                    <div class="form-check mb-3 p-3 bg-light border rounded">
+                                        <input class="form-check-input" type="checkbox" name="hoanKho" id="chkHoanKho" value="true" checked>
+                                        <label class="form-check-label fw-bold text-primary" for="chkHoanKho">
+                                            <i class="fas fa-boxes"></i> Hoàn sản phẩm vào kho?
+                                        </label>
+                                        <div class="form-text text-dark">
+                                            <small>
+                                                - <strong>Tích chọn:</strong> Hàng còn tốt, cộng lại số lượng vào kho.<br />
+                                                - <strong>Bỏ chọn:</strong> Hàng hỏng/mất/vỡ (Không cộng kho).
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <!-- LOGIC HIỂN THỊ DỰA TRÊN LOẠI ĐƠN -->
+                                    @if (Model.PhuongThucThanhToan == "VnPay" && Model.TrangThaiThanhToan == 1)
+                                    {
+                                        <!-- 1. ĐƠN VNPAY ĐÃ THANH TOÁN -->
+                                        <div class="alert alert-info">
+                                            <strong><i class="fas fa-credit-card"></i> Đơn VNPAY đã thanh toán:</strong><br />
+                                            Tổng tiền: <strong>@Model.TongTien.ToString("N0") đ</strong> (Ship: @((Model.PhiVanChuyen ?? 0).ToString("N0")) đ)
+                                        </div>
+
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="hoanShip" id="vnpHoanShip" value="true" checked>
+                                            <label class="form-check-label" for="vnpHoanShip">
+                                                <strong>Hoàn cả tiền Ship?</strong> (Mặc định hoàn tất cả)
+                                            </label>
+                                            <div class="form-text text-muted">
+                                                - Tích chọn: Hoàn 100% tiền (Lỗi do Shop).<br />
+                                                - Bỏ tích: Giữ lại tiền ship, chỉ hoàn tiền hàng (Lỗi do Khách).
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <!-- 2. ĐƠN COD HOẶC VNPAY CHƯA THANH TOÁN -->
+                                        <div class="alert alert-warning">
+                                            <strong><i class="fas fa-truck"></i> Đơn COD / Chưa thanh toán:</strong><br />
+                                            Khách chưa trả tiền, nhưng Shop có thể đã mất phí vận chuyển/đóng gói.
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Chi phí phát sinh (Nếu có):</label>
+                                            <input type="number" name="phiPhatSinh" class="form-control" placeholder="Nhập số tiền shop bị lỗ (VD: 30000)...">
+                                            <div class="form-text">
+                                                Nhập số tiền shop phải chịu (VD: Phí ship chiều đi, phí hoàn hàng...).<br />
+                                                Hệ thống sẽ tạo <strong>Phiếu Chi</strong> để ghi nhận khoản lỗ này.
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                    <button type="submit" class="btn btn-danger">Xác nhận Hủy</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+                @if (Model.TrangThaiDonHang == 8)
+                {  @if (!string.IsNullOrEmpty(Model.LyDoHuy))
+                    {
+                        <div class="alert alert-warning mb-3">
+                            <strong>Lý do khách hàng yêu cầu hủy:</strong>
+                            <p class="mb-0 fst-italic">"@Model.LyDoHuy"</p>
+                        </div>
+                    }
+                    <form asp-controller="DanhSachDonHang" asp-action="DuyetHuyVaHoanTien" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.MaDonHang" />
+                        <button type="submit" class="btn btn-success" onclick="return confirm('Bạn có chắc chắn muốn DUYỆT HỦY và HOÀN TIỀN cho đơn hàng này không? Hành động này không thể hoàn tác.');"><i class="fas fa-check-double"></i> DUYỆT HỦY & HOÀN TIỀN</button>
+                    </form>
+                    <button type="button" class="btn btn-outline-danger" onclick="openRefuseModal(@Model.MaDonHang)">
+                        <i class="fas fa-ban"></i> TỪ CHỐI HỦY
+                    </button>
+                }
+            </div>
+
+            <div class="table-responsive table-responsive_cthd_admin">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Tổng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.DonHangChiTiets)
+                        {
+                            <tr>
+                                <td>
+                                    @{
+                                        
+                                        string imagePath = "~/img/placeholder.jpg";
+
+                                        if (!string.IsNullOrEmpty(item.HinhAnh_Luu))
+                                        {
+                                            imagePath = $"~/images/{item.HinhAnh_Luu}";
+                                        }
+                                        else if (!string.IsNullOrEmpty(item.SanPhamChiTiet?.HinhAnh))
+                                        {
+                                            imagePath = $"~/images/{item.SanPhamChiTiet.HinhAnh}";
+                                        }
+                                        else if (!string.IsNullOrEmpty(item.SanPhamChiTiet?.SanPham?.AnhSanPham))
+                                        {
+                                            imagePath = $"~/images/{item.SanPhamChiTiet.SanPham.AnhSanPham}";
+                                        }
+                                    }
+
+                                    <img src="@Url.Content(imagePath)"
+                                         class="img-fluid me-5 rounded-circle img-sm_cthd_admin" alt="Ảnh sản phẩm" />
+                                </td>
+                                <td>
+                                    <!-- HIỂN THỊ TÊN SẢN PHẨM -->
+                                    <!-- Ưu tiên TenSanPham_Luu, nếu null thì lấy từ bảng liên kết, nếu null tiếp thì báo lỗi -->
+                                    <p class="fw-bold mb-1">
+                                        @(item.TenSanPham_Luu ?? item.SanPhamChiTiet?.SanPham?.TenSanPham ?? "Sản phẩm đã ngừng KD/Xóa")
+                                    </p>
+
+                                    <!-- HIỂN THỊ MÀU VÀ SIZE -->
+                                    <small class="text-muted">
+                                        Màu: @(item.TenMau_Luu ?? item.SanPhamChiTiet?.MauSac?.TenMau ?? "N/A"),
+                                        Size: @(item.TenSize_Luu ?? item.SanPhamChiTiet?.Size?.TenSize ?? "N/A")
+                                    </small>
+                                </td>
+                                <td>
+                                    <!-- Giá này đã được lưu cứng trong bảng DonHangChiTiet rồi nên không cần sửa -->
+                                    <p>@item.DonGia.ToString("N0") ₫</p>
+                                </td>
+                                <td>
+                                    <p>@item.SoLuong</p>
+                                </td>
+                                <td>@((item.DonGia * item.SoLuong).ToString("N0")) ₫</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <hr />
+            <div class="row mt-3">
+                <div class="col">
+                    <!-- Timeline Wrapper -->
+                    <div class="timeline-wrapper_cthd_admin">
+                        <ol class="c-timeline_cthd_admin">
+                            <!-- Phần này bạn có thể thêm logic để ghi lại lịch sử thay đổi trạng thái sau -->
+                            <style>
+                                /* ===== Timeline đẹp & hiện đại ===== */
+                                .timeline-box {
+                                    background: #fff;
+                                    border-radius: 15px;
+                                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                                    padding: 25px 30px;
+                                    margin-top: 20px;
+                                    border-left: 5px solid #0d6efd;
+                                    transition: all 0.3s ease;
+                                }
+
+                                    .timeline-box:hover {
+                                        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+                                        transform: translateY(-2px);
+                                    }
+
+                                .timeline-header {
+                                    font-size: 1.3rem;
+                                    font-weight: 700;
+                                    color: #0d6efd;
+                                    margin-bottom: 15px;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                }
+
+                                    .timeline-header i {
+                                        font-size: 1.4rem;
+                                    }
+
+                                .timeline-content {
+                                    position: relative;
+                                    padding-left: 25px;
+                                    border-left: 2px dashed #0d6efd;
+                                }
+
+                                .timeline-item {
+                                    position: relative;
+                                    margin-bottom: 15px;
+                                }
+
+                                    .timeline-item::before {
+                                        content: "";
+                                        position: absolute;
+                                        left: -10px;
+                                        top: 5px;
+                                        width: 14px;
+                                        height: 14px;
+                                        background: #0d6efd;
+                                        border-radius: 50%;
+                                        box-shadow: 0 0 0 3px #eaf2ff;
+                                    }
+
+                                .timeline-text {
+                                    background: #f8f9fa;
+                                    border-radius: 10px;
+                                    padding: 10px 15px;
+                                    border: 1px solid #e0e0e0;
+                                    font-size: 0.95rem;
+                                    color: #333;
+                                    white-space: pre-line;
+                                    transition: background 0.3s;
+                                }
+
+                                    .timeline-text:hover {
+                                        background: #eef5ff;
+                                    }
+
+                                .timeline-empty {
+                                    font-style: italic;
+                                    color: #888;
+                                }
+                            </style>
+
+                            <li class="c-timeline__item_cthd_admin">
+                                <div class="timeline-box">
+                                    <h5 class="timeline-header"><i class="bi bi-clock-history"></i> Lịch sử trạng thái đơn hàng</h5>
+                                    @if (!string.IsNullOrEmpty(Model.LichSuTrangThai))
+                                    {
+                                        <div class="timeline-content">
+                                            @{
+                                                var lines = Model.LichSuTrangThai.Split('\n');
+                                                foreach (var line in lines)
+                                                {
+                                                    <div class="timeline-item">
+                                                        <div class="timeline-text">@line</div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="timeline-empty">Chưa có lịch sử trạng thái nào.</div>
+                                    }
+                                </div>
+                            </li>
+
+
+                        </ol>
+                    </div>
+                </div>
+                <div class="col-4 justify-content-end">
+                    <div class="col-sm-8 col-md-7 col-lg-6 col-xl-11">
+                        <div class="bg-light rounded">
+                            <div class="p-4">
+                                <h3 class="display-7 mb-4">Thông tin thanh toán</h3>
+
+                                @{
+                                    // ==================================================================
+                                    // LOGIC TÍNH TOÁN CHUẨN (Khớp với bên Khách hàng)
+                                    // ==================================================================
+
+                                    // 1. TẠM TÍNH: Tổng tiền hàng (Số lượng * Đơn giá)
+                                    // Không bao gồm Ship, chưa trừ Voucher
+                                    decimal tamTinhAdmin = Model.DonHangChiTiets.Sum(ct => ct.SoLuong * ct.DonGia);
+
+                                    // 2. GIẢM GIÁ: Lấy từ DB
+                                    decimal giamGiaAdmin = Model.SoTienDuocGiam ?? 0;
+
+                                    // 3. PHÍ VẬN CHUYỂN: Lấy từ DB
+                                    decimal phiShipAdmin = Model.PhiVanChuyen ?? 0;
+
+                                    // 4. TỔNG CỘNG: Số tiền thực tế khách phải trả (Lấy từ DB)
+                                    decimal tongCongAdmin = Model.TongTien;
+                                }
+
+                                <div class="d-flex justify-content-between mb-4">
+                                    <h6 class="mb-0 me-4">Tạm tính:</h6>
+                                    <p class="mb-0">@tamTinhAdmin.ToString("N0") ₫</p>
+                                </div>
+
+                                <div class="d-flex justify-content-between mb-4">
+                                    <h6 class="mb-0 me-4 text-danger">Khuyến mãi (Voucher):</h6>
+                                    <p class="mb-0 text-danger">- @giamGiaAdmin.ToString("N0") ₫</p>
+                                </div>
+
+                                <div class="d-flex justify-content-between mb-4">
+                                    <h6 class="mb-0 me-4">Phí vận chuyển:</h6>
+                                    <p class="mb-0">+ @phiShipAdmin.ToString("N0") ₫</p>
+                                </div>
+                            </div>
+
+                            <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+                                <h5 class="mb-0 ps-4 me-4">Tổng cộng:</h5>
+                                <p class="mb-0 pe-4 fw-bold text-primary">@tongCongAdmin.ToString("N0") ₫</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a asp-action="Index" class="btn-warning_cthd_admin btn" data-abc="true">
+                <i class="fa fa-chevron-left"></i> Quay lại
+            </a>
+        </div>
+    </article>
+</div>
+<div class="modal fade" id="refuseCancelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="TuChoiHuyDonHang" method="post" onsubmit="return validateRefuse()">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Từ chối yêu cầu hủy đơn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="refuseOrderId" name="id" />
+                    <input type="hidden" id="finalRefuseReason" name="lyDoTuChoi" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Lý do từ chối hoàn tiền:</label>
+                        <select class="form-select" id="refuseReasonSelect" onchange="handleRefuseReasonChange(this)">
+                            <option value="">-- Chọn lý do từ chối --</option>
+                            <option value="Hàng đã giao cho đơn vị vận chuyển">Hàng đã giao cho đơn vị vận chuyển</option>
+                            <option value="Sản phẩm đã được đóng gói và đang chờ lấy hàng">Sản phẩm đã được đóng gói và đang chờ lấy hàng</option>
+                            <option value="Đã quá thời gian quy định để yêu cầu hủy đơn">Đã quá thời gian quy định để yêu cầu hủy đơn</option>
+                            <option value="Yêu cầu không hợp lệ theo chính sách của cửa hàng">Yêu cầu không hợp lệ</option>
+                            <option value="Khác">Lý do khác...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="divRefuseReasonOther" style="display:none;">
+                        <label class="form-label fw-bold">Chi tiết lý do:</label>
+                        <textarea class="form-control" id="refuseReasonOther" rows="3"
+                                  placeholder="Nhập lý do cụ thể tại đây..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-danger">Xác nhận từ chối</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@functions {
+    // Hàm helper để hiển thị text phù hợp cho nút "Xác nhận"
+    public string GetNextStatusText(int currentStatus)
+    {
+        switch (currentStatus)
+        {
+            case 1: return "XÁC NHẬN ĐƠN HÀNG";
+            case 7: return "BẮT ĐẦU CHUẨN BỊ";
+            case 2: return "BẮT ĐẦU CHUẨN BỊ";
+            case 3: return "BÀN GIAO VẬN CHUYỂN";
+            case 4: return "XÁC NHẬN HOÀN THÀNH";
+            default: return "XÁC NHẬN";
+        }
+    }
+}
+@section Scripts {
+    <script>
+          function openCancelModal(id) {
+            document.getElementById("cancelOrderId").value = id;
+            // Reset form khi mở lại
+            document.getElementById("adminReasonSelect").value = "";
+            document.getElementById("divAdminReasonOther").style.display = "none";
+            document.getElementById("adminLyDoFinal").value = "";
+
+            const modal = new bootstrap.Modal(document.getElementById('cancelOrderModal'));
+            modal.show();
+        }
+
+        // Hàm xử lý ẩn hiện lý do
+        function handleAdminReason(select) {
+            var otherDiv = document.getElementById("divAdminReasonOther");
+            var otherTxt = document.getElementById("adminReasonOther");
+            var finalInput = document.getElementById("adminLyDoFinal");
+
+            if (select.value === "Khác") {
+                otherDiv.style.display = "block";
+                otherTxt.value = "";
+                finalInput.value = "";
+                otherTxt.focus();
+            } else {
+                otherDiv.style.display = "none";
+                finalInput.value = select.value;
+            }
+        }
+
+        // Validate trước khi submit
+        function validateAdminCancel() {
+            var reason = document.getElementById("adminLyDoFinal").value;
+            var select = document.getElementById("adminReasonSelect").value;
+
+            if (!select) {
+                alert("Vui lòng chọn lý do hủy!");
+                return false;
+            }
+            if (select === "Khác" && !reason.trim()) {
+                alert("Vui lòng nhập lý do cụ thể!");
+                return false;
+            }
+            return true;
+        }
+                     function openRefuseModal(id) {
+            document.getElementById("refuseOrderId").value = id;
+            // Reset modal
+            document.getElementById("refuseReasonSelect").value = "";
+            document.getElementById("divRefuseReasonOther").style.display = "none";
+            document.getElementById("refuseReasonOther").value = "";
+
+            var myModal = new bootstrap.Modal(document.getElementById('refuseCancelModal'));
+            myModal.show();
+        }
+
+        function handleRefuseReasonChange(select) {
+            var otherDiv = document.getElementById("divRefuseReasonOther");
+            if (select.value === "Khác") {
+                otherDiv.style.display = "block";
+            } else {
+                otherDiv.style.display = "none";
+            }
+        }
+
+        function validateRefuse() {
+            var select = document.getElementById("refuseReasonSelect");
+            var otherTxt = document.getElementById("refuseReasonOther");
+            var finalInput = document.getElementById("finalRefuseReason");
+
+            if (!select.value) {
+                alert("Vui lòng chọn lý do từ chối!");
+                return false;
+            }
+
+            if (select.value === "Khác") {
+                if (!otherTxt.value.trim()) {
+                    alert("Vui lòng nhập lý do cụ thể!");
+                    return false;
+                }
+                finalInput.value = otherTxt.value;
+            } else {
+                finalInput.value = select.value;
+            }
+            return true;
+        }
+    </script>
+
+
+}

@@ -1,0 +1,46 @@
+﻿@model DATNN.Models.Size
+
+@{
+    ViewData["Title"] = "Thêm Size";
+}
+
+<h2 class="mb-4 text-center">Thêm Size mới</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow rounded-3">
+            <div class="card-body">
+
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="TenSize" class="form-label">Tên Size</label>
+                        <input asp-for="TenSize" class="form-control" placeholder="Ví dụ: S, M, L, XL..." />
+                        <span asp-validation-for="TenSize" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MoTa" class="form-label">Mô tả</label>
+                        <textarea asp-for="MoTa" class="form-control" rows="3" placeholder="Nhập mô tả nếu cần..."></textarea>
+                        <span asp-validation-for="MoTa" class="text-danger"></span>
+                    </div>
+
+                
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary px-4">Lưu</button>
+                        <a asp-action="Index" class="btn btn-secondary px-4">Trở lại</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

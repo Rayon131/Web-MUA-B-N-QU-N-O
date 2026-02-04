@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DATNN</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DATNN.styles.css" asp-append-version="true" />
+</head>
+<body>
+
+    <div class="container-ad">
+        <aside class="sidebar-ad hidden-ad" id="sidebar">
+            <button class="toggle-btn-ad" onclick="toggleSidebar()">☰</button>
+            <h2 class="logo-ad">ADMIN</h2>
+            <ul class="menu-ad">
+                <li><a href="/Dashboard" style="color: white; text-decoration: none;">📊 Dashboard</a></li>
+                <li><a href="/Users" style="color: white; text-decoration: none;">👥 Quản lý người dùng</a></li>
+                <li><a href="/Products" style="color: white; text-decoration: none;">📦 Sản phẩm</a></li>
+                <li><a href="/Orders" style="color: white; text-decoration: none;">🧾 Đơn hàng</a></li>
+            </ul>
+        </aside>
+
+        <main role="main" class="main-content-ad pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container-ad {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar-ad {
+            background-color: #2c3e50;
+            color: white;
+            transition: width 0.3s;
+            overflow: hidden;
+            padding-top: 10px;
+        }
+
+            .sidebar-ad.hidden-ad {
+                width: 60px;
+            }
+
+            .sidebar-ad:not(.hidden-ad) {
+                width: 250px;
+            }
+
+            .sidebar-ad.hidden-ad .logo-ad,
+            .sidebar-ad.hidden-ad .menu-ad {
+                display: none;
+            }
+
+        .toggle-btn-ad {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .logo-ad {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        .menu-ad {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .menu-ad li {
+                padding: 15px 20px;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+
+                .menu-ad li:hover {
+                    background-color: #34495e;
+                }
+
+        .main-content-ad {
+            flex: 1;
+            padding: 30px;
+            background-color: #ecf0f1;
+        }
+    </style>
+
+    <script>
+        function toggleSidebar() {
+          const sidebar = document.getElementById('sidebar');
+          sidebar.classList.toggle('hidden-ad');
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,32 @@
+﻿.status-pending_dsdh,
+.status-waiting-payment_dsdh,
+.status-paid_dsdh,
+.status-cancelled_dsdh,
+.status-unknown_dsdh {
+    padding: 5px 10px;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 500;
+}
+
+.status-pending_dsdh {
+    background-color: #ffc107; /* Vàng */
+    color: #000;
+}
+
+.status-waiting-payment_dsdh {
+    background-color: #0dcaf0; /* Xanh dương nhạt */
+    color: #000;
+}
+
+.status-paid_dsdh {
+    background-color: #198754; /* Xanh lá */
+}
+
+.status-cancelled_dsdh {
+    background-color: #dc3545; /* Đỏ */
+}
+
+.status-unknown_dsdh {
+    background-color: #6c757d; /* Xám */
+}

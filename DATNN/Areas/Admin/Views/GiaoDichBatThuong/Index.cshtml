@@ -1,0 +1,380 @@
+﻿@model IEnumerable<DATNN.ViewModel.AbnormalTransactionViewModel>
+
+<style>
+    /* Chuyển nền toàn trang sang trắng */
+    .light-page {
+        background-color: #ffffff;
+        color: #212529; /* Màu chữ tối */
+        min-height: 100vh;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .header-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 25px;
+        border-left: 4px solid #007bff; /* Đổi sang màu xanh dương cho hiện đại */
+        padding-left: 15px;
+        color: #212529;
+    }
+
+    .filter-section {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        background-color: #f8f9fa; /* Nền xám nhạt cho khu vực lọc */
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+
+        /* Input và Select trong chế độ sáng */
+        .filter-section input, .filter-section select {
+            background: #ffffff;
+            border: 1px solid #ced4da;
+            color: #495057;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+
+    .btn-loc {
+        background: #007bff;
+        color: #fff;
+        border: none;
+        padding: 6px 20px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background 0.2s;
+    }
+
+        .btn-loc:hover {
+            background: #0056b3;
+            color: #fff;
+        }
+
+    /* Table phong cách sáng */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+        .custom-table th {
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            background-color: #f1f3f5;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .custom-table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+
+        .custom-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+    /* Link hành động */
+    .action-link {
+        color: #007bff; /* Màu xanh dương cho link */
+        text-decoration: none;
+        margin-right: 15px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+        .action-link:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+    .footer-note {
+        margin-top: 40px;
+        border-top: 1px dashed #dee2e6;
+        padding-top: 15px;
+        color: #6c757d;
+        font-size: 12px;
+        font-style: italic;
+    }
+</style>
+
+<div class="light-page">
+    <div class="header-title">Theo dõi giao dịch</div>
+
+    <form method="get" id="filterForm" class="filter-section">
+        <span style="margin-right: 5px; font-weight: 500;">Trạng thái:</span>
+        <select name="statusFilter">
+            <option value="0" selected="@(ViewBag.StatusFilter == 0)">-- Tất cả --</option>
+            <option value="1" selected="@(ViewBag.StatusFilter == 1)">Hoạt động</option>
+            <option value="2" selected="@(ViewBag.StatusFilter == 2)">Bị cấm</option>
+        </select>
+
+        <span style="margin-left: 10px; font-weight: 500;">Từ ngày:</span>
+        <input type="date" name="startDate" id="startDate" value="@ViewBag.StartDate">
+
+        <span style="margin-left: 10px; font-weight: 500;">Đến ngày:</span>
+        <input type="date" name="endDate" id="endDate" value="@ViewBag.EndDate">
+        <button type="submit" class="btn-loc">Lọc dữ liệu</button>
+    </form>
+
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Tên khách hàng</th>
+                    <th>Đơn đã đặt (Chưa hoàn thành)</th>
+                    <th>Đơn đã hủy</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@item.TenKhachHang </td>
+                            <td><span class="badge bg-light text-dark border">@item.SoDonDaDat</span></td>
+                            <td><span class="badge bg-danger-subtle text-danger border border-danger-subtle">@item.SoDonDaHuy</span></td>
+                            <td>
+                                @if (item.TrangThaiHienTai != 2)
+                                {
+                                    <span class="action-link text-danger" onclick="openBanModal(@item.MaKhachHang)"> Cấm </span>
+                                }
+                                else
+                                {
+                                    <span class="action-link" style="color:#fd7e14;"
+                                          onclick="openUnbanModal(@item.MaKhachHang, '@item.TenKhachHang', '@item.ResetTokenLuuTru')">
+                                        Hủy cấm
+                                    </span>
+                                }
+                                <span class="action-link" onclick="openOrderDetailsModal(@item.MaKhachHang, '@item.TenKhachHang')">Xem chi tiết</span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding: 50px; color: #6c757d;">Không có dữ liệu trong khoảng thời gian này.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Cấm -->
+<div class="modal fade" id="banModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CamKhachHang" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title text-dark">Cấm khách hàng thanh toán COD</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-dark">
+                    <input type="hidden" name="id" id="banUserId" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Lý do cấm</label>
+                        <select class="form-select" name="lyDo" id="reasonSelect">
+                            <option value="Hủy đơn liên tục">Hủy đơn liên tục</option>
+                            <option value="Khách hàng không tin cậy">Khách hàng không tin cậy</option>
+                            <option value="Địa chỉ giả mạo">Địa chỉ giả mạo</option>
+                            <option value="Khác">Khác...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="otherReasonSection" style="display: none;">
+                        <label class="form-label fw-bold">Nhập lý do chi tiết</label>
+                        <textarea class="form-control" name="lyDoChiTiet" rows="2" placeholder="Nhập lý do chi tiết tại đây..."></textarea>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="isPermanent" id="chkPermanent" value="true">
+                        <label class="form-check-label text-danger fw-bold" for="chkPermanent">Cấm vĩnh viễn</label>
+                    </div>
+
+                    <div class="mb-3" id="durationSection">
+                        <label class="form-label fw-bold">Thời gian cấm (Số ngày)</label>
+                        <input type="number" name="soNgayCam" value="30" min="1" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"> Đóng </button>
+                    <button type="submit" class="btn btn-danger btn-sm px-4"> Xác nhận cấm </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Hủy Cấm -->
+<div class="modal fade" id="unbanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="HuyCam" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title text-dark">Gỡ bỏ lệnh cấm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-dark">
+                    <input type="hidden" name="id" id="unbanUserId" />
+                    <p>Xác nhận hủy lệnh cấm cho khách hàng:</p>
+                    <h6 id="unbanCustomerName" class="text-primary fw-bold mb-3"></h6>
+
+                    <div class="p-3 bg-light rounded border">
+                        <small class="text-muted d-block mb-1">Thông tin cấm hiện tại:</small>
+                        <div id="currentBanInfo"></div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"> Đóng </button>
+                    <button type="submit" class="btn btn-warning btn-sm px-4 fw-bold"> Xác nhận gỡ cấm </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi Tiết Đơn Hàng -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Chi tiết đơn COD: <span id="detailCustomerName" class="fw-bold"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Thời gian</th>
+                                <th>Sản phẩm</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderDetailsBody" class="text-dark">
+                            <!-- AJAX content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- JS CHO MODAL CẤM ---
+    function openBanModal(id) {
+        document.getElementById('banUserId').value = id;
+        document.getElementById('reasonSelect').value = "Hủy đơn liên tục";
+        document.getElementById('otherReasonSection').style.display = 'none';
+        document.getElementById('chkPermanent').checked = false;
+        document.getElementById('durationSection').style.display = 'block';
+        new bootstrap.Modal(document.getElementById('banModal')).show();
+    }
+
+    document.getElementById('reasonSelect').addEventListener('change', function () {
+        const otherSection = document.getElementById('otherReasonSection');
+        if (this.value === 'Khác') {
+            otherSection.style.display = 'block';
+            otherSection.querySelector('textarea').focus();
+        } else {
+            otherSection.style.display = 'none';
+        }
+    });
+
+    document.getElementById('chkPermanent').addEventListener('change', function () {
+        document.getElementById('durationSection').style.display = this.checked ? 'none' : 'block';
+    });
+
+    // --- JS CHO MODAL HỦY CẤM ---
+    function openUnbanModal(id, name, banData) {
+        document.getElementById('unbanUserId').value = id;
+        document.getElementById('unbanCustomerName').innerText = name;
+
+        let infoHtml = "";
+        if (banData && banData.includes('|')) {
+            const parts = banData.split('|');
+            const reason = parts[0];
+            const dateStr = parts[1];
+            let dateDisplay = dateStr === "9999-12-31" ? "Vĩnh viễn" : dateStr;
+
+            infoHtml = `<p class="mb-1"><strong>Lý do:</strong> ${reason}</p>
+                        <p class="mb-0"><strong>Hạn đến:</strong> <span class="badge bg-warning text-dark">${dateDisplay}</span></p>`;
+        } else {
+            infoHtml = `<p class="text-muted italic">Không có dữ liệu cấm.</p>`;
+        }
+        document.getElementById('currentBanInfo').innerHTML = infoHtml;
+        new bootstrap.Modal(document.getElementById('unbanModal')).show();
+    }
+
+    // --- JS CHO CHI TIẾT ĐƠN HÀNG ---
+    function getStatusName(status) {
+        switch (status) {
+            case 1: return '<span class="badge bg-secondary">Chờ xác nhận</span>';
+            case 2: return '<span class="badge bg-info text-dark">Đã xác nhận</span>';
+            case 3: return '<span class="badge bg-primary">Đang chuẩn bị</span>';
+            case 4: return '<span class="badge bg-warning text-dark">Đang giao</span>';
+            case 6: return '<span class="badge bg-danger">Đã hủy</span>';
+            case 8: return '<span class="badge bg-dark">Yêu cầu hủy</span>';
+            default: return '<span class="badge bg-light text-dark">Khác</span>';
+        }
+    }
+
+    function openOrderDetailsModal(userId, userName) {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        document.getElementById('detailCustomerName').innerText = userName;
+        const tableBody = document.getElementById('orderDetailsBody');
+        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Đang tải...</td></tr>';
+
+        fetch(`/Admin/GiaoDichBatThuong/GetOrderDetails?userId=${userId}&startDate=${startDate}&endDate=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Không có đơn hàng nào.</td></tr>';
+                } else {
+                    tableBody.innerHTML = '';
+                    data.forEach(order => {
+                        let productsHtml = order.sanPhams.join('<br/>');
+                        let row = `
+                            <tr>
+                                <td class="fw-bold">#${order.maDonHang}</td>
+                                <td>${order.ngayTao}</td>
+                                <td style="font-size: 0.85rem;">${productsHtml}</td>
+                                <td class="fw-bold text-primary">${order.tongTien.toLocaleString('vi-VN')} ₫</td>
+                                <td>${getStatusName(order.trangThai)}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                }
+                new bootstrap.Modal(document.getElementById('orderDetailsModal')).show();
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+                alert('Không thể lấy chi tiết đơn hàng.');
+            });
+    }
+</script>

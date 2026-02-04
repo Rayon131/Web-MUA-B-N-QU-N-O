@@ -1,0 +1,548 @@
+﻿@model DATNN.ViewModel.DatHangViewModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
+    ViewData["Title"] = "Thanh Toán";
+    // === SỬA LỖI Ở ĐÂY: Lấy token ngay trong phần thân của View ===
+    var antiforgeryToken = Xsrf.GetAndStoreTokens(Context).RequestToken;
+}
+
+
+<!-- Page Header (giữ nguyên) -->
+<div class="container-fluid page-header py-5" style="margin-top: 100px;">
+    <h1 class="text-center text-white display-6">Thanh Toán</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-controller="GioHang" asp-action="Index">Giỏ hàng</a></li>
+        <li class="breadcrumb-item active text-white">Thanh Toán</li>
+    </ol>
+</div>
+
+<!-- Checkout Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <h1 class="mb-4">Hóa đơn thanh toán</h1>
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+        <form id="checkout-form" asp-controller="GioHang" asp-action="DatHang" method="post">
+            <input type="hidden" name="SelectedAddressId" id="SelectedAddressId" value="@ViewBag.SelectedAddressId" />
+
+            @Html.AntiForgeryToken()
+
+            @* Thêm các hidden field để gửi lại danh sách ID sản phẩm và mã KM *@
+            @if (Model.SelectedCartItemIds != null)
+            {
+                @foreach (var id in Model.SelectedCartItemIds)
+                {
+                    <input type="hidden" name="SelectedCartItemIds" value="@id" />
+                }
+            }
+            <input type="hidden" asp-for="TongTienHang" />
+            <input type="hidden" asp-for="PhiVanChuyen" />
+            <input type="hidden" asp-for="AppliedVoucherCode" />
+            <input type="hidden" asp-for="TienGiamGia" />
+            <input type="hidden" asp-for="TongThanhToan" />
+
+            <div class="row g-5">
+                <div class="col-md-12 col-lg-6 col-xl-7">
+                    <h4 class="mb-4">Thông tin giao hàng</h4>
+                    <div class="form-item">
+                        <label class="form-label my-3">Chọn địa chỉ đã lưu</label>
+                        <select id="address-selector" class="form-select">
+                            @if (Model.DanhSachDiaChi != null && Model.DanhSachDiaChi.Any())
+                            {
+                                foreach (var diaChi in Model.DanhSachDiaChi)
+                                {
+                                    var isSelected = (ViewBag.SelectedAddressId != null && ViewBag.SelectedAddressId == diaChi.Id);
+                                    <option value="@diaChi.Id" selected="@isSelected">
+                                        @diaChi.Ten - @($"{diaChi.ChiTietDiaChi}, {diaChi.Phuong}, {diaChi.Quan}, {diaChi.ThanhPho}")
+                                    </option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="">Bạn chưa có địa chỉ nào được lưu</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label my-3">Họ và tên người nhận<sup>*</sup></label>
+                        <input type="text" class="form-control" asp-for="HoTenNguoiNhan" required id="ho-ten-input" readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label my-3">Địa chỉ giao hàng<sup>*</sup></label>
+                        <input type="text" class="form-control" asp-for="DiaChiGiaoHang" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố" required id="dia-chi-input" readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                        @if (string.IsNullOrEmpty(Model.DiaChiGiaoHang))
+                        {
+                            <small class="text-danger">Bạn chưa thêm địa chỉ. Vui lòng điền đầy đủ thông tin giao hàng.</small>
+                        }
+                    </div>
+
+                    <div class="form-item">
+                        <label class="form-label my-3">Số điện thoại<sup>*</sup></label>
+                        <input type="tel" class="form-control" asp-for="SoDienThoaiNguoiNhan" required id="sdt-input" readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label my-3">Địa chỉ Email<sup>*</sup></label>
+                        <input type="email" class="form-control" asp-for="Email" required readonly style="background-color: #e9ecef; cursor: not-allowed;">
+                    </div>
+                    <div class="form-item mt-4">
+                        <label class="form-label my-3">Ghi chú đơn hàng</label>
+                        <textarea asp-for="GhiChu" class="form-control" spellcheck="false" cols="30" rows="5" placeholder="Ghi chú cho người bán (tùy chọn)"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-6 col-xl-5">
+                    <div class="table-responsive">
+                        <h4 class="mb-4">Đơn hàng của bạn</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Sản phẩm</th>
+                                    <th scope="col">Tên</th>
+                                    <th scope="col">Số lượng</th>
+                                    <th scope="col">Tổng tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var itemVM in Model.ItemsToPurchase)
+                                {
+                                    var item = itemVM.ChiTietGioHang;
+                                    <tr>
+                                        <th scope="row">
+                                            <div class="d-flex align-items-center mt-2">
+                                                <img src="@Url.Content(!string.IsNullOrEmpty(item.SanPhamChiTiet.HinhAnh) ? $"~/images/{item.SanPhamChiTiet.HinhAnh}" : $"~/images/{item.SanPhamChiTiet.SanPham.AnhSanPham}")"
+                                                     class="img-fluid rounded-circle" style="width: 60px; height: 60px;" alt="">
+                                            </div>
+                                        </th>
+                                        <td class="py-4">@item.SanPhamChiTiet.SanPham.TenSanPham <br /> <small>@item.SanPhamChiTiet.MauSac.TenMau, @item.SanPhamChiTiet.Size.TenSize</small> </td>
+                                        <td class="py-4">@item.SoLuong</td>
+                                        <td class="py-4">@((item.SoLuong * itemVM.GiaKhuyenMai).ToString("N0")) VNĐ</td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <th scope="row" colspan="3" class="border-bottom-0 text-dark py-3">
+                                        Tạm tính
+                                    </th>
+                                    <td class="py-3 border-bottom-0">@Model.TongTienHang.ToString("N0") VNĐ</td>
+                                </tr>
+                                @if (Model.TienGiamGia > 0)
+                                {
+                                    <tr class="table-light" id="discount-display-row" style="@(Model.TienGiamGia > 0 ? "display: table-row;" : "display: none;")">
+                                        <th scope="row" colspan="2" class="text-danger py-3">
+                                            Giảm giá <span id="voucher-code-display">@(!string.IsNullOrEmpty(Model.AppliedVoucherCode) ? $"({Model.AppliedVoucherCode})" : "")</span>
+                                        </th>
+                                        <td class="py-3 text-danger text-end" id="discount-amount-display">- @Model.TienGiamGia.ToString("N0") VNĐ</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <th scope="row" colspan="3" class="border-bottom-0 text-dark py-3">
+                                        Khoảng Cách
+                                    </th>
+                                    <!-- ✅ Thêm id="khoang-cach-display" -->
+                                    <td class="py-3 border-bottom-0"><span id="khoang-cach-display">@Model.KhoangCachGiaoHang</span> KM</td>
+                                </tr>
+                                <tr>
+                                <tr>
+                                    <th scope="row" colspan="3" class="border-bottom-0 text-dark py-3">
+                                        Phí vận chuyển
+                                    </th>
+                                    <td class="py-3 border-bottom-0">
+                                            @if (ViewBag.GiamGiaShip != null && (decimal)ViewBag.GiamGiaShip > 0)
+                                            {
+                                                // Tính lại phí gốc để hiển thị gạch ngang
+                                                var shipGoc = Model.PhiVanChuyen + (decimal)ViewBag.GiamGiaShip;
+
+                                            <div>
+                                                <span class="text-decoration-line-through text-muted me-2">@shipGoc.ToString("N0") VNĐ</span>
+                                                <span class="text-success fw-bold">Freeship</span>
+                                            </div>
+                                            <span id="phi-van-chuyen-display" class="fw-bold">@Model.PhiVanChuyen.ToString("N0")</span> <span>VNĐ</span>
+                                            }
+                                            else
+                                            {
+                                            <span id="phi-van-chuyen-display">@Model.PhiVanChuyen.ToString("N0")</span> <span>VNĐ</span>
+                                            }
+                                    </td>
+                                </tr>
+                                </tr>
+                                <tr>
+                                    <th scope="row" colspan="3" class="text-dark text-uppercase py-3">
+                                        Tổng tiền
+                                    </th>
+                                    <td class="py-3 text-end">
+                                        @* === SỬA LỖI QUAN TRỌNG Ở ĐÂY: Thêm ID cho thẻ <p> === *@
+                                        <p class="mb-0 text-dark fw-bold fs-5" id="final-total-display">@Model.TongThanhToan.ToString("N0") VNĐ</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row g-4 my-3">
+                        <h5 class="mb-3">Áp dụng mã giảm giá</h5>
+                        <div class="input-group">
+                            <select class="form-select" id="voucher-select-checkout" asp-for="AppliedVoucherCode">
+                                <option value="">-- Không áp dụng --</option>
+                                @foreach (var v in Model.AvailableVouchers)
+                                {
+                                    var conditionText = v.DieuKienDonHangToiThieu > 0 ? $" (Đơn từ {v.DieuKienDonHangToiThieu:N0} VNĐ)" : "";
+                                    <option value="@v.MaCode">@v.MaCode - Giảm @v.GiaTriGiamGia.ToString("N0")@(v.LoaiGiamGia == "PhanTram" ? "%" : " VNĐ")@conditionText</option>
+                                }
+                            </select>
+                            <button type="button" id="apply-voucher-checkout-btn" class="btn border-secondary text-primary">Áp dụng</button>
+                        </div>
+                    </div>
+                    <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
+                        <div class="col-12">
+                            <h5 class="mb-3">Phương thức thanh toán</h5>
+
+                            @if (ViewBag.IsBannedCOD == true)
+                            {
+                                <div class="alert alert-warning text-start" style="font-size: 14px;">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Tài khoản của bạn bị hạn chế phương thức <strong>COD</strong>.
+                                    Vui lòng thanh toán qua <strong>VNPay</strong> để tiếp tục mua hàng.
+                                </div>
+                            }
+
+                            <div class="form-check text-start my-3">
+                                @if (ViewBag.IsBannedCOD == true)
+                                {
+                                    <!-- Nếu bị cấm: Disable và không cho chọn -->
+                                    <input type="radio" class="form-check-input border-0" id="payment-cod"
+                                           name="PhuongThucThanhToan" value="COD" disabled>
+                                    <label class="form-check-label text-muted" for="payment-cod" style="text-decoration: line-through;">
+                                        Thanh toán khi nhận hàng (COD) - <span class="text-danger">Đang bị hạn chế</span>
+                                    </label>
+                                }
+                                else
+                                {
+                                    <!-- Bình thường: Cho phép chọn và mặc định chọn -->
+                                    <input type="radio" class="form-check-input bg-primary border-0" id="payment-cod"
+                                           name="PhuongThucThanhToan" value="COD" checked>
+                                    <label class="form-check-label" for="payment-cod">
+                                        Thanh toán khi nhận hàng (COD)
+                                    </label>
+                                }
+                            </div>
+
+                            <div class="form-check text-start my-3">
+                                <!-- Nếu bị cấm COD thì tự động tích chọn VNPay (checked) -->
+                                <input type="radio" class="form-check-input bg-primary border-0" id="payment-vnpay"
+                                       name="PhuongThucThanhToan" value="VnPay" @(ViewBag.IsBannedCOD == true ? "checked" : "")>
+                                <label class="form-check-label" for="payment-vnpay">Chuyển khoản qua VNPay</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 text-center align-items-center justify-content-center pt-4">
+                        <button type="submit" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Đặt Hàng</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const antiForgeryToken = '@antiforgeryToken';
+
+            // Lấy các element trên trang
+            const applyBtn = document.getElementById('apply-voucher-checkout-btn');
+            const voucherSelect = document.getElementById('voucher-select-checkout');
+
+            // Các thẻ input ẩn cần được cập nhật
+            const hiddenVoucherInput = document.querySelector('input[name="AppliedVoucherCode"]');
+            const hiddenDiscountInput = document.querySelector('input[name="TienGiamGia"]');
+            const hiddenFinalTotalInput = document.querySelector('input[name="TongThanhToan"]');
+
+            // Lấy các giá trị ban đầu từ Model
+            const subtotal = parseFloat('@Model.TongTienHang.ToString(System.Globalization.CultureInfo.InvariantCulture)');
+            const shippingFee = parseFloat('@Model.PhiVanChuyen.ToString(System.Globalization.CultureInfo.InvariantCulture)');
+
+            // Các element hiển thị trên giao diện
+            const discountRow = document.getElementById('discount-display-row');
+            const discountAmountEl = document.getElementById('discount-amount-display');
+            const voucherCodeEl = document.getElementById('voucher-code-display');
+            const finalTotalEl = document.getElementById('final-total-display');
+
+                   function updateTotals(discountAmount = 0, appliedCode = '') {
+            // SỬA LỖI: Đọc lại giá trị phí vận chuyển MỚI NHẤT từ input ẩn mỗi khi hàm được gọi
+            const currentShippingFee = parseFloat(document.querySelector('input[name="PhiVanChuyen"]').value) || 0;
+
+            // Sử dụng giá trị phí vận chuyển mới nhất để tính toán
+            const finalTotal = subtotal - discountAmount + currentShippingFee;
+
+            // 1. Cập nhật các input ẩn để form gửi đi cho đúng
+            hiddenVoucherInput.value = appliedCode;
+            hiddenDiscountInput.value = discountAmount;
+            hiddenFinalTotalInput.value = finalTotal;
+
+            // 2. Cập nhật giao diện cho người dùng thấy
+            if (discountAmount > 0) {
+                if (discountAmountEl) discountAmountEl.textContent = `- ${discountAmount.toLocaleString('vi-VN')} VNĐ`;
+                if (voucherCodeEl) voucherCodeEl.textContent = `(${appliedCode})`;
+                if (discountRow) discountRow.style.display = 'table-row';
+            } else {
+                if (discountRow) discountRow.style.display = 'none';
+            }
+
+            if (finalTotalEl) finalTotalEl.textContent = finalTotal.toLocaleString('vi-VN') + ' VNĐ';
+        }
+
+
+            // Sự kiện khi nhấn nút "Áp dụng"
+            if (applyBtn) {
+                applyBtn.addEventListener('click', function() {
+                    const selectedCode = voucherSelect.value;
+
+                    // Trường hợp người dùng chọn gỡ mã giảm giá
+                    if (!selectedCode) {
+                        updateTotals(0, ''); // Cập nhật mọi thứ về 0
+                        alert("Đã gỡ mã giảm giá.");
+                        return;
+                    }
+
+                    // Gọi API để xác thực và lấy số tiền giảm giá
+                    fetch('/GioHang/ApplyVoucher', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        body: `voucherCode=${selectedCode}&subTotal=${subtotal}` // Luôn gửi subtotal gốc
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // API trả về số tiền giảm giá đã được tính toán
+                           const discountValue = parseFloat(data.discountAmountFormatted.replace(/[^\d]/g, ''));
+
+                            // Gọi hàm cập nhật tổng thể
+                            updateTotals(discountValue, selectedCode);
+
+                            alert(data.message);
+                        } else {
+                            // Nếu có lỗi, reset mọi thứ
+                            alert('Lỗi: ' + data.message);
+                            voucherSelect.value = ''; // Bỏ chọn voucher
+                            updateTotals(0, ''); // Cập nhật mọi thứ về 0
+                        }
+                    })
+                          .catch(error => {
+            console.error('Lỗi khi lấy thông tin địa chỉ:', error);
+
+            // === SỬA ĐỔI TẠI ĐÂY: CƠ CHẾ FALLBACK (DỰ PHÒNG) ===
+
+            alert('Không tính được phí vận chuyển tự động. Sẽ áp dụng phí mặc định.');
+
+            // 1. Ép cứng phí ship mặc định (Ví dụ 30,000)
+            const PHI_SHIP_MAC_DINH = 30000;
+
+            // 2. Cập nhật giao diện
+            document.getElementById('phi-van-chuyen-display').textContent = PHI_SHIP_MAC_DINH.toLocaleString('vi-VN');
+            document.getElementById('khoang-cach-display').textContent = "Không xác định";
+
+            // 3. Cập nhật input ẩn (Quan trọng để gửi về server)
+            const hiddenShippingInput = document.querySelector('input[name="PhiVanChuyen"]');
+            if(hiddenShippingInput) {
+                hiddenShippingInput.value = PHI_SHIP_MAC_DINH;
+            }
+
+            // 4. Tính lại tổng tiền
+            const subtotal = parseFloat('@Model.TongTienHang.ToString(System.Globalization.CultureInfo.InvariantCulture)');
+            const discount = parseFloat(document.querySelector('input[name="TienGiamGia"]').value || '0');
+
+            // Tổng tiền = Tiền hàng - Giảm giá + Phí ship mặc định
+            const finalTotal = subtotal - discount + PHI_SHIP_MAC_DINH;
+
+            document.getElementById('final-total-display').textContent = finalTotal.toLocaleString('vi-VN') + ' VNĐ';
+
+            const hiddenFinalTotalInput = document.querySelector('input[name="TongThanhToan"]');
+            if(hiddenFinalTotalInput) {
+                hiddenFinalTotalInput.value = finalTotal;
+            }
+
+            // 5. Vẫn điền thông tin text cũ (nếu có) để form trông không bị trống
+            // (Optional: Nếu API lỗi thì có thể không lấy được tên/sđt, nhưng ít nhất phí ship đã an toàn)
+        });
+                });
+            }
+
+                const checkoutForm = document.getElementById('checkout-form');
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', function(e) {
+                // 1. Ngăn chặn submit mặc định ngay lập tức
+                e.preventDefault();
+
+                // 2. Hỏi xác nhận người dùng trước
+                if (!confirm("Bạn có chắc chắn muốn đặt đơn hàng này không?")) {
+                    return; // Nếu khách hủy thì dừng luôn
+                }
+
+                // 3. Hiển thị loading hoặc disable nút để tránh bấm nhiều lần
+                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Đang kiểm tra tồn kho...";
+
+                // 4. Thu thập danh sách ID sản phẩm đang chọn mua (từ input hidden)
+                // Chúng ta cần lấy tất cả input có name="SelectedCartItemIds"
+                const selectedIdsInputs = document.querySelectorAll('input[name="SelectedCartItemIds"]');
+                const selectedIds = Array.from(selectedIdsInputs).map(input => parseInt(input.value));
+
+                // Tạo dữ liệu FormData để gửi đi
+                const formData = new FormData();
+                selectedIds.forEach(id => formData.append('selectedCartItemIds', id));
+
+                // 5. GỌI AJAX KIỂM TRA KHO (REAL-TIME)
+                fetch('/GioHang/CheckStockRealTime', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': '@antiforgeryToken' // Token bảo mật
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // === KHO CÒN HÀNG ===
+                        // Kiểm tra phương thức thanh toán để điều hướng đúng
+                        const paymentMethod = document.querySelector('input[name="PhuongThucThanhToan"]:checked').value;
+
+                        if (paymentMethod === 'VnPay') {
+                            checkoutForm.action = '@Url.Action("TaoThanhToanVnPay", "GioHang")';
+                        } else {
+                            checkoutForm.action = '@Url.Action("DatHang", "GioHang")';
+                        }
+
+                        // Submit form bằng lệnh native của HTML (bỏ qua listener này)
+                        checkoutForm.submit();
+                    } else {
+                        // === HẾT HÀNG / LỖI ===
+                        alert(data.message); // Hiển thị thông báo lỗi từ server (VD: Rất tiếc sản phẩm A vừa hết hàng...)
+
+                        // Mở lại nút đặt hàng
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+
+                        // Tùy chọn: Chuyển hướng về giỏ hàng để khách sửa
+                         window.location.href = '@Url.Action("Index", "GioHang")';
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi kiểm tra kho:', error);
+                    alert('Đã xảy ra lỗi khi kiểm tra tồn kho. Vui lòng thử lại.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                });
+            });
+        }
+            const addressSelector = document.getElementById('address-selector');
+
+            if (addressSelector) {
+                addressSelector.addEventListener('change', function() {
+                    const selectedAddressId = this.value;
+
+                    if (!selectedAddressId) {
+                        return; // Nếu không chọn gì thì không làm gì cả
+                    }
+                     document.getElementById('SelectedAddressId').value = selectedAddressId;
+                    // Hiển thị trạng thái đang tải (tùy chọn)
+                    document.getElementById('dia-chi-input').value = 'Đang tải thông tin...';
+
+                    // Gọi API để lấy thông tin địa chỉ mới
+                    fetch(`/GioHang/LayThongTinDiaChi?diaChiId=${selectedAddressId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Không thể kết nối đến máy chủ.');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // 1. Cập nhật các ô input cho người dùng thấy
+                            document.getElementById('ho-ten-input').value = data.hoTen;
+                            document.getElementById('sdt-input').value = data.soDienThoai;
+                            document.getElementById('dia-chi-input').value = data.diaChiDayDu;
+
+                            // 2. Cập nhật thông tin giao hàng hiển thị trong bảng tóm tắt
+                            document.getElementById('khoang-cach-display').textContent = data.khoangCach;
+                            document.getElementById('phi-van-chuyen-display').textContent = data.phiVanChuyen.toLocaleString('vi-VN');
+
+                            // 3. QUAN TRỌNG: Cập nhật các input ẩn để form submit đúng giá trị
+                            const hiddenShippingInput = document.querySelector('input[name="PhiVanChuyen"]');
+                            if(hiddenShippingInput) {
+                                hiddenShippingInput.value = data.phiVanChuyen;
+                            }
+
+                            // 4. Tính toán lại và cập nhật tổng tiền cuối cùng
+                            const subtotal = parseFloat('@Model.TongTienHang.ToString(System.Globalization.CultureInfo.InvariantCulture)');
+                            const discount = parseFloat(document.querySelector('input[name="TienGiamGia"]').value || '0');
+                            const newShippingFee = data.phiVanChuyen;
+                            const finalTotal = subtotal - discount + newShippingFee;
+                                  const phiShipDisplay = document.getElementById('phi-van-chuyen-display');
+        const parentTd = phiShipDisplay.parentElement; // Lấy thẻ TD chứa nó
+
+        if (data.tienGiamShip > 0) {
+            // Nếu có giảm giá ship: Render lại HTML để hiện gạch ngang
+            parentTd.innerHTML = `
+                <div>
+                    <span class="text-decoration-line-through text-muted me-2">${data.phiShipGoc.toLocaleString('vi-VN')} VNĐ</span>
+                    <span class="text-success fw-bold">Freeship</span>
+                </div>
+                <span id="phi-van-chuyen-display" class="fw-bold">${data.phiVanChuyen.toLocaleString('vi-VN')}</span> VNĐ
+            `;
+        } else {
+            // Không giảm giá: Hiện bình thường
+            parentTd.innerHTML = `<span id="phi-van-chuyen-display">${data.phiVanChuyen.toLocaleString('vi-VN')}</span> VNĐ`;
+        }
+                            // Cập nhật hiển thị tổng tiền
+                            document.getElementById('final-total-display').textContent = finalTotal.toLocaleString('vi-VN') + ' VNĐ';
+
+                            // QUAN TRỌNG: Cập nhật input ẩn của tổng tiền
+                            const hiddenFinalTotalInput = document.querySelector('input[name="TongThanhToan"]');
+                            if(hiddenFinalTotalInput) {
+                                hiddenFinalTotalInput.value = finalTotal;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi lấy thông tin địa chỉ:', error);
+                            alert('Không thể tải thông tin địa chỉ mới. Vui lòng thử lại.');
+                            document.getElementById('dia-chi-input').value = 'Lỗi khi tải!';
+                        });
+                });
+            }
+        });
+    </script>
+    <script>
+        function listenForChanges() {
+            // Khởi tạo SSE kết nối đến action GetUpdateStream trong GioHangController
+            const eventSource = new EventSource('/GioHang/GetUpdateStream');
+
+            eventSource.onmessage = function (event) {
+                if (event.data === "reload") {
+                    console.log("Phát hiện thay đổi từ quản trị viên. Đang tải lại...");
+
+                    // Đối với trang Đặt hàng, nên dùng thông báo nhẹ để khách không bị giật mình
+                    if (window.location.pathname.includes("DatHang")) {
+                         // Bạn có thể dùng alert hoặc bỏ qua nếu muốn reload ngay
+                         alert("Thông tin sản phẩm hoặc khuyến mãi vừa được cập nhật. Trang sẽ tải lại để áp dụng giá mới nhất.");
+                    }
+
+                    window.location.reload();
+                }
+            };
+
+            eventSource.onerror = function () {
+                eventSource.close();
+                // Thử kết nối lại sau 5 giây nếu server ngắt kết nối
+                setTimeout(listenForChanges, 5000);
+            };
+        }
+
+        // Kích hoạt lắng nghe
+        listenForChanges();
+    </script>
+}

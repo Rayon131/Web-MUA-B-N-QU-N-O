@@ -1,0 +1,272 @@
+﻿@model IEnumerable<DATNN.Models.DonHang>
+@{
+    ViewData["Title"] = "Danh sách Đơn hàng chi tiết";
+
+}
+<style>
+    .filter-label {
+        font-weight: 600;
+    }
+</style>
+<link rel="stylesheet" href="~/css/dsDonHang.css" />
+<div class="main-content_dsdh">
+    <div class="card card_dsdh">
+        <div class="card-header card-header_dsdh">
+            <h3>DANH SÁCH ĐƠN HÀNG CHI TIẾT</h3>
+          
+            <form method="get" class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Tìm mã đơn hàng</label>
+                    <div class="input-group">
+                        <input type="number" name="maDonHang" class="form-control"
+                               placeholder="Nhập mã..." value="@ViewBag.MaDonHang" />
+                    </div>
+                </div>
+                <!-- Từ ngày -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Từ ngày</label>
+                    <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+                </div>
+
+                <!-- Đến ngày -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Đến ngày</label>
+                    <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+                </div>
+
+                <!-- Loại đơn -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Loại đơn</label>
+                    <select name="loaiDon" class="form-control">
+                        <option value="">-- Tất cả --</option>
+                        <option value="1" selected="@(ViewBag.LoaiDon == 1)">Đơn Online</option>
+                        <option value="2" selected="@(ViewBag.LoaiDon == 2)">Đơn Tại Quầy</option>
+                    </select>
+                </div>
+
+                <!-- TRẠNG THÁI ĐƠN (ONLINE) -->
+                @if (ViewBag.LoaiDon == 1)
+                {
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Trạng thái đơn hàng</label>
+                        <select name="trangThaiDonHang" class="form-control">
+                            <option value="">-- Tất cả trạng thái --</option>
+                            <option value="1" selected="@(ViewBag.TrangThaiDonHang == 1)">Chờ xác nhận</option>
+                            <option value="2" selected="@(ViewBag.TrangThaiDonHang == 2)">Đã xác nhận</option>
+                            <option value="3" selected="@(ViewBag.TrangThaiDonHang == 3)">Đang chuẩn bị</option>
+                            <option value="4" selected="@(ViewBag.TrangThaiDonHang == 4)">Chờ nhận hàng</option>
+                            <option value="5" selected="@(ViewBag.TrangThaiDonHang == 5)">Hoàn thành</option>
+                            <option value="7" selected="@(ViewBag.TrangThaiDonHang == 7)">Đã thanh toán</option>
+                        </select>
+                    </div>
+                }
+
+                <!-- TRẠNG THÁI ĐƠN (TẠI QUẦY) -->
+                @if (ViewBag.LoaiDon == 2)
+                {
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Trạng thái đơn hàng</label>
+                        <select name="trangThaiDonHang" class="form-control">
+                            <option value="">-- Tất cả trạng thái --</option>
+                            <option value="1" selected="@(ViewBag.TrangThaiDonHang == 1)">Chờ thanh toán</option>
+                            <option value="2" selected="@(ViewBag.TrangThaiDonHang == 2)">Đã thanh toán</option>
+                        </select>
+                    </div>
+                }
+
+                <!-- Nút -->
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary px-4 me-2">Lọc</button>
+                    <a asp-action="Index" class="btn btn-secondary px-4">Reset</a>
+                </div>
+
+            </form>
+
+    </div>
+
+       
+        <div class="card-body card-body_dsdh">
+            <div class="table-responsive">
+                <table class="table table_dsdh table-bordered" style="vertical-align: middle;">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th rowspan="2">Mã HĐ</th>
+                            <th rowspan="2">Khách hàng</th>
+                            <th rowspan="2">Nhân viên</th>
+                            <th colspan="4">Chi tiết sản phẩm</th>
+                            <th rowspan="2">Tổng tiền HĐ</th>
+                            <th rowspan="2">Trạng thái TT</th>
+                            <th rowspan="2">Phương thức TT</th>
+                            <th rowspan="2">Trạng thái ĐH</th>
+                            <th rowspan="2">Thời gian</th>
+                            <th rowspan="2">In hóa đơn</th>
+                            <th rowspan="2"></th>
+                        </tr>
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Size - Màu</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var donHang in Model)
+                        {
+                            var chiTietDonHangs = donHang.DonHangChiTiets.ToList();
+                            var rowCount = chiTietDonHangs.Any() ? chiTietDonHangs.Count : 1;
+
+                            <tr>
+                                <td rowspan="@rowCount" class="text-center fw-bold">@donHang.MaDonHang</td>
+                                <td rowspan="@rowCount">@(donHang.KhachHang?.HoTen ?? "Khách vãng lai")</td>
+                                <td rowspan="@rowCount">@(donHang.NguoiDung?.HoTen ?? "N/A")</td>
+
+                                @if (chiTietDonHangs.Any())
+                                {
+                                    var firstChiTiet = chiTietDonHangs.First();
+                                    <td>@(firstChiTiet.TenSanPham_Luu ?? firstChiTiet.SanPhamChiTiet?.SanPham?.TenSanPham ?? "Sản phẩm đã xóa")</td>
+                                    <td>
+                                        @(firstChiTiet.TenSize_Luu ?? firstChiTiet.SanPhamChiTiet?.Size?.TenSize ?? "N/A") -
+                                        @(firstChiTiet.TenMau_Luu ?? firstChiTiet.SanPhamChiTiet?.MauSac?.TenMau ?? "N/A")
+                                    </td>
+                                    <td class="text-center">@firstChiTiet.SoLuong</td>
+                                    <td class="text-end">@firstChiTiet.DonGia.ToString("N0") đ</td>
+                                }
+                                else
+                                {
+                                    <td colspan="4" class="text-center text-muted"><em>Đơn hàng trống</em></td>
+                                }
+
+                                <td rowspan="@rowCount" class="text-end">
+                                    <p class="mb-0">Tạm tính: @((donHang.TongTien + (donHang.SoTienDuocGiam ?? 0)).ToString("N0")) đ</p>
+                                    <p class="mb-0 text-danger">Giảm: @((donHang.SoTienDuocGiam ?? 0).ToString("N0")) đ</p>
+                                    <hr class="my-1" />
+                                    <p class="mb-0 fw-bold">Tổng: @donHang.TongTien.ToString("N0") đ</p>
+                                </td>
+                                <td rowspan="@rowCount" class="text-center">
+                                    @if (donHang.TrangThaiThanhToan == 1)
+                                    {
+                                        <span class="badge bg-primary">Online</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Tại quầy</span>
+                                    }
+                                </td>
+                                <td rowspan="@rowCount" class="text-center">@donHang.PhuongThucThanhToan</td>
+                                <td rowspan="@rowCount" class="text-center">
+                                    @if (donHang.TrangThaiThanhToan == 1) // Logic cho đơn ONLINE
+                                    {
+                                        switch (donHang.TrangThaiDonHang)
+                                        {
+                                            case 1:
+                                                <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                                break;
+                                            case 2:
+                                                <span class="badge bg-info text-dark">Đã xác nhận</span>
+                                                break;
+                                            case 3:
+                                                <span class="badge" style="background-color: #6f42c1; color: white;">Đang chuẩn bị</span>
+                                                break;
+                                            case 4:
+                                                <span class="badge bg-primary">Chờ nhận hàng</span>
+                                                break;
+                                            case 5:
+                                                <span class="badge bg-success">Hoàn thành</span>
+                                                break;
+                                            case 6: // SỬA LẠI CASE 6
+                                                if (donHang.PhuongThucThanhToan == "VnPay")
+                                                {
+                                                    <span class="badge bg-danger">Đã hủy & Hoàn tiền</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Đã hủy</span>
+                                                }
+                                                break;
+                                            case 7:
+                                                <span class="badge bg-success">Đã thanh toán</span>
+                                                break;
+                                            case 8: // THÊM CASE 8 MỚI
+                                                <span class="badge bg-warning text-dark">Chờ duyệt hủy</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">Không xác định</span>
+                                                break;
+                                        }
+                                    }
+                                    else // Logic cho đơn TẠI QUẦY (giữ nguyên như cũ)
+                                    {
+                                        switch (donHang.TrangThaiDonHang)
+                                        {
+                                            case 0:
+                                                <span class="status-waiting-payment_dsdh">Chờ</span>
+                                                break;
+                                            case 1:
+                                                <span class="status-waiting-payment_dsdh">Chờ Thanh Toán</span>
+                                                break;
+                                            case 2:
+                                                <span class="status-paid_dsdh">Đã thanh toán</span>
+                                                break;
+                                            case 3:
+                                                <span class="status-cancelled_dsdh">Đã hủy</span>
+                                                break;
+                                            default:
+                                                <span class="status-unknown_dsdh">Không xác định</span>
+                                                break;
+                                        }
+                                    }
+                                </td>
+                                <td rowspan="@rowCount">@donHang.ThoiGianTao.ToString("dd/MM/yy HH:mm")</td>
+                                <td class="text-center">
+                                    @if (donHang.TrangThaiThanhToan == 2)
+                                    {
+                                        <a asp-area="Admin"
+                                           asp-controller="BanHang"
+                                           asp-action="PrintReceipt"
+                                           asp-route-orderId="@donHang.MaDonHang"
+                                           class="btn btn-sm btn_dsdh"
+                                           title="In hóa đơn">
+                                            <i class="fas fa-print"></i> In
+                                        </a>
+
+                                    }
+                                    else
+                                    {
+                                        <a asp-area="Admin"
+                                           asp-controller="BanHang"
+                                           asp-action="PrintReceiptonl"
+                                           asp-route-orderId="@donHang.MaDonHang"
+                                           class="btn btn-sm btn_dsdh"
+                                           title="In hóa đơn">
+                                            <i class="fas fa-print"></i> In
+                                        </a>
+                                    }
+                                </td>
+                                <td rowspan="@rowCount" class="text-center">
+
+                                    <a asp-area="Admin" asp-controller="DanhSachDonHang" asp-action="ChiTietDonHang" asp-route-id="@donHang.MaDonHang" class="btn btn-sm btn_dsdh" title="Xem chi tiết">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+
+                            @for (int i = 1; i < chiTietDonHangs.Count; i++)
+                            {
+                                var chiTiet = chiTietDonHangs[i];
+                                <tr>
+                                    <td>@(chiTiet.TenSanPham_Luu ?? chiTiet.SanPhamChiTiet?.SanPham?.TenSanPham ?? "Sản phẩm đã xóa")</td>
+                                    <td>
+                                        @(chiTiet.TenSize_Luu ?? chiTiet.SanPhamChiTiet?.Size?.TenSize ?? "N/A") -
+                                        @(chiTiet.TenMau_Luu ?? chiTiet.SanPhamChiTiet?.MauSac?.TenMau ?? "N/A")
+                                    </td>
+                                    <td class="text-center">@chiTiet.SoLuong</td>
+                                    <td class="text-end">@chiTiet.DonGia.ToString("N0") đ</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

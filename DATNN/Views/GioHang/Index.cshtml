@@ -1,0 +1,367 @@
+﻿@model DATNN.ViewModel.GioHangViewModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@{
+    ViewData["Title"] = "Giỏ Hàng Của Bạn";
+    // Lấy Antiforgery Token để dùng trong JavaScript
+    var antiforgeryToken = Xsrf.GetAndStoreTokens(Context).RequestToken;
+}
+
+<!-- Page Header -->
+<div class="container-fluid page-header py-5" style="margin-top: 100px;">
+    <h1 class="text-center text-white display-6">Giỏ Hàng</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item active text-white">Giỏ hàng</li>
+    </ol>
+</div>
+
+<!-- Form bọc toàn bộ -->
+<form asp-controller="GioHang" asp-action="ProceedToCheckout" method="post">
+    @Html.AntiForgeryToken()
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    <i class="fa fa-exclamation-triangle me-2"></i>
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"><input type="checkbox" id="select-all-items" checked /></th>
+                            <th scope="col">Sản phẩm</th>
+                            <th scope="col">Tên</th>
+                            <th scope="col">Giá</th>
+                            <th scope="col">Số lượng</th>
+                            <th scope="col">Tổng</th>
+                            <th scope="col">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var itemViewModel in Model.Items)
+                        {
+                            var item = itemViewModel.ChiTietGioHang;
+                            <tr class="cart-item-row-@item.MaChiTietGioHang">
+                                <td>
+                                    <input type="checkbox" name="selectedItems" value="@item.MaChiTietGioHang" class="cart-item-checkbox" checked />
+                                </td>
+                                <th scope="row">
+                                    <div class="d-flex align-items-center">
+                                        <img src="@Url.Content(!string.IsNullOrEmpty(item.SanPhamChiTiet.HinhAnh) ? $"~/images/{item.SanPhamChiTiet.HinhAnh}" : $"~/images/{item.SanPhamChiTiet.SanPham.AnhSanPham}")"
+                                             class="img-fluid me-3 rounded-circle" style="width: 80px; height: 80px;" alt="">
+                                    </div>
+                                </th>
+                                <td>
+                                    <p class="mb-0 mt-4">@item.SanPhamChiTiet.SanPham.TenSanPham</p>
+                                    <small>Màu: @item.SanPhamChiTiet.MauSac.TenMau, Size: @item.SanPhamChiTiet.Size.TenSize</small>
+                                </td>
+                                <td>
+                                    @if (itemViewModel.GiaKhuyenMai < item.SanPhamChiTiet.GiaBan)
+                                    {
+                                        <p class="mb-0 mt-4 text-danger fw-bold">@itemViewModel.GiaKhuyenMai.ToString("N0") VNĐ</p>
+                                        <small class="text-muted text-decoration-line-through">@item.SanPhamChiTiet.GiaBan.ToString("N0") VNĐ</small>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-0 mt-4">@item.SanPhamChiTiet.GiaBan.ToString("N0") VNĐ</p>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="input-group quantity mt-4" style="width: 100px;">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-sm btn-minus rounded-circle bg-light border" data-id="@item.MaChiTietGioHang">
+                                                <i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control form-control-sm text-center border-0 quantity-input" value="@item.SoLuong" data-id="@item.MaChiTietGioHang">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-sm btn-plus rounded-circle bg-light border" data-id="@item.MaChiTietGioHang">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="mb-0 mt-4 item-total">@((item.SoLuong * itemViewModel.GiaKhuyenMai).ToString("N0")) VNĐ</p>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-md rounded-circle bg-light border mt-4 remove-cart-item" data-id="@item.MaChiTietGioHang">
+                                        <i class="fa fa-times text-danger"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row g-4 justify-content-between">
+                <!-- Phần khuyến mãi -->
+                <div class="col-lg-6">
+                    <div class="input-group">
+                        <select id="voucher-select" class="form-select form-select-lg" aria-label="Chọn mã giảm giá">
+                            <option value="">Chọn mã giảm giá...</option>
+                            @{
+                                var vouchers = ViewBag.AvailableVouchers as List<DATNN.Models.MaGiamGia> ?? new List<DATNN.Models.MaGiamGia>();
+                            }
+                            @foreach (var v in vouchers)
+                            {
+                                var conditionText = v.DieuKienDonHangToiThieu > 0 ? $" (Đơn từ {v.DieuKienDonHangToiThieu:N0} VNĐ)" : "";
+                                <option value="@v.MaCode" data-condition="@v.DieuKienDonHangToiThieu">
+                                    @v.MaCode - Giảm @v.GiaTriGiamGia.ToString("N0")@(v.LoaiGiamGia == "PhanTram" ? "%" : " VNĐ")@conditionText
+                                </option>
+                            }
+                        </select>
+                        <button id="apply-voucher-btn" class="btn border-secondary text-primary" type="button">Áp dụng</button>
+                    </div>
+                </div>
+
+                <!-- Phần tổng tiền -->
+                <div class="col-lg-5">
+                    <div class="bg-light rounded">
+                        <div class="p-4">
+                            <h1 class="display-6 mb-4">Tổng <span class="fw-normal">Giỏ Hàng</span></h1>
+                            <div class="d-flex justify-content-between mb-4">
+                                <h5 class="mb-0 me-4">Tạm tính:</h5>
+                                <p class="mb-0" id="subtotal">@Model.TongTienHang.ToString("N0") VNĐ</p>
+                            </div>
+                            <div id="discount-row" class="d-flex justify-content-between text-danger" style="display: none;">
+                                <h5 class="mb-0 me-4">Giảm giá:</h5>
+                                <p class="mb-0" id="discount-amount"></p>
+                            </div>
+                        </div>
+                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+                            <h5 class="mb-0 ps-4 me-4">Thành tiền</h5>
+                            <p class="mb-0 pe-4" id="total">@Model.TongTienThanhToan.ToString("N0") VNĐ</p>
+                        </div>
+                        <button type="submit" class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4">Tiến hành thanh toán</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Lấy token chống giả mạo
+            const antiForgeryToken = '@antiforgeryToken';
+
+            // Các element trên trang
+            const selectAllCheckbox = document.getElementById('select-all-items');
+            const itemCheckboxes = document.querySelectorAll('.cart-item-checkbox');
+            const subtotalElement = document.getElementById('subtotal');
+            const totalElement = document.getElementById('total');
+            const discountRow = document.getElementById('discount-row');
+            const discountAmountElement = document.getElementById('discount-amount');
+            const voucherSelect = document.getElementById('voucher-select');
+            const applyVoucherBtn = document.getElementById('apply-voucher-btn');
+            const checkoutButton = document.querySelector('form button[type="submit"]');
+
+            function recalculateTotals() {
+                let newSubtotal = 0;
+                document.querySelectorAll('.cart-item-checkbox:checked').forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    const itemTotalText = row.querySelector('.item-total').textContent;
+                    // Chuyển đổi chuỗi tiền tệ thành số, xử lý cả dấu chấm và phẩy
+                    const itemTotal = parseFloat(itemTotalText.replace(/[^\d]/g, ''));
+                    if (!isNaN(itemTotal)) {
+                        newSubtotal += itemTotal;
+                    }
+                });
+
+                // Cập nhật giao diện
+                subtotalElement.textContent = newSubtotal.toLocaleString('vi-VN') + ' VNĐ';
+                discountRow.style.display = 'none'; // Luôn ẩn khi tính lại
+                discountAmountElement.textContent = '';
+                totalElement.textContent = newSubtotal.toLocaleString('vi-VN') + ' VNĐ';
+
+                // Bỏ chọn voucher đã áp dụng
+                voucherSelect.value = '';
+
+                // Cập nhật trạng thái nút thanh toán
+                if (checkoutButton) {
+                    checkoutButton.disabled = newSubtotal === 0;
+                }
+            }
+
+            // Sự kiện cho checkbox chọn tất cả
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function(event) {
+                    itemCheckboxes.forEach(checkbox => {
+                        checkbox.checked = event.target.checked;
+                    });
+                    recalculateTotals();
+                });
+            }
+
+            // Sự kiện cho từng checkbox sản phẩm
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    selectAllCheckbox.checked = Array.from(itemCheckboxes).every(cb => cb.checked);
+                    recalculateTotals();
+                });
+            });
+
+            // Sự kiện cho nút áp dụng voucher
+            if (applyVoucherBtn) {
+                applyVoucherBtn.addEventListener('click', function() {
+                    const voucherCode = voucherSelect.value;
+                    if (!voucherCode) {
+                        alert('Vui lòng chọn một mã giảm giá.');
+                        return;
+                    }
+
+                    // Lấy giá trị subtotal mới nhất từ giao diện tại thời điểm click
+                    const currentSubTotalText = subtotalElement.textContent.replace(/[^\d]/g, '');
+                    const currentSubTotal = parseFloat(currentSubTotalText);
+
+                    if (currentSubTotal <= 0) {
+                        alert("Vui lòng chọn sản phẩm trước khi áp dụng mã giảm giá.");
+                        return;
+                    }
+
+                    fetch('/GioHang/ApplyVoucher', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        body: `voucherCode=${voucherCode}&subTotal=${currentSubTotal}` // Gửi tổng tiền hiện tại
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            discountRow.style.display = 'flex';
+                            discountAmountElement.textContent = data.discountAmountFormatted;
+                            totalElement.textContent = data.finalTotalFormatted;
+                            alert(data.message);
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                            // Reset nếu lỗi
+                            discountRow.style.display = 'none';
+                            totalElement.textContent = subtotalElement.textContent;
+                            voucherSelect.value = '';
+                        }
+                    });
+                });
+            }
+
+            // Hàm gọi API để cập nhật số lượng
+            function updateCartQuantity(chiTietGioHangId, newQuantity) {
+                fetch('/GioHang/UpdateQuantity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': antiForgeryToken
+                    },
+                    body: `chiTietGioHangId=${chiTietGioHangId}&newQuantity=${newQuantity}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload(); // Tải lại trang để server tính toán lại mọi thứ
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                        window.location.reload(); // Tải lại để khôi phục giá trị cũ
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi khi cập nhật số lượng:', error);
+                    window.location.reload();
+                });
+            }
+
+            // Gán sự kiện cho các nút tăng/giảm/thay đổi số lượng
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    let newQuantity = parseInt(this.value, 10);
+                    if (isNaN(newQuantity) || newQuantity < 1) {
+                        newQuantity = 1; // Hoặc khôi phục giá trị cũ
+                    }
+                    updateCartQuantity(this.dataset.id, newQuantity);
+                });
+            });
+
+            document.querySelectorAll('.btn-plus').forEach(button => {
+                button.addEventListener('click', function() {
+                    const input = this.closest('.quantity').querySelector('.quantity-input');
+                    let currentQuantity = parseInt(input.value, 10);
+                    updateCartQuantity(this.dataset.id, currentQuantity + 1);
+                });
+            });
+
+            document.querySelectorAll('.btn-minus').forEach(button => {
+                button.addEventListener('click', function() {
+                    const input = this.closest('.quantity').querySelector('.quantity-input');
+                    let currentQuantity = parseInt(input.value, 10);
+                    if (currentQuantity > 1) {
+                        updateCartQuantity(this.dataset.id, currentQuantity - 1);
+                    }
+                });
+            });
+
+            // Sự kiện cho nút xóa sản phẩm
+            document.querySelectorAll('.remove-cart-item').forEach(button => {
+                button.addEventListener('click', function () {
+                    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+                        fetch('/GioHang/RemoveFromCart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'RequestVerificationToken': antiForgeryToken
+                            },
+                            body: `chiTietGioHangId=${this.dataset.id}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert('Lỗi: ' + data.message);
+                            }
+                        })
+                        .catch(error => console.error('Lỗi khi xóa sản phẩm:', error));
+                    }
+                });
+            });
+
+            // Chạy tính toán lần đầu khi tải trang
+            recalculateTotals();
+        });
+    </script>
+    <script>
+        function listenForChanges() {
+            // Khởi tạo SSE kết nối đến action GetUpdateStream trong GioHangController
+            const eventSource = new EventSource('/GioHang/GetUpdateStream');
+
+            eventSource.onmessage = function (event) {
+                if (event.data === "reload") {
+                    console.log("Phát hiện thay đổi từ quản trị viên. Đang tải lại...");
+
+                    // Đối với trang Đặt hàng, nên dùng thông báo nhẹ để khách không bị giật mình
+                    if (window.location.pathname.includes("DatHang")) {
+                         // Bạn có thể dùng alert hoặc bỏ qua nếu muốn reload ngay
+                         alert("Thông tin sản phẩm hoặc khuyến mãi vừa được cập nhật. Trang sẽ tải lại để áp dụng giá mới nhất.");
+                    }
+
+                    window.location.reload();
+                }
+            };
+
+            eventSource.onerror = function () {
+                eventSource.close();
+                // Thử kết nối lại sau 5 giây nếu server ngắt kết nối
+                setTimeout(listenForChanges, 5000);
+            };
+        }
+
+        // Kích hoạt lắng nghe
+        listenForChanges();
+    </script>
+}

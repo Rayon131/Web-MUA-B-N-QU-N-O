@@ -1,0 +1,307 @@
+﻿@model DATNN.Models.KhuyenMai
+
+@{
+    ViewData["Title"] = "Tạo mới Khuyến mãi";
+}
+
+<style>
+    .promo-create-container {
+        padding: 2rem 1rem;
+    }
+
+    .promo-create-header {
+        margin-bottom: 2rem;
+    }
+
+    .promo-create-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 1.5rem;
+    }
+
+    .promo-form-card {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+        .form-group label.control-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+    .form-control, .form-select {
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+    .btn-submit {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.625rem 2rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+    .btn-back {
+        background: #6b7280;
+        color: white;
+        border: none;
+        padding: 0.625rem 2rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .btn-back:hover {
+            background: #4b5563;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+    .alert-danger {
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .text-danger {
+        color: #dc2626;
+        font-size: 0.813rem;
+        margin-top: 0.25rem;
+    }
+
+    .product-selector {
+        height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 2rem;
+        background: #f9fafb;
+    }
+
+        .product-selector .form-check {
+            max-width: 100%;
+        }
+
+        .product-selector .form-check-label {
+            word-break: break-word;
+            white-space: normal;
+            max-width: calc(100% - 30px);
+            display: inline-block;
+        }
+
+    .form-check {
+        padding: 0.5rem 0;
+    }
+
+    .form-check-input {
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+    }
+
+        .form-check-input:checked {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+    .form-check-label {
+        font-size: 0.875rem;
+        color: #374151;
+        margin-left: 0.5rem;
+    }
+
+        .form-check-label.fw-bold {
+            font-weight: 600;
+            color: #111827;
+        }
+
+    .radio-group {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+        .radio-group input[type="radio"] {
+            margin-right: 0.375rem;
+        }
+
+        .radio-group label {
+            font-size: 0.875rem;
+            color: #374151;
+            margin: 0;
+        }
+
+    .action-buttons {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+
+<div class="promo-create-container">
+    <div class="promo-create-header">
+        <h1 class="promo-create-title">Tạo chương trình khuyến mãi mới</h1>
+    </div>
+
+    @if (TempData["ValidationErrors"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @Html.Raw(TempData["ValidationErrors"])
+        </div>
+    }
+
+    <div class="promo-form-card">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @await Html.PartialAsync("_KhuyenMaiForm")
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-submit">Tạo chương trình</button>
+                <a asp-action="Index" class="btn btn-back">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. Logic Checkbox Cha - Con (Giữ nguyên)
+            function updateChildCheckboxes(parentCheckbox) {
+                const productId = parentCheckbox.dataset.productId;
+                const isChecked = parentCheckbox.checked;
+
+                // Tìm trong phạm vi container của sản phẩm đó để tránh xung đột
+                const container = parentCheckbox.closest('.product-group-item');
+                if (container) {
+                    container.querySelectorAll(`.child-variant`).forEach(childCheckbox => {
+                        childCheckbox.disabled = isChecked;
+                        if (isChecked) {
+                            childCheckbox.checked = false;
+                        }
+                    });
+                }
+            }
+
+            const parentCheckboxes = document.querySelectorAll('.parent-product');
+            parentCheckboxes.forEach(parentCheckbox => {
+                parentCheckbox.addEventListener('change', function () {
+                    updateChildCheckboxes(this);
+                });
+                // Chạy lần đầu khi tải trang
+                updateChildCheckboxes(parentCheckbox);
+            });
+
+            // 2. Logic Validate Giá trị (Phần bổ sung từ câu hỏi trước của bạn)
+            const loaiGiamGiaSelect = document.getElementById('LoaiGiamGia');
+            const giaTriGiamGiaInput = document.getElementById('GiaTriGiamGia');
+
+            function validateGiaTri() {
+                if (loaiGiamGiaSelect && loaiGiamGiaSelect.value === 'SoTien') {
+                    if (giaTriGiamGiaInput) giaTriGiamGiaInput.removeAttribute('max');
+                }
+            }
+
+            if (loaiGiamGiaSelect && giaTriGiamGiaInput) {
+                loaiGiamGiaSelect.addEventListener('change', validateGiaTri);
+                giaTriGiamGiaInput.addEventListener('input', validateGiaTri);
+                validateGiaTri();
+            }
+
+            // ============================================================
+            // 3. LOGIC TÌM KIẾM SẢN PHẨM (MỚI THÊM)
+            // ============================================================
+            const searchInput = document.getElementById('productSearchInput');
+
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function () {
+                    const searchText = this.value.toLowerCase().trim();
+                    const productGroups = document.querySelectorAll('.product-group-item');
+
+                    productGroups.forEach(group => {
+                        // Lấy tên sản phẩm cha
+                        const parentLabel = group.querySelector('.search-parent-name').textContent.toLowerCase();
+                        // Kiểm tra cha có khớp không
+                        const isParentMatch = parentLabel.includes(searchText);
+
+                        // Lấy danh sách con
+                        const variants = group.querySelectorAll('.child-item-row');
+                        let hasVisibleChild = false;
+
+                        variants.forEach(variant => {
+                            const variantLabel = variant.querySelector('.search-variant-name').textContent.toLowerCase();
+
+                            // Nếu cha khớp: Hiện tất cả con
+                            // Nếu cha không khớp: Chỉ hiện con nào khớp từ khóa
+                            if (isParentMatch) {
+                                variant.style.display = "";
+                                hasVisibleChild = true;
+                            } else {
+                                if (variantLabel.includes(searchText)) {
+                                    variant.style.display = "";
+                                    hasVisibleChild = true;
+                                } else {
+                                    variant.style.display = "none";
+                                }
+                            }
+                        });
+
+                        // Ẩn/Hiện cả nhóm sản phẩm
+                        // Nếu cha khớp HOẶC có ít nhất 1 con khớp -> Hiện nhóm
+                        if (isParentMatch || hasVisibleChild) {
+                            group.style.display = "";
+                        } else {
+                            group.style.display = "none";
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}

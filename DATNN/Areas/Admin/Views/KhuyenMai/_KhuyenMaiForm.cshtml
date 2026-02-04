@@ -1,0 +1,132 @@
+﻿@model DATNN.Models.KhuyenMai
+
+<div class="form-section-title">Thông tin cơ bản</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label asp-for="TenKhuyenMai" class="control-label">Tên chương trình</label>
+            <input asp-for="TenKhuyenMai" class="form-control" placeholder="Nhập tên chương trình khuyến mãi" />
+            <span asp-validation-for="TenKhuyenMai" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="NgayBatDau" class="control-label">Ngày bắt đầu</label>
+            <input asp-for="NgayBatDau" type="date" class="form-control" />
+            <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="NgayKetThuc" class="control-label">Ngày kết thúc</label>
+            <input asp-for="NgayKetThuc" type="date" class="form-control" />
+            <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label asp-for="LoaiGiamGia" class="control-label">Loại giảm giá</label>
+            <select asp-for="LoaiGiamGia" class="form-control" id="LoaiGiamGia">
+                <option value="PhanTram">Phần trăm (%)</option>
+                <option value="SoTien">Số tiền cố định (VNĐ)</option>
+            </select>
+            <span asp-validation-for="LoaiGiamGia" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="GiaTriGiamGia" class="control-label">Giá trị giảm</label>
+            <input asp-for="GiaTriGiamGia" class="form-control" id="GiaTriGiamGia" placeholder="Nhập giá trị" />
+            <span asp-validation-for="GiaTriGiamGia" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="KenhApDung" class="control-label">Kênh áp dụng</label>
+            <div class="radio-group">
+                <div>
+                    <input type="radio" asp-for="KenhApDung" value="TaiQuay" id="rdTaiQuay" checked />
+                    <label for="rdTaiQuay">Tại quầy</label>
+                </div>
+                <div>
+                    <input type="radio" asp-for="KenhApDung" value="Online" id="rdOnline" />
+                    <label for="rdOnline">Online</label>
+                </div>
+                <div>
+                    <input type="radio" asp-for="KenhApDung" value="TatCa" id="rdTatCa" />
+                    <label for="rdTatCa">Tất cả</label>
+                </div>
+            </div>
+            <span asp-validation-for="KenhApDung" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label asp-for="GhiChu" class="control-label">Ghi chú</label>
+    <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Thêm ghi chú cho chương trình (tùy chọn)"></textarea>
+    <span asp-validation-for="GhiChu" class="text-danger"></span>
+</div>
+
+<div class="form-section-title" style="margin-top: 2rem;">Sản phẩm áp dụng</div>
+
+<div id="sanPhamOptions">
+    <div class="form-group">
+        <label class="control-label">Chọn sản phẩm hoặc phiên bản</label>
+        <span asp-validation-for="DanhSachSanPhamApDung" class="text-danger d-block mb-2"></span>
+
+        <!-- Ô TÌM KIẾM MỚI THÊM VÀO -->
+        <div class="mb-2">
+            <input type="text" id="productSearchInput" class="form-control" placeholder="🔍 Tìm kiếm sản phẩm theo tên, màu sắc, size...">
+        </div>
+
+        <div class="product-selector">
+            @{
+                var productTree = ViewBag.ProductTree as List<DATNN.Models.SanPham>;
+                var selectedIds = (ViewBag.SelectedIds as List<string>) ?? new List<string>();
+
+                if (productTree != null)
+                {
+                    foreach (var sanPham in productTree)
+                    {
+                        string parentValue = $"p-{sanPham.MaSanPham}";
+                        bool isParentChecked = selectedIds.Contains(parentValue);
+
+                        // Bọc mỗi sản phẩm trong một div container để dễ ẩn/hiện
+                        <div class="product-group-item border-bottom mb-2 pb-2">
+                            <div class="form-check">
+                                <input class="form-check-input parent-product" type="checkbox" name="selectedItems"
+                                       value="@parentValue" id="sp_@sanPham.MaSanPham"
+                                       data-product-id="@sanPham.MaSanPham" @(isParentChecked ? "checked" : "")>
+                                <!-- Thêm class search-parent-name để JS tìm kiếm -->
+                                <label class="form-check-label fw-bold search-parent-name" for="sp_@sanPham.MaSanPham">
+                                    @sanPham.TenSanPham
+                                </label>
+                            </div>
+
+                            <div class="ms-4 child-container">
+                                @foreach (var variant in sanPham.SanPhamChiTiets.Where(ct => ct.TrangThai == 1))
+                                {
+                                    string variantValue = $"v-{variant.MaSanPhamChiTiet}";
+                                    bool isVariantChecked = selectedIds.Contains(variantValue);
+
+                                    // Bọc phiên bản con để dễ ẩn/hiện
+                                    <div class="form-check child-item-row">
+                                        <input class="form-check-input child-variant" type="checkbox" name="selectedItems"
+                                               value="@variantValue" id="ct_@variant.MaSanPhamChiTiet"
+                                               data-parent-id="@sanPham.MaSanPham" @(isVariantChecked ? "checked" : "") @(isParentChecked ? "disabled" : "")>
+                                        <!-- Thêm class search-variant-name để JS tìm kiếm -->
+                                        <label class="form-check-label search-variant-name" for="ct_@variant.MaSanPhamChiTiet">
+                                            @variant.MauSac.TenMau - @variant.Size.TenSize
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+
+    </script>
+}

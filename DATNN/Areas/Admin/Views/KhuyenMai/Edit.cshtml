@@ -1,0 +1,238 @@
+﻿@model DATNN.Models.KhuyenMai
+
+@{
+    ViewData["Title"] = "Chỉnh sửa Khuyến mãi";
+}
+
+<style>
+    .promo-edit-container {
+        padding: 2rem 1rem;
+    }
+
+    .promo-edit-header {
+        margin-bottom: 2rem;
+    }
+
+    .promo-edit-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 1.5rem;
+    }
+
+    .promo-form-card {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+        .form-group label.control-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+    .form-control, .form-select {
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+    .btn-submit {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.625rem 2rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+    .btn-back {
+        background: #6b7280;
+        color: white;
+        border: none;
+        padding: 0.625rem 2rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .btn-back:hover {
+            background: #4b5563;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+    .text-danger {
+        color: #dc2626;
+        font-size: 0.813rem;
+        margin-top: 0.25rem;
+    }
+
+    .product-selector {
+        height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 2rem;
+        background: #f9fafb;
+    }
+
+        .product-selector .form-check {
+            max-width: 100%;
+        }
+
+        .product-selector .form-check-label {
+            word-break: break-word;
+            white-space: normal;
+            max-width: calc(100% - 30px);
+            display: inline-block;
+        }
+
+    .form-check {
+        padding: 0.5rem 0;
+    }
+
+    .form-check-input {
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+    }
+
+        .form-check-input:checked {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+    .form-check-label {
+        font-size: 0.875rem;
+        color: #374151;
+        margin-left: 0.5rem;
+    }
+
+        .form-check-label.fw-bold {
+            font-weight: 600;
+            color: #111827;
+        }
+
+    .radio-group {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+        .radio-group input[type="radio"] {
+            margin-right: 0.375rem;
+        }
+
+        .radio-group label {
+            font-size: 0.875rem;
+            color: #374151;
+            margin: 0;
+        }
+
+    .action-buttons {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+
+<div class="promo-edit-container">
+    <div class="promo-edit-header">
+        <h1 class="promo-edit-title">Chỉnh sửa chương trình khuyến mãi</h1>
+    </div>
+
+    <div class="promo-form-card">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaKhuyenMai" />
+            @await Html.PartialAsync("_KhuyenMaiForm")
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-submit">Lưu thay đổi</button>
+                <a asp-action="Index" class="btn btn-back">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            if (typeof $ !== 'undefined') {
+                $('[data-bs-toggle="tooltip"]').tooltip();
+            } else {
+                 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                     return new bootstrap.Tooltip(tooltipTriggerEl);
+                 });
+            }
+
+
+
+            function updateChildCheckboxes(parentCheckbox) {
+                const productId = parentCheckbox.dataset.productId;
+                const isChecked = parentCheckbox.checked;
+
+                document.querySelectorAll(`.child-variant[data-parent-id="${productId}"]`).forEach(childCheckbox => {
+                    childCheckbox.disabled = isChecked;
+                    if (isChecked) {
+                        childCheckbox.checked = false;
+                    }
+                });
+            }
+
+            // Gán sự kiện "change" cho tất cả các checkbox cha
+            const parentCheckboxes = document.querySelectorAll('.parent-product');
+            parentCheckboxes.forEach(parentCheckbox => {
+                parentCheckbox.addEventListener('change', function() {
+                    updateChildCheckboxes(this); // Gọi hàm cập nhật khi có thay đổi
+                });
+            });
+
+            // CHẠY KIỂM TRA TRẠNG THÁI BAN ĐẦU KHI TẢI TRANG
+            parentCheckboxes.forEach(parentCheckbox => {
+                updateChildCheckboxes(parentCheckbox);
+            });
+        });
+    </script>
+}

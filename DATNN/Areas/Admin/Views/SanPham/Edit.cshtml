@@ -1,0 +1,122 @@
+﻿@model DATNN.Models.SanPham
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+
+        <div class="card-header bg-warning text-dark py-3 rounded-top-4">
+            <h3 class="mb-0">
+                <i class="bi bi-pencil-square"></i> Chỉnh sửa sản phẩm
+            </h3>
+        </div>
+
+        <div class="card-body p-4">
+
+            <form asp-action="Edit" enctype="multipart/form-data">
+
+                @* Hidden fields *@
+                <input type="hidden" asp-for="MaSanPham" />
+                <input type="hidden" asp-for="ThoiGianTao" />
+                <input type="hidden" asp-for="TrangThai" />
+                <input type="hidden" asp-for="AnhSanPham" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row">
+
+                    <!-- Cột trái -->
+                    <div class="col-md-6">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Danh mục</label>
+                            <select asp-for="MaDanhMuc" class="form-control"
+                                    asp-items="ViewBag.MaDanhMuc"></select>
+                            <span asp-validation-for="MaDanhMuc" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Chất liệu</label>
+                            <select asp-for="MaChatLieu" class="form-control"
+                                    asp-items="ViewBag.MaChatLieu"></select>
+                            <span asp-validation-for="MaChatLieu" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Xuất xứ</label>
+                            <select asp-for="MaXuatXu" class="form-control"
+                                    asp-items="ViewBag.MaXuatXu"></select>
+                            <span asp-validation-for="MaXuatXu" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên sản phẩm</label>
+                            <input asp-for="TenSanPham" class="form-control" />
+                            <span asp-validation-for="TenSanPham" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mô tả</label>
+                            <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Thời gian tạo</label>
+                            <p class="form-control bg-light">
+                                @Model.ThoiGianTao?.ToString("dd/MM/yyyy HH:mm:ss")
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Cột phải -->
+                    <div class="col-md-6">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ảnh hiện tại</label><br />
+                            @if (!string.IsNullOrEmpty(Model.AnhSanPham))
+                            {
+                                <img src="~/images/@Model.AnhSanPham"
+                                     class="img-thumbnail rounded shadow-sm"
+                                     style="max-width: 250px;" />
+                            }
+                            else
+                            {
+                                <p class="text-muted fst-italic">Chưa có ảnh</p>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Chọn ảnh mới</label>
+                            <input type="file" name="file" class="form-control" />
+                            <span asp-validation-for="AnhSanPham" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save"></i> Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="card-footer bg-light py-3 d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Trở lại
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

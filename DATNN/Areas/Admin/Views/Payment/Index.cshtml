@@ -1,0 +1,36 @@
+﻿@model IEnumerable<DATNN.Models.DonHang>
+@{
+    ViewData["Title"] = "Index";
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mã đơn hàng</th>
+            <th>Họ tên người nhận</th>
+            <th>Tổng tiền</th>
+            <th>Hành động</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.MaDonHang</td>
+                <td>@order.HoTenNguoiNhan ?? "Chưa có"</td>
+                <td>@order.TongTien.ToString("N0") VNĐ</td>
+                <td>
+                    <form asp-action="CreatePaymentUrlVnpay" method="post">
+                        <input type="hidden" name="OrderId" value="@order.MaDonHang" />
+                        <input type="hidden" name="Name" value="@order.HoTenNguoiNhan" />
+                        <input type="hidden" name="Amount" value="@order.TongTien" />
+                        <input type="hidden" name="Description" value="Thanh toán đơn hàng @order.MaDonHang" />
+                        <input type="hidden" name="OrderType" value="billpayment" />
+                        <button type="submit" class="btn btn-success">Thanh toán</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,560 @@
+﻿@using Microsoft.EntityFrameworkCore
+@model DATNN.ViewModel.TaoYeuCauViewModel
+@inject DATNN.MyDbContext _context
+@{
+    ViewData["Title"] = "Tạo Yêu Cầu Đổi/Trả";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Tạo Yêu Cầu Đổi/Trả Hàng</h3>
+                </div>
+                <div class="card-body">
+                    <article class="card card_cthd mb-3">
+                        <div class="card-body card-body_cthd">
+                            <div class="d-flex justify-content-between">
+                                <h5>Từ đơn hàng gốc <a asp-controller="GioHang" asp-action="ChiTietDonHang" asp-route-id="@Model.MaDonHangGoc" target="_blank">#@Model.MaDonHangGoc</a></h5>
+                                <h6>Ngày đặt: @Model.ThoiGianTaoDonHangGoc.ToString("dd/MM/yyyy")</h6>
+                            </div>
+                            <hr />
+                            <div class="table-responsive" style="max-height: 150px; overflow-y: auto;">
+                                <table class="table table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col">Sản phẩm</th>
+                                            <th scope="col" class="text-end">Đơn giá</th>
+                                            <th scope="col" class="text-end">Số lượng</th>
+                                            <th scope="col" class="text-end">Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in _context.DonHangChiTiets.Include(c => c.SanPhamChiTiet.SanPham).Where(c => c.MaDonHang == Model.MaDonHangGoc))
+                                        {
+                                            bool isCurrentItem = item.MaDonHangChiTiet == Model.MaDonHangChiTiet;
+                                            <tr class="@(isCurrentItem ? "table-info" : "")">
+                                                <td>
+                                                    <small>
+                                                        <!-- Ưu tiên Tên LƯU CỨNG -->
+                                                        @(item.TenSanPham_Luu ?? item.SanPhamChiTiet.SanPham.TenSanPham) <br />
+
+                                                        <!-- Ưu tiên Màu/Size LƯU CỨNG -->
+                                                        <span class="text-muted">
+                                                            (@(item.TenMau_Luu ?? item.SanPhamChiTiet.MauSac.TenMau) -
+                                                            @(item.TenSize_Luu ?? item.SanPhamChiTiet.Size.TenSize))
+                                                        </span>
+                                                    </small>
+                                                </td>
+                                                <td class="text-end align-middle"><small>@item.DonGia.ToString("N0") ₫</small></td>
+                                                <td class="text-end"><small>x @item.SoLuong</small></td>
+                                                <td class="text-end"><small>@((item.DonGia * item.SoLuong).ToString("N0")) ₫</small></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </article>
+
+                    <div class="alert alert-info">
+                        <!-- Hiển thị tên sản phẩm từ ViewModel (cần sửa Controller để gán đúng) -->
+                        <strong>Sản phẩm:</strong> @Model.TenSanPham <br />
+
+                        <!-- Bạn có thể thêm dòng này nếu muốn hiện chi tiết Màu/Size -->
+                        <strong>Phân loại:</strong> @Model.TenMau - @Model.TenSize <br />
+
+                        <strong>Số lượng đã mua:</strong> @Model.SoLuong <br />
+                        <strong>Giá trị sản phẩm:</strong> @((Model.GiaTri / Model.SoLuong).ToString("N0")) ₫ / sản phẩm
+                    </div>
+
+                    <form asp-action="TaoYeuCau" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="MaDonHangChiTiet" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Loại yêu cầu</strong></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="LoaiYeuCau" value="0" id="doiHangRadio" checked>
+                                    <label class="form-check-label" for="doiHangRadio">Đổi hàng</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" asp-for="LoaiYeuCau" value="1" id="traHangRadio">
+                                    <label class="form-check-label" for="traHangRadio">Trả hàng / Hoàn tiền</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================== KHU VỰC ĐỔI HÀNG MỚI ================== -->
+                        <div id="doiHangSection">
+                            <hr />
+                            <h5>Chọn sản phẩm bạn muốn đổi <span class="text-danger">*</span></h5>
+                            <input type="hidden" asp-for="MaSanPhamChiTietMoi" id="hiddenMaSanPhamChiTietMoi" />
+                            <span asp-validation-for="MaSanPhamChiTietMoi" class="text-danger"></span>
+
+                            <div class="input-group mb-3">
+                                <input type="text" id="selectedProductName" class="form-control" placeholder="-- Nhấn để chọn sản phẩm --" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#productSelectModal">
+                                    <i class="fas fa-search"></i> Chọn...
+                                </button>
+                            </div>
+
+                            <div id="financialSummary" class="p-3 bg-light rounded" style="display: none;">
+                                <h6><strong>Tạm tính chi phí đổi hàng:</strong></h6>
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-7">Giá sản phẩm mới:</dt>
+                                    <dd class="col-sm-5 text-end"><span id="giaMoiDisplay">0 đ</span></dd>
+                                    <dt class="col-sm-7">Trừ giá trị sản phẩm cũ:</dt>
+                                    <dd class="col-sm-5 text-end">- @((Model.GiaTri / Model.SoLuong).ToString("N0")) đ / sản phẩm</dd>
+                                  
+                                    <hr class="my-1" />
+                                    <dt class="col-sm-7 fs-6" id="tongTienLabel">Tổng cộng (dự kiến):</dt>
+                                    <dd class="col-sm-5 text-end fs-6 fw-bold text-danger"><span id="tongTienDisplay">0 đ</span></dd>
+                                </dl>
+                                <small class="text-muted"><i>*Đây là chi phí dự kiến cho <strong>1 sản phẩm</strong>. Admin sẽ xác nhận lại chi phí cuối cùng.</i></small>
+                            </div>
+                        </div>
+                        <div id="refundSectionContainer" style="display: none;">
+                            <hr />
+
+                            <!-- ============================================================= -->
+                            <!-- KỊCH BẢN 1: ĐƠN HÀNG LÀ COD -->
+                            <!-- ============================================================= -->
+                            @if (Model.IsCOD)
+                            {
+                                <h5>Thông tin nhận hoàn tiền </h5>
+                                <p class="text-muted">Vui lòng cung cấp thông tin tài khoản ngân hàng để chúng tôi hoàn tiền cho bạn.</p>
+                                <div id="bankInfoSection_COD" class="mt-3 p-3 border rounded">
+                                    <div class="mb-3">
+                                        <label asp-for="TenNganHang" class="form-label"></label>
+                                        <input asp-for="TenNganHang" class="form-control" />
+                                        <span asp-validation-for="TenNganHang" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="TenChuTaiKhoan" class="form-label"></label>
+                                        <input asp-for="TenChuTaiKhoan" class="form-control" />
+                                        <span asp-validation-for="TenChuTaiKhoan" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="SoTaiKhoan" class="form-label"></label>
+                                        <input asp-for="SoTaiKhoan" class="form-control" />
+                                        <span asp-validation-for="SoTaiKhoan" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="ChiNhanh" class="form-label"></label>
+                                        <input asp-for="ChiNhanh" class="form-control" />
+                                        <span asp-validation-for="ChiNhanh" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- ============================================================= -->
+                            <!-- KỊCH BẢN 2: ĐƠN HÀNG LÀ VNPAY -->
+                            <!-- ============================================================= -->
+                            @if (!Model.IsCOD) // Sử dụng điều kiện ngược lại !Model.IsCOD
+                            {
+                                <h5>Hình thức nhận hoàn tiền (VNPAY) <span class="text-danger">*</span></h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" asp-for="HinhThucHoanTien" value="@((int)HinhThucHoanTien.VNPAY)" id="refundVNPAY" checked>
+                                    <label class="form-check-label" for="refundVNPAY">Hoàn tự động qua cổng VNPAY (Khuyến khích)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" asp-for="HinhThucHoanTien" value="@((int)HinhThucHoanTien.NganHangKhac)" id="refundNganHangKhac">
+                                    <label class="form-check-label" for="refundNganHangKhac">Hoàn qua tài khoản Ngân hàng khác</label>
+                                </div>
+
+                                <div id="bankInfoSection_VNPAY" style="display: none;" class="mt-3 p-3 border rounded">
+                                    <p class="text-muted">Vui lòng cung cấp thông tin tài khoản ngân hàng để chúng tôi hoàn tiền thủ công cho bạn.</p>
+                                    <!-- Do asp-for bị trùng, ta sẽ sử dụng thẻ input thông thường với name -->
+                                    <div class="mb-3">
+                                        <label asp-for="TenNganHang" class="form-label"></label>
+                                        <input name="TenNganHang" class="form-control" />
+                                        <span asp-validation-for="TenNganHang" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="TenChuTaiKhoan" class="form-label"></label>
+                                        <input name="TenChuTaiKhoan" class="form-control" />
+                                        <span asp-validation-for="TenChuTaiKhoan" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="SoTaiKhoan" class="form-label"></label>
+                                        <input name="SoTaiKhoan" class="form-control" />
+                                        <span asp-validation-for="SoTaiKhoan" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="ChiNhanh" class="form-label"></label>
+                                        <input name="ChiNhanh" class="form-control" />
+                                        <span asp-validation-for="ChiNhanh" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SoLuongYeuCau" class="form-label"><strong>Số lượng đổi/trả <span class="text-danger">*</span></strong></label>
+                            <input type="number" asp-for="SoLuongYeuCau" class="form-control" min="1" max="@Model.SoLuong" value="1" />
+                            <span asp-validation-for="SoLuongYeuCau" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="LyDo" class="form-label"><strong>Lý do <span class="text-danger">*</span></strong></label>
+
+                            <!-- 1. DANH SÁCH LÝ DO CỐ ĐỊNH (KHÔNG DÙNG VIEWBAG NỮA) -->
+                            <select class="form-select mb-2" id="reasonSelect">
+                                <option value="">-- Vui lòng chọn lý do --</option>
+                                <option value="Sản phẩm bị lỗi kỹ thuật/không hoạt động">Sản phẩm bị lỗi kỹ thuật/không hoạt động</option>
+                                <option value="Sản phẩm bị bể vỡ/biến dạng khi giao hàng">Sản phẩm bị bể vỡ/biến dạng khi giao hàng</option>
+                                <option value="Giao sai sản phẩm (Sai màu, size, mã)">Giao sai sản phẩm (Sai màu, size, mã)</option>
+                                <option value="Sản phẩm không giống hình ảnh/mô tả">Sản phẩm không giống hình ảnh/mô tả</option>
+                                <option value="Thiếu phụ kiện/quà tặng kèm theo">Thiếu phụ kiện/quà tặng kèm theo</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+
+                            <!-- 2. Ô NHẬP TAY (MẶC ĐỊNH ẨN) -->
+                            <div id="otherReasonDiv" style="display:none;">
+                                <textarea id="otherReasonText" class="form-control" rows="3"
+                                          placeholder="Vui lòng mô tả chi tiết lý do..."></textarea>
+                            </div>
+
+                            <!-- 3. INPUT ẨN ĐỂ GỬI DỮ LIỆU -->
+                            <input type="hidden" asp-for="LyDo" id="finalReason" />
+                            <span asp-validation-for="LyDo" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="GhiChuKhachHang" class="form-label"><strong>Ghi chú thêm</strong></label>
+                            <textarea asp-for="GhiChuKhachHang" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hinhAnh" class="form-label"><strong>Hình ảnh bằng chứng (nếu có)</strong></label>
+                            <input type="file" name="hinhAnh" id="hinhAnh" class="form-control" accept="image/*" />
+                        </div>
+                        <hr />
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="agreePolicy" />
+                                <label class="form-check-label" for="agreePolicy">
+                                    Tôi đã đọc và đồng ý với <a href="#" onclick="showPolicy(event)" style="color:#007BFF;text-decoration:underline;">chính sách đổi/trả hàng</a>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Gửi Yêu Cầu</button>
+                        <a asp-action="LichSuDatHang" asp-controller="GioHang" class="btn btn-secondary">Quay Lại</a>
+                    </form>
+                    <div id="policyModal">
+                        <h3>🔁 Chính sách đổi/trả hàng</h3>
+                        <div class="modal-content">@Html.Raw(Model.NoiDungChinhSach)</div>
+                        <div class="modal-footer"><button onclick="closePolicy()">Đóng</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="productSelectModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tìm và chọn sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="productSearchInput" class="form-control mb-3" placeholder="Nhập tên, màu, size để tìm kiếm...">
+                <hr />
+                <div class="accordion" id="productAccordion">
+                    @if (ViewBag.ProductGroups != null && (ViewBag.ProductGroups as List<ProductGroupViewModel>).Any())
+                    {
+                        @foreach (var group in ViewBag.ProductGroups as List<ProductGroupViewModel>)
+                        {
+                            <div class="accordion-item product-group-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@group.GetHashCode()">@group.ProductName</button>
+                                </h2>
+                                <div id="collapse-@group.GetHashCode()" class="accordion-collapse collapse" data-bs-parent="#productAccordion">
+                                    <div class="accordion-body p-0">
+                                        <div class="list-group list-group-flush">
+                                            @foreach (var variant in group.Variants)
+                                            {
+                                                <a href="#" class="list-group-item list-group-item-action variant-item"
+                                                   data-value="@variant.Id" data-text="@($"{group.ProductName} - {variant.DisplayText}")"
+                                                   data-search-text="@variant.FullTextForSearch.ToLower()" data-price="@variant.Price">
+                                                    @variant.DisplayText
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-center text-muted">Không có sản phẩm nào để đổi.</p>
+                    }
+                </div>
+                <div id="noResultsMessage" class="text-center text-muted mt-3" style="display: none;">Không tìm thấy sản phẩm nào.</div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+#policyModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 640px;
+    height: 420px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    flex-direction: column;
+}
+
+    #policyModal h3 {
+        margin: 0;
+        padding: 20px 30px;
+        background: linear-gradient(to right, #007BFF, #00bfff);
+        color: white;
+        font-size: 20px;
+        font-weight: 600;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+    }
+
+    #policyModal .modal-content {
+        padding: 24px 30px;
+        overflow-y: auto;
+        flex: 1;
+        font-size: 15px;
+        line-height: 1.7;
+        color: #333;
+        background-color: #f9fcff;
+    }
+
+    #policyModal .modal-footer {
+        padding: 15px 30px;
+        text-align: right;
+        background-color: #f1f5f9;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+    }
+
+        #policyModal .modal-footer button {
+            padding: 10px 22px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+            #policyModal .modal-footer button:hover {
+                background-color: #0056b3;
+            }
+
+</style>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- KHAI BÁO BIẾN ---
+            const reasonSelect = document.getElementById('reasonSelect');
+            const otherReasonDiv = document.getElementById('otherReasonDiv');
+            const otherReasonText = document.getElementById('otherReasonText');
+            const finalReasonInput = document.getElementById('finalReason');
+            const mainForm = document.querySelector('form');
+
+            // Các biến khác (Radio, checkbox...)
+            const traHangRadio = document.getElementById('traHangRadio');
+            const doiHangRadio = document.getElementById('doiHangRadio');
+            const refundSectionContainer = document.getElementById('refundSectionContainer');
+            const doiHangSection = document.getElementById('doiHangSection');
+            const bankInfoSection_VNPAY = document.getElementById('bankInfoSection_VNPAY');
+            const refundNganHangKhac = document.getElementById('refundNganHangKhac');
+            const checkbox = document.getElementById('agreePolicy');
+            const submitBtn = document.getElementById('submitBtn');
+            const soLuongInput = document.getElementById('SoLuongYeuCau');
+
+            // Dữ liệu Server
+            const soLuongCu = @(Model.SoLuong);
+            const giaTriDonHang = @(Model.GiaTri.ToString("0", System.Globalization.CultureInfo.InvariantCulture));
+            const giaCuMotSanPham = soLuongCu > 0 ? giaTriDonHang / soLuongCu : 0;
+            const phiShipUocTinh = 0;
+            let giaMoi = 0;
+
+            // =======================================================
+            // 1. LOGIC ĐỒNG BỘ LÝ DO (QUAN TRỌNG)
+            // =======================================================
+
+            function syncReasonUI() {
+                // Kiểm tra giá trị hiện tại của ô ẩn
+                var currentVal = finalReasonInput.value;
+
+                // Nếu ô ẩn có giá trị (do load lại trang)
+                if (currentVal) {
+                    // Kiểm tra xem giá trị đó có nằm trong danh sách <option> không
+                    var exists = Array.from(reasonSelect.options).some(op => op.value === currentVal);
+
+                    if (exists) {
+                        // Nếu có trong danh sách -> Chọn combobox, ẩn ô nhập tay
+                        reasonSelect.value = currentVal;
+                        otherReasonDiv.style.display = 'none';
+                    } else {
+                        // Nếu không có -> Chọn "Khác", hiện ô nhập tay, điền giá trị vào
+                        reasonSelect.value = "Khác";
+                        otherReasonDiv.style.display = 'block';
+                        otherReasonText.value = currentVal;
+                    }
+                }
+            }
+
+            // Gọi ngay khi load trang
+            syncReasonUI();
+
+            // Sự kiện thay đổi Combobox
+            reasonSelect.addEventListener('change', function() {
+                if (this.value === "Khác") {
+                    otherReasonDiv.style.display = 'block';
+                    otherReasonText.required = true;
+                    // Xóa giá trị cũ để người dùng nhập mới
+                    finalReasonInput.value = otherReasonText.value;
+                    otherReasonText.focus();
+                } else {
+                    otherReasonDiv.style.display = 'none';
+                    otherReasonText.required = false;
+                    // Gán trực tiếp giá trị combobox vào ô ẩn
+                    finalReasonInput.value = this.value;
+                }
+            });
+
+            // Sự kiện gõ phím vào ô "Khác"
+            otherReasonText.addEventListener('input', function() {
+                finalReasonInput.value = this.value;
+            });
+
+            // Sự kiện Submit Form (Validation cuối cùng)
+            if (mainForm) {
+                mainForm.addEventListener('submit', function (e) {
+                    // 1. Chưa chọn combobox
+                    if (!reasonSelect.value) {
+                        e.preventDefault();
+                        alert("Vui lòng chọn lý do.");
+                        reasonSelect.focus();
+                        return;
+                    }
+                    // 2. Chọn "Khác" nhưng chưa nhập
+                    if (reasonSelect.value === "Khác" && !otherReasonText.value.trim()) {
+                        e.preventDefault();
+                        alert("Vui lòng nhập lý do cụ thể.");
+                        otherReasonText.focus();
+                        return;
+                    }
+                });
+            }
+
+            // =======================================================
+            // 2. LOGIC TÍNH TOÁN & GIAO DIỆN KHÁC (GIỮ NGUYÊN)
+            // =======================================================
+            function formatCurrency(number) { return new Intl.NumberFormat('vi-VN').format(number) + ' đ'; }
+
+            function toggleSections() {
+                const isTraHang = traHangRadio.checked;
+                if (refundSectionContainer) refundSectionContainer.style.display = isTraHang ? 'block' : 'none';
+                if (doiHangSection) doiHangSection.style.display = doiHangRadio.checked ? 'block' : 'none';
+                if (bankInfoSection_VNPAY) {
+                    bankInfoSection_VNPAY.style.display = (isTraHang && refundNganHangKhac && refundNganHangKhac.checked) ? 'block' : 'none';
+                }
+            }
+
+                   function updateFinancialSummary() {
+            const soLuongDoiTra = parseInt(soLuongInput.value) || 1;
+
+            // Tính tổng tiền chỉ dựa trên chênh lệch giá giữa sản phẩm mới và cũ
+            let tongTien = (giaMoi - giaCuMotSanPham) * soLuongDoiTra;
+
+            document.getElementById('giaMoiDisplay').textContent = formatCurrency(giaMoi * soLuongDoiTra);
+
+            // Cập nhật nhãn hiển thị tùy theo số tiền âm hay dương
+            const tongTienLabel = document.getElementById('tongTienLabel');
+            if (tongTien < 0) {
+                tongTienLabel.textContent = "Số tiền hệ thống sẽ hoàn trả:";
+                document.getElementById('tongTienDisplay').textContent = formatCurrency(Math.abs(tongTien));
+            } else if (tongTien > 0) {
+                tongTienLabel.textContent = "Số tiền bạn cần trả thêm:";
+                document.getElementById('tongTienDisplay').textContent = formatCurrency(tongTien);
+            } else {
+                tongTienLabel.textContent = "Chênh lệch thanh toán:";
+                document.getElementById('tongTienDisplay').textContent = "0 đ";
+            }
+
+            const summaryDiv = document.getElementById('financialSummary');
+            if (summaryDiv) summaryDiv.style.display = (giaMoi > 0) ? 'block' : 'none';
+        }
+
+            // Gán sự kiện
+            if (soLuongInput) soLuongInput.addEventListener('input', updateFinancialSummary);
+            if (traHangRadio && doiHangRadio) {
+                traHangRadio.addEventListener('change', toggleSections);
+                doiHangRadio.addEventListener('change', toggleSections);
+            }
+            document.querySelectorAll('input[name="HinhThucHoanTien"]').forEach(radio => {
+                if (radio) radio.addEventListener('change', toggleSections);
+            });
+            if (checkbox && submitBtn) {
+                checkbox.addEventListener('change', function () { submitBtn.disabled = !this.checked; });
+            }
+
+            // Xử lý Modal chọn sản phẩm
+            document.querySelectorAll('.variant-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('hiddenMaSanPhamChiTietMoi').value = this.dataset.value;
+                    document.getElementById('selectedProductName').value = this.dataset.text;
+                    giaMoi = parseFloat(this.dataset.price);
+                    updateFinancialSummary();
+                    var modalEl = document.getElementById('productSelectModal');
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) { modal.hide(); }
+                });
+            });
+
+            // Xử lý tìm kiếm
+            const searchInput = document.getElementById('productSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function () {
+                    const searchTerm = this.value.toLowerCase();
+                    let anyGroupVisible = false;
+                    document.querySelectorAll('.product-group-item').forEach(group => {
+                        let anyVariantVisible = false;
+                        group.querySelectorAll('.variant-item').forEach(variant => {
+                            const searchText = variant.dataset.searchText;
+                            if (searchText.includes(searchTerm)) {
+                                variant.style.display = 'block';
+                                anyVariantVisible = true;
+                                anyGroupVisible = true;
+                            } else { variant.style.display = 'none'; }
+                        });
+                        group.style.display = anyVariantVisible ? 'block' : 'none';
+                        if (anyVariantVisible && searchTerm.length > 0) {
+                            try { new bootstrap.Collapse(group.querySelector('.accordion-collapse'), { toggle: false }).show(); } catch (e) {}
+                        }
+                    });
+                    document.getElementById('noResultsMessage').style.display = anyGroupVisible ? 'none' : 'block';
+                });
+            }
+
+            toggleSections();
+        });
+
+        function showPolicy(event) { event.preventDefault(); document.getElementById('policyModal').style.display = 'flex'; }
+        function closePolicy() { document.getElementById('policyModal').style.display = 'none'; }
+    </script>
+}

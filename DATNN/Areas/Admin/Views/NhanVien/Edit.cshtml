@@ -1,0 +1,87 @@
+﻿@model DATNN.ViewModel.EditNhanVienViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa Nhân viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+<h4>@Model.HoTen</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaNguoiDung" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="HoTen" class="control-label">Họ và Tên</label>
+                    <input asp-for="HoTen" class="form-control" />
+                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                </div>
+              
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="TenDangNhap" class="control-label">Tên đăng nhập (Không thể đổi)</label>
+                    <input asp-for="TenDangNhap" class="form-control" readonly />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NgayTao" class="control-label">Ngày tạo</label>
+                    <input asp-for="NgayTao" class="form-control" readonly />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" type="email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="SoDienThoai" class="control-label">Số điện thoại</label>
+                    <input asp-for="SoDienThoai" class="form-control" />
+                    <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="NgaySinh" class="control-label">Ngày sinh</label>
+                    <input asp-for="NgaySinh" class="form-control" type="date" />
+                    <span asp-validation-for="NgaySinh" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="GioiTinh" class="control-label">Giới tính</label>
+                    <div>
+                        <input type="radio" asp-for="GioiTinh" value="Nam" /> Nam
+                        <input type="radio" asp-for="GioiTinh" value="Nữ" class="ms-3" /> Nữ
+                        <input type="radio" asp-for="GioiTinh" value="Khác" class="ms-3" /> Khác
+                    </div>
+                    <span asp-validation-for="GioiTinh" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="TrangThai" class="control-label">Trạng thái</label>
+                <div>
+                    <input type="radio" asp-for="TrangThai" value="1" /> Hoạt động
+                </div>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>
+@* ========================================================== *@
+@* === THÊM KHỐI CODE NÀY VÀO CUỐI FILE === *@
+@* ========================================================== *@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

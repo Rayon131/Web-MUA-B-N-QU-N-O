@@ -1,0 +1,182 @@
+﻿@model DATNN.Models.DiaChiNguoiDung
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-6 col-md-8">
+        <h3 class="text-center mb-4 fw-bold">📦 Thêm địa chỉ giao hàng</h3>
+        <form asp-action="Edit" method="post" class="p-4 bg-light rounded shadow diachi-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Ten" class="control-label fw-bold">Họ và tên</label>
+                <input asp-for="Ten" class="form-control diachi-input" />
+                <span asp-validation-for="Ten" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="SoDienThoai" class="control-label fw-bold">Số điện thoại</label>
+                <input asp-for="SoDienThoai" class="form-control diachi-input" />
+                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+            </div>
+
+            <!-- ví dụ trong form Edit địa chỉ người dùng -->
+            <div class="form-group mb-3">
+                <label for="ThanhPho" class="fw-bold">Tỉnh/Thành phố</label>
+                <select class="form-select diachi-select" id="city" data-value="@Model.ThanhPho">
+                    <option value="">Chọn tỉnh thành</option>
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="Quan" class="fw-bold">Quận/Huyện</label>
+                <select class="form-select diachi-select" id="district" data-value="@Model.Quan">
+                    <option value="">Chọn quận huyện</option>
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="Phuong" class="fw-bold">Phường/Xã</label>
+                <select class="form-select diachi-select" id="ward" data-value="@Model.Phuong">
+                    <option value="">Chọn phường xã</option>
+                </select>
+            </div>
+
+            <input type="hidden" name="TenThanhPho" id="TenThanhPho" value="@Model.ThanhPho" />
+            <input type="hidden" name="TenQuan" id="TenQuan" value="@Model.Quan" />
+            <input type="hidden" name="TenPhuong" id="TenPhuong" value="@Model.Phuong" />
+
+
+            <div class="form-group mb-3">
+                <label asp-for="ChiTietDiaChi" class="control-label fw-bold">Chi tiết địa chỉ</label>
+                <input asp-for="ChiTietDiaChi" class="form-control diachi-input" />
+                <span asp-validation-for="ChiTietDiaChi" class="text-danger"></span>
+            </div>
+
+            <div class="form-group text-center">
+                <input type="submit" value="Cập Nhật" class="btn btn-primary px-4 diachi-btn" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .diachi-form {
+        margin-top: 100px;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    .diachi-input, .diachi-select {
+        font-size: 1rem;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+    }
+
+    .diachi-btn {
+        font-weight: bold;
+        font-size: 1rem;
+        width: 120px;
+    }
+
+</style>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+    const city = document.getElementById("city");
+    const district = document.getElementById("district");
+    const ward = document.getElementById("ward");
+
+    axios.get("/json/data.json").then(function(response) {
+        const data = response.data;
+
+        // 1. render tất cả tỉnh/thành
+        for (const c of data) {
+            city.options[city.options.length] = new Option(c.Name, c.Id);
+        }
+
+        // 2. đọc giá trị mặc định từ DB (tên đã lưu)
+        const defaultCityName = city.getAttribute("data-value");
+        const defaultDistrictName = district.getAttribute("data-value");
+        const defaultWardName = ward.getAttribute("data-value");
+
+        // 3. nếu có tỉnh cũ thì chọn
+        const cityObj = data.find(c => c.Name === defaultCityName);
+        if (cityObj) {
+            city.value = cityObj.Id;
+            document.getElementById("TenThanhPho").value = cityObj.Name;
+
+            // render quận
+            for (const d of cityObj.Districts) {
+                district.options[district.options.length] = new Option(d.Name, d.Id);
+            }
+
+            // chọn quận nếu có
+            const districtObj = cityObj.Districts.find(d => d.Name === defaultDistrictName);
+            if (districtObj) {
+                district.value = districtObj.Id;
+                document.getElementById("TenQuan").value = districtObj.Name;
+
+                // render phường
+                for (const w of districtObj.Wards) {
+                    ward.options[ward.options.length] = new Option(w.Name, w.Id);
+                }
+
+                // chọn phường nếu có
+                const wardObj = districtObj.Wards.find(w => w.Name === defaultWardName);
+                if (wardObj) {
+                    ward.value = wardObj.Id;
+                    document.getElementById("TenPhuong").value = wardObj.Name;
+                }
+            }
+        }
+
+        // 4. sự kiện onchange: khi người dùng thay đổi tỉnh
+        city.onchange = function () {
+            // reset
+            district.length = 1;  // giữ option đầu
+            ward.length = 1;
+
+            const selectedCity = data.find(c => c.Id === this.value);
+            document.getElementById("TenThanhPho").value = selectedCity ? selectedCity.Name : "";
+
+            if (selectedCity) {
+                for (const d of selectedCity.Districts) {
+                    district.options[district.options.length] = new Option(d.Name, d.Id);
+                }
+            }
+        };
+
+        // 5. onchange quận -> load phường
+        district.onchange = function () {
+            ward.length = 1;
+            const selectedCity = data.find(c => c.Id === city.value);
+            const selectedDistrict = selectedCity?.Districts.find(d => d.Id === this.value);
+            document.getElementById("TenQuan").value = selectedDistrict ? selectedDistrict.Name : "";
+
+            if (selectedDistrict) {
+                for (const w of selectedDistrict.Wards) {
+                    ward.options[ward.options.length] = new Option(w.Name, w.Id);
+                }
+            }
+        };
+
+        // 6. onchange phường
+        ward.onchange = function () {
+            const selectedWardName = ward.options[ward.selectedIndex].text;
+            document.getElementById("TenPhuong").value = selectedWardName;
+        };
+
+    }).catch(function(error) {
+        console.error("Không thể load data.json:", error);
+    });
+</script>

@@ -1,0 +1,486 @@
+﻿ @model DATNN.ViewModel.HomeViewModel
+<style>
+    /* Khung ảnh sản phẩm */
+    .fruite-img {
+        width: 100%;
+        height: 230px; /* chỉnh 200–260 tùy giao diện */
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+
+        .fruite-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+    /* Card sản phẩm có chiều cao đều */
+    .fruite-item {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .fruite-item .p-3 {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Badge danh mục đẹp hơn */
+        .fruite-item .badge {
+            font-size: 0.85rem;
+            padding: 6px 10px;
+            border-radius: 10px;
+        }
+
+    .pagination {
+        flex-wrap: nowrap !important; /* Không cho xuống dòng */
+    }
+
+        .pagination .page-item {
+            white-space: nowrap; /* Không cho text tự xuống hàng */
+        }
+
+        .pagination .page-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+
+    /* Khung form */
+    .search-box {
+        max-width: 500px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    /* Nhóm input + button */
+    .search-group {
+        display: flex;
+        width: 100%;
+    }
+
+    /* Ô nhập */
+    .search-input {
+        flex: 1;
+        padding: 12px 18px;
+        border: 2px solid #6c757d;
+        border-right: none;
+        border-radius: 50px 0 0 50px;
+        font-size: 16px;
+        outline: none;
+    }
+
+    /* Nút tìm kiếm */
+    .search-btn {
+        padding: 0 20px;
+        background: #0d6efd;
+        border: 2px solid #6c757d;
+        border-left: none;
+        border-radius: 0 50px 50px 0;
+        color: #fff;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .search-btn i {
+            color: #fff;
+        }
+
+        /* Hover nhẹ */
+        .search-btn:hover {
+            background: #0b5ed7;
+        }
+
+
+    .fruite-categorie {
+        max-height: 250px; /* chỉnh 180–300 tùy ý */
+        overflow-y: auto;
+        padding-right: 10px; /* tránh text dính vào scrollbar */
+    }
+
+        /* Scrollbar đẹp hơn (Chrome/Edge) */
+        .fruite-categorie::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .fruite-categorie::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .fruite-categorie::-webkit-scrollbar-thumb {
+            background: #bbb;
+            border-radius: 10px;
+        }
+
+            .fruite-categorie::-webkit-scrollbar-thumb:hover {
+                background: #999;
+            }
+
+    .sale-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ff4757;
+        color: white;
+        padding: 5px 10px;
+        font-weight: bold;
+        border-radius: 5px;
+        z-index: 20;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: pulse 2s infinite; /* Hiệu ứng nhấp nháy nhẹ */
+    }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    /* Hiệu ứng hover cho card sản phẩm */
+    .border-hover {
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+        .border-hover:hover {
+            transform: translateY(-5px);
+            border-color: #0d6efd;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    /* Cắt tỉa text để không bị vỡ khung */
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Nút thêm vào giỏ hàng đẹp hơn */
+    .btn-primary {
+        background: linear-gradient(45deg, #0d6efd, #00d2ff);
+        border: none;
+        transition: 0.3s;
+    }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+
+    .badge-km {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ff4757; /* Màu đỏ nổi bật */
+        color: white;
+        padding: 3px 8px;
+        font-size: 13px;
+        font-weight: bold;
+        border-radius: 4px;
+        z-index: 5;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: pulse 2s infinite;
+    }
+
+    /* Hiệu ứng hover cho card sản phẩm */
+    .fruite-item {
+        transition: transform 0.3s ease;
+    }
+
+        .fruite-item:hover {
+            transform: translateY(-5px);
+        }
+</style>
+
+
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content rounded-0">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Search by keyword</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex align-items-center">
+                <div class="input-group w-75 mx-auto d-flex">
+                    <input type="search" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
+                    <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid page-header py-5" style="margin-top: 200px;">
+    <h1 class="text-center text-white display-6">Sản Phẩm</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+      
+    </ol>
+</div>
+<!-- Single Page Header End -->
+<!-- Fruits Shop Start-->
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <h1 class="mb-4">Legend Store</h1>
+        <div class="row g-4">
+            <div class="col-lg-12">
+                <div class="row g-4">
+                    <div class="col-xl-3">
+                        <div class="input-group w-100 mx-auto d-flex">
+                           <div class="col-xl-3">
+                                <form method="get" action="/SanPham/Index" class="search-box">
+                                    <div class="search-group">
+                                        <input type="search"
+                                               name="keyword"
+                                               value="@Model.Keyword"
+                                               class="search-input"
+                                               placeholder="Tìm sản phẩm..." />
+
+                                        <button class="search-btn">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </form>
+
+
+                        </div>
+
+                        </div>
+                    </div>
+                    <div class="col-6"></div>
+                   
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="row g-4">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <h4>Các Danh Mục</h4>
+                                    <ul class="list-unstyled fruite-categorie">
+                                        @foreach (var dm in Model.DanhMucs)
+                                        {
+                                            <li>
+                                                <div class="d-flex justify-content-between fruite-name">
+                                                    <a href="@Url.Action("Index", new { categoryId = dm.MaDanhMuc })">
+                                                        <i class="fas fa-tags me-2"></i>@dm.TenDanhMuc
+                                                    </a>
+                                                    <span>(@dm.SoLuong)</span>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+
+                                </div>
+
+                            </div>
+                            <div class="col-lg-12">
+                                <h4 class="mb-2">Giá</h4>
+
+                                <form method="get" action="/SanPham/Index">
+                                    <input type="hidden" name="categoryId" value="@Model.SelectedCategoryId" />
+
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>0 VNĐ</span>
+                                        <span id="priceValue">
+                                            @(Model.MaxPrice.HasValue ? Model.MaxPrice.Value.ToString("N0") : "0") VNĐ
+                                        </span>
+                                    </div>
+
+                                    <input type="range"
+                                           class="form-range w-100"
+                                           id="rangeInput"
+                                           name="maxPrice"
+                                           min="0"
+                                           max="5000000"
+                                           value="@(Model.MaxPrice ?? 0)"
+                                           oninput="updatePrice(this.value)">
+
+                                    <button class="btn btn-primary w-100 mt-2">Lọc giá</button>
+                                </form>
+                            </div>
+                          
+                          
+                           
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="row g-4 ">
+
+                            @foreach (var sp in Model.SanPhams)
+                            {
+                                var giaGoc = sp.SanPhamChiTiets?.FirstOrDefault()?.GiaBan ?? 0;
+
+                                // Lấy dữ liệu khuyến mãi từ ViewBag
+                                var promoData = ViewBag.PromoData as Dictionary<int, (decimal GiaMoi, int PhanTram)>;
+                                bool coKhuyenMai = promoData != null && promoData.ContainsKey(sp.MaSanPham);
+
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="rounded shadow-sm overflow-hidden fruite-item position-relative bg-white">
+
+                                        <!-- CHỈ HIỆN BADGE GIẢM GIÁ NẾU CÓ KHUYẾN MÃI -->
+                                        @if (coKhuyenMai)
+                                        {
+                                            <div class="badge-km">-@promoData[sp.MaSanPham].PhanTram%</div>
+                                        }
+
+                                        <a asp-controller="SanPhamChiTiet" asp-action="Detail" asp-route-id="@sp.MaSanPham" class="...">
+                                            <div class="fruite-img">
+                                                <img src="@Url.Content(!string.IsNullOrEmpty(sp.AnhSanPham) ? "~/images/" + sp.AnhSanPham : "~/img/placeholder.jpg")" alt="@sp.TenSanPham">
+                                            </div>
+                                        </a>
+
+                                        <!-- Badge Danh Mục -->
+                                        <span class="badge bg-secondary position-absolute" style="top: 10px; left: 10px;">
+                                            @sp.DanhMuc?.TenDanhMuc
+                                        </span>
+
+                                        <div class="p-3">
+                                            <h5 class="fw-bold text-dark mb-2">@sp.TenSanPham</h5>
+
+                                            <div class="mb-3">
+                                                @if (coKhuyenMai)
+                                                {
+                                                    <!-- HIỆN GIÁ MỚI VÀ GIÁ CŨ GẠCH ĐI NẾU CÓ KM -->
+                                                    <span class="text-danger fw-bold fs-5">
+                                                        @promoData[sp.MaSanPham].GiaMoi.ToString("N0") VNĐ
+                                                    </span>
+                                                    <br />
+                                                    <small class="text-muted text-decoration-line-through">
+                                                        @giaGoc.ToString("N0") VNĐ
+                                                    </small>
+                                                }
+                                                else
+                                                {
+                                                    <!-- CHỈ HIỆN GIÁ GỐC NẾU KHÔNG CÓ KM -->
+                                                    <span class="text-danger fw-bold fs-5">
+                                                        @giaGoc.ToString("N0") VNĐ
+                                                    </span>
+                                                }
+                                            </div>
+
+                                            <a asp-controller="SanPhamChiTiet" asp-action="Detail" asp-route-id="@sp.MaSanPham" class="btn btn-outline-primary rounded-pill px-3 w-100">
+                                                <i class="fa fa-shopping-bag me-2"></i> Thêm vào giỏ
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- PHÂN TRANG -->
+                            <div class="col-12">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center">
+
+                                        <!-- Previous -->
+                                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                            <a class="page-link" href="@Url.Action("Index", new {
+                                            page = Model.CurrentPage - 1,
+                                            categoryId = Model.SelectedCategoryId,
+                                            keyword = Model.Keyword,
+                                            minPrice = Model.MinPrice,
+                                            maxPrice = Model.MaxPrice
+                                        })">‹</a>
+                                        </li>
+
+                                        <!-- Trang đầu -->
+                                        @if (Model.CurrentPage > 3)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" href="@Url.Action("Index", new {
+                                                page = 1,
+                                                categoryId = Model.SelectedCategoryId,
+                                                keyword = Model.Keyword,
+                                                minPrice = Model.MinPrice,
+                                                maxPrice = Model.MaxPrice
+                                            })">1</a>
+                                            </li>
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        }
+
+                                        <!-- Các trang xung quanh -->
+                                        @for (int i = Model.CurrentPage - 2; i <= Model.CurrentPage + 2; i++)
+                                        {
+                                            if (i > 0 && i <= Model.TotalPages)
+                                            {
+                                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                                    <a class="page-link" href="@Url.Action("Index", new {
+                                                    page = i,
+                                                    categoryId = Model.SelectedCategoryId,
+                                                    keyword = Model.Keyword,
+                                                    minPrice = Model.MinPrice,
+                                                    maxPrice = Model.MaxPrice
+                                                })">@i</a>
+                                                </li>
+                                            }
+                                        }
+
+                                        <!-- Trang cuối -->
+                                        @if (Model.CurrentPage < Model.TotalPages - 2)
+                                        {
+                                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="@Url.Action("Index", new {
+                                            page = Model.TotalPages,
+                                            categoryId = Model.SelectedCategoryId,
+                                            keyword = Model.Keyword,
+                                            minPrice = Model.MinPrice,
+                                            maxPrice = Model.MaxPrice
+                                        })">@Model.TotalPages</a>
+                                            </li>
+                                        }
+
+                                        <!-- Next -->
+                                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                            <a class="page-link" href="@Url.Action("Index", new {
+                                            page = Model.CurrentPage + 1,
+                                            categoryId = Model.SelectedCategoryId,
+                                            keyword = Model.Keyword,
+                                            minPrice = Model.MinPrice,
+                                            maxPrice = Model.MaxPrice
+                                        })">›</a>
+                                        </li>
+
+                                    </ul>
+                                </nav>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+<script>
+    function updatePrice(val) {
+        document.getElementById("priceValue").innerText =
+            Number(val).toLocaleString('vi-VN') + " VNĐ";
+    }
+</script>
+}

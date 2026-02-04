@@ -1,0 +1,603 @@
+﻿@model List<SanPhamViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<style>
+    .btn-group .btn {
+        border-radius: 6px !important;
+    }
+
+    .btn-group {
+        border-radius: 8px;
+    }
+
+    .btn.disabled, .btn:disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .row-promotion {
+        background-color: #fff9e6 !important; /* Vàng nhạt */
+        transition: all 0.3s ease;
+    }
+
+    /* Badge khuyến mãi nhấp nháy nhẹ để gây chú ý */
+    .promo-badge {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        animation: pulse-red 2s infinite;
+        display: inline-block;
+        margin-left: 5px;
+        vertical-align: middle;
+    }
+
+    @@keyframes pulse-red {
+        0%
+
+    {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+    }
+
+    }
+</style>
+
+<h1>Danh sách sản phẩm</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p>
+        <a asp-action="Create" class="btn btn-success">Tạo mới sản phẩm</a>
+    </p>
+    <div class="mx-3 flex-grow-1" style="max-width: 400px;">
+        <form asp-action="Index" method="get" class="input-group">
+            <input type="hidden" name="statusFilter" value="@ViewBag.CurrentStatusFilter" />
+            <input type="text" name="searchString" class="form-control"
+                   placeholder="Tìm tên hoặc mã sản phẩm..." value="@ViewBag.CurrentSearch">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search"></i> Tìm
+            </button>
+            @if (!string.IsNullOrEmpty(ViewBag.CurrentSearch))
+            {
+                <a asp-action="Index" asp-route-statusFilter="@ViewBag.CurrentStatusFilter" class="btn btn-outline-secondary">Xóa</a>
+            }
+        </form>
+    </div>
+    <div class="d-flex align-items-center">
+        <form asp-action="ImportFromExcel" method="post" enctype="multipart/form-data" id="importForm" class="d-flex align-items-center me-3">
+            @Html.AntiForgeryToken()
+
+            @* SỬA ĐỔI Ở ĐÂY: Bọc các input vào một div để dễ sắp xếp *@
+            <div class="d-flex flex-column">
+                <div>
+                    <label for="excelFile" class="form-label-sm small">1. Chọn file Excel:</label>
+                    <input type="file" name="excelFile" id="excelFile" class="form-control form-control-sm" accept=".xlsx, .xls" required />
+                </div>
+                <div class="mt-2">
+                    @* THÊM MỚI Ở ĐÂY: Input để chọn nhiều file ảnh *@
+                    <label for="imageFiles" class="form-label-sm small">2. Chọn các file ảnh (tùy chọn):</label>
+                    <input type="file" name="imageFiles" id="imageFiles" class="form-control form-control-sm" accept="image/*" multiple />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-sm btn-info ms-2 align-self-end" style="white-space: nowrap;">Nhập từ Excel</button>
+        </form>
+        <a asp-action="DownloadExcelTemplate" class="btn btn-sm btn-outline-success" style="white-space: nowrap;">Tải file mẫu</a>
+    </div>
+    <div>
+        <strong>Lọc theo trạng thái:</strong>
+        <a asp-action="Index" asp-route-statusFilter="active" asp-route-searchString="@ViewBag.CurrentSearch" class="btn btn-sm @(ViewBag.CurrentStatusFilter == "active" ? "btn-primary" : "btn-outline-primary")">Đang kinh doanh</a>
+        <a asp-action="Index" asp-route-statusFilter="not_yet_active" asp-route-searchString="@ViewBag.CurrentSearch" class="btn btn-sm @(ViewBag.CurrentStatusFilter == "not_yet_active" ? "btn-info" : "btn-outline-info")">Chưa kinh doanh</a>
+
+        <a asp-action="Index" asp-route-statusFilter="inactive" asp-route-searchString="@ViewBag.CurrentSearch" class="btn btn-sm @(ViewBag.CurrentStatusFilter == "inactive" ? "btn-secondary" : "btn-outline-secondary")">Ngừng kinh doanh</a>
+    </div>
+</div>
+@* THÊM PHẦN HIỂN THỊ THÔNG BÁO (TempData) *@
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning">@TempData["Warning"]</div>
+}
+@if (ViewBag.FilterMessage != null)
+{
+    <div class="alert alert-info">@ViewBag.FilterMessage</div>
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th class="text-center" style="width: 60px;">Mã SP</th>
+                <th>Tên SP</th>
+                <th>Ảnh</th>
+                <th>Ngày tạo</th>
+                <th>Tổng SL Tồn Kho</th>
+                <th>Trạng thái</th>
+                <th style="width: 200px;" class="text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* Sửa lại vòng lặp để dùng ViewModel *@
+            @foreach (var viewModel in Model)
+            {
+                var sanPham = viewModel.SanPham;
+                <tr id="row-@sanPham.MaSanPham" class="@(viewModel.HasPromotion ? "row-promotion" : "")">
+                    <td class="text-center align-middle fw-bold text-secondary">
+                        #@sanPham.MaSanPham
+                    </td>
+                    <td>
+                     
+                        <strong>@sanPham.TenSanPham</strong><br />
+                        @if (viewModel.HasPromotion)
+                        {
+                            <span class="promo-badge"><i class="bi bi-lightning-fill"></i> ĐANG GIẢM GIÁ</span>
+                        }
+                        <small class="text-muted">Mô tả: @sanPham.MoTa</small><br />
+                        <small class="text-muted">@sanPham.DanhMuc?.TenDanhMuc / @sanPham.ChatLieu?.TenChatLieu / @sanPham.XuatXu?.TenXuatXu</small>
+                    </td>
+                    <td>
+                        <img src="@Url.Content(!string.IsNullOrEmpty(sanPham.AnhSanPham) ? $"~/images/{sanPham.AnhSanPham}" : "~/img/placeholder.jpg")"
+                             style="width:80px; height:80px; object-fit: cover;" alt="Ảnh SP">
+                    </td>
+                    <td>@sanPham.ThoiGianTao?.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @{
+                            // Tính số lượng đang kinh doanh
+                            var activeStock = sanPham.SanPhamChiTiets.Where(ct => ct.TrangThai == 1).Sum(ct => ct.SoLuong);
+                            // Tính tổng số lượng vật lý
+                            var totalStock = sanPham.SanPhamChiTiets.Sum(ct => ct.SoLuong);
+                        }
+
+                        <span title="Đang kinh doanh / Tổng tồn kho vật lý"
+                              data-bs-toggle="tooltip"
+                              data-bs-placement="top">
+                            @activeStock / @totalStock
+                        </span>
+                    </td>
+                    <td id="status-text-@sanPham.MaSanPham" class="text-center">
+                        @if (sanPham.TrangThai == 1)
+                        {
+                            <span class="badge bg-success">Đang kinh doanh</span>
+                        }
+                        else if (sanPham.TrangThai == 2)
+                        {
+                            <span class="badge bg-info">Chưa kinh doanh</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Ngừng kinh doanh</span>
+                        }
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="d-flex flex-column gap-2 align-items-center">
+
+                            @* NHÓM 1: Sửa - Chi tiết *@
+                            <div class="btn-group btn-group-sm shadow-sm w-100" role="group">
+                                <a asp-action="Edit"
+                                   asp-route-id="@sanPham.MaSanPham"
+                                   class="btn btn-outline-primary fw-semibold @(sanPham.TrangThai == 0 ? "disabled" : "")">
+                                    <i class="bi bi-pencil-square"></i> Sửa
+                                </a>
+                                <a asp-action="Details"
+                                   asp-route-id="@sanPham.MaSanPham"
+                                   class="btn btn-outline-info fw-semibold @(sanPham.TrangThai == 0 ? "disabled" : "")">
+                                    <i class="bi bi-card-list"></i> CT
+                                </a>
+                            </div>
+
+                            @* NHÓM 2: Phiên bản (Tách ra cho gọn) *@
+                            @* Dòng 2.1: Xem phiên bản (Full width) *@
+                            <button class="btn btn-info btn-sm fw-semibold w-100 shadow-sm @(sanPham.TrangThai == 0 ? "disabled" : "")"
+                                    onclick="loadChiTiet(@sanPham.MaSanPham, this, @sanPham.TrangThai)">
+                                <i class="bi bi-eye-fill me-1"></i>Xem phiên bản
+                            </button>
+
+                            <div class="btn-group btn-group-sm w-100 shadow-sm">
+                                <button type="button"
+                                        class="btn btn-success dropdown-toggle fw-semibold @(sanPham.TrangThai == 0 ? "disabled" : "")"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="bi bi-plus-circle me-1"></i> Thêm phiên bản
+                                </button>
+                                <ul class="dropdown-menu">
+                                    @* Lựa chọn 1: Thêm thủ công 1 cái *@
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="SanPhamChiTiet"
+                                           asp-action="Create"
+                                           asp-route-maSanPham="@sanPham.MaSanPham">
+                                            <i class="bi bi-file-earmark-plus me-2 text-success"></i>Thêm 1 phiên bản
+                                        </a>
+                                    </li>
+                                    @* Lựa chọn 2: Thêm nhiều *@
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="SanPhamChiTiet"
+                                           asp-action="CreateMulti"
+                                           asp-route-id="@sanPham.MaSanPham">
+                                            <i class="bi bi-collection me-2 text-primary"></i>Thêm nhiều phiên bản
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            @* NHÓM 3: Nút trạng thái *@
+                            @{
+                                string buttonClass = "btn-outline-success";
+                                string buttonIcon = "<i class='bi bi-play-fill'></i>";
+                                string buttonTitle = "Kinh doanh lại";
+
+                                if (sanPham.TrangThai == 1)
+                                {
+                                    buttonClass = "btn-outline-warning";
+                                    buttonIcon = "<i class='bi bi-pause-fill'></i>";
+                                    buttonTitle = "Ngừng kinh doanh";
+                                }
+                                else if (sanPham.TrangThai == 2)
+                                {
+                                    buttonClass = "btn-outline-primary";
+                                    buttonTitle = "Bắt đầu bán";
+                                }
+                            }
+                            <button class="btn btn-sm @buttonClass w-100 fw-bold toggle-status-btn shadow-sm"
+                                    data-id="@sanPham.MaSanPham"
+                                    title="@buttonTitle">
+                                @Html.Raw(buttonIcon) @buttonTitle
+                            </button>
+
+                        </div>
+                    </td>
+                </tr>
+                <tr class="sanphamchitiet-row" style="display:none;">
+                    @* ========================================================== *@
+                    @* == CHỖ SỬA 5: CẬP NHẬT LẠI COLSPAN CHO KHỚP == *@
+                    @* ========================================================== *@
+                    <td colspan="7" class="chitiet-container p-0"></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<form id="antiForgeryForm" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+<div class="modal fade" id="addStockModal" tabindex="-1" aria-labelledby="addStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStockModalLabel">Nhập kho cho phiên bản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Sản phẩm:</strong> <span id="modalProductName"></span></p>
+                <p><strong>Tồn kho hiện tại:</strong> <strong id="modalCurrentStock" class="text-primary"></strong></p>
+                <hr>
+                <div class="mb-3">
+                    <label for="quantityToAddInput" class="form-label">Số lượng nhập thêm:</label>
+                    <input type="number" class="form-control" id="quantityToAddInput" min="1" required placeholder="Nhập số lượng mới...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmAddStockBtn">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="adjustStockModal" tabindex="-1" aria-labelledby="adjustStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adjustStockModalLabel">Điều chỉnh tồn kho</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Sản phẩm:</strong> <span id="modalAdjustProductName"></span></p>
+                <p><strong>Tồn kho trên hệ thống:</strong> <strong id="modalAdjustCurrentStock" class="text-danger"></strong></p>
+                <hr>
+                <div class="mb-3">
+                    <label for="actualQuantityInput" class="form-label">Số lượng thực tế đếm được:</label>
+                    <input type="number" class="form-control" id="actualQuantityInput" min="0" required>
+                </div>
+                <div class="mb-3">
+                    <label for="adjustmentReasonInput" class="form-label">Lý do điều chỉnh (không bắt buộc):</label>
+                    <textarea class="form-control" id="adjustmentReasonInput" rows="2" placeholder="Ví dụ: Thất thoát, hàng hỏng..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="confirmAdjustStockBtn">Xác nhận điều chỉnh</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // ===================================================================
+        // CÁC HÀM TIỆN ÍCH
+        // ===================================================================
+
+        // Hàm tải lại danh sách phiên bản con bằng AJAX
+        function reloadChiTiet(sanPhamId, filter, container) {
+            container.html('<div class="p-5 text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+            $.get("/Admin/SanPhamChiTiet/ListBySanPham", { sanPhamId: sanPhamId, statusFilter: filter }, function (data) {
+                container.html(data);
+            }).fail(function() {
+                container.html('<div class="p-3 text-center text-danger">Đã xảy ra lỗi khi tải dữ liệu.</div>');
+            });
+        }
+
+        // Hàm mở hoặc đóng danh sách phiên bản con
+        function loadChiTiet(sanPhamId, btn, parentStatus) {
+            var row = $(btn).closest("tr").next(".sanphamchitiet-row");
+            var container = row.find(".chitiet-container");
+
+            if (row.is(":visible")) {
+                row.hide();
+                container.empty();
+            } else {
+                // Ẩn tất cả các dòng chi tiết khác trước khi hiển thị dòng mới
+                $(".sanphamchitiet-row").hide().find(".chitiet-container").empty();
+                row.show();
+
+                // Xác định bộ lọc mặc định dựa trên trạng thái của sản phẩm cha
+                let initialFilter = 'inactive';
+                if (parentStatus === 1) { initialFilter = 'active'; }
+                else if (parentStatus === 2) { initialFilter = 'not_yet_active'; }
+
+                reloadChiTiet(sanPhamId, initialFilter, container);
+            }
+        }
+
+        // ===================================================================
+        // SỰ KIỆN VÀ LOGIC CHÍNH KHI TRANG ĐÃ TẢI XONG
+        // ===================================================================
+
+        $(document).ready(function() {
+
+            let currentVariantIdForStock = null;
+
+            // --- SCRIPT CHO NÚT CỦA SẢN PHẨM CHA (.toggle-status-btn) ---
+            // Khi nhấn, sẽ thay đổi trạng thái và tải lại toàn bộ trang.
+            $('.toggle-status-btn').on('click', function () {
+                if (!confirm("Bạn có chắc chắn muốn thay đổi trạng thái của sản phẩm này và tất cả các phiên bản con không?")) {
+                    return;
+                }
+                const sanPhamId = $(this).data('id');
+                const token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
+
+                fetch(`/Admin/SanPham/ToggleStatus?id=${sanPhamId}`, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cập nhật trạng thái thành công! Trang sẽ được tải lại.');
+                        window.location.reload(); // Tải lại để đảm bảo dữ liệu mới nhất
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Lỗi AJAX khi đổi trạng thái sản phẩm cha:', error));
+            });
+
+            // --- SCRIPT CHO NÚT CỦA PHIÊN BẢN CON (.toggle-chitiet-status-btn) ---
+            // Khi nhấn, chỉ cập nhật phiên bản, tải lại danh sách con và cập nhật số liệu.
+                    $(document).on('click', '.toggle-chitiet-status-btn', function() {
+            const chiTietId = $(this).data('id');
+            const token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
+            const container = $(this).closest('.chitiet-container');
+            // Lấy bộ lọc đang active trong danh sách phiên bản con
+            const currentFilterInChiTiet = container.find('.chitiet-filter-btn.btn-primary, .chitiet-filter-btn.btn-secondary, .chitiet-filter-btn.btn-info').data('filter') || 'active';
+            // Lấy ID sản phẩm cha từ hàng TR trước đó
+            const sanPhamId = $(this).closest('.sanphamchitiet-row').prev('tr').attr('id').replace('row-', '');
+
+            fetch(`/Admin/SanPhamChiTiet/ToggleStatus/${chiTietId}`, {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // 1. Tải lại danh sách phiên bản con
+                    reloadChiTiet(sanPhamId, currentFilterInChiTiet, container);
+
+                    // 2. Cập nhật lại ô "Tổng SL Tồn Kho" của sản phẩm cha
+                    const parentRow = $(`#row-${sanPhamId}`);
+                    parentRow.find('td').eq(3).find('span').text(`${data.newActiveStock} / ${data.newTotalStock}`);
+
+                    // 3. KHÔNG làm gì cả (Không ẩn sản phẩm cha)
+                    // Logic ẩn đã được loại bỏ hoàn toàn.
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi AJAX khi đổi trạng thái phiên bản:', error);
+                alert('Đã xảy ra lỗi kết nối. Vui lòng thử lại.');
+            });
+        });
+            // --- CÁC SỰ KIỆN KHÁC ---
+
+            // Sự kiện click nút lọc trong danh sách phiên bản
+            $(document).on('click', '.chitiet-filter-btn', function() {
+                const sanPhamId = $(this).data('sanphamid');
+                const filter = $(this).data('filter');
+                const container = $(this).closest('.chitiet-container');
+                reloadChiTiet(sanPhamId, filter, container);
+            });
+
+            // Mở modal Nhập kho
+            $(document).on('click', '.add-stock-btn', function() {
+                currentVariantIdForStock = $(this).data('id');
+                $('#modalProductName').text($(this).data('name'));
+                $('#modalCurrentStock').text($(this).data('current-stock'));
+                $('#quantityToAddInput').val('').focus();
+                $('#addStockModal').modal('show');
+            });
+
+                   $('#confirmAddStockBtn').on('click', function() {
+            const quantityToAdd = parseInt($('#quantityToAddInput').val());
+            const token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
+
+            if (isNaN(quantityToAdd) || quantityToAdd <= 0) {
+                alert('Vui lòng nhập số lượng hợp lệ (lớn hơn 0).');
+                return;
+            }
+
+            fetch(`/Admin/SanPhamChiTiet/AddStock/${currentVariantIdForStock}?quantityToAdd=${quantityToAdd}`, {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // --- BẮT ĐẦU LOGIC ĐÚNG ---
+
+                    // 1. Tìm và cập nhật số lượng của chính phiên bản đó
+                    const stockSpan = $(`span.variant-stock[data-variant-id="${currentVariantIdForStock}"]`);
+                    stockSpan.text(data.newQuantity);
+
+                    // 2. Cập nhật lại data-current-stock trên các nút để lần mở modal sau lấy đúng số liệu
+                    const buttonContainer = stockSpan.closest('td');
+                    buttonContainer.find('.add-stock-btn').data('current-stock', data.newQuantity);
+                    buttonContainer.find('.adjust-stock-btn').data('current-stock', data.newQuantity);
+
+                    // 3. Tìm sản phẩm cha và tính toán lại tổng tồn kho
+                    const parentId = data.parentId;
+                    const parentRow = $(`#row-${parentId}`);
+                    let totalActiveStock = 0;
+                    let totalPhysicalStock = 0;
+
+                    // Lặp qua tất cả các phiên bản của sản phẩm cha đó để tính tổng
+                    parentRow.next('.sanphamchitiet-row').find('.variant-stock').each(function() {
+                        const stock = parseInt($(this).text());
+                        const isRowActive = $(this).closest('tr').find('.badge.bg-success').length > 0;
+                        if (!isNaN(stock)) {
+                            totalPhysicalStock += stock;
+                            if (isRowActive) {
+                                totalActiveStock += stock;
+                            }
+                        }
+                    });
+
+                    // 4. Cập nhật giao diện của sản phẩm cha
+                    parentRow.find('td').eq(3).find('span').text(`${totalActiveStock} / ${totalPhysicalStock}`);
+
+                    // 5. Đóng modal sau khi hoàn tất
+                    $('#addStockModal').modal('hide');
+
+                    // --- KẾT THÚC LOGIC ĐÚNG ---
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi AJAX khi nhập kho:', error);
+                alert('Đã xảy ra lỗi kết nối. Vui lòng thử lại.');
+            });
+        });
+
+            // Mở modal Kiểm kê
+            $(document).on('click', '.adjust-stock-btn', function() {
+                currentVariantIdForStock = $(this).data('id');
+                $('#modalAdjustProductName').text($(this).data('name'));
+                $('#modalAdjustCurrentStock').text($(this).data('current-stock'));
+                $('#actualQuantityInput').val($(this).data('current-stock'));
+                $('#adjustmentReasonInput').val('');
+                $('#adjustStockModal').modal('show');
+            });
+
+            // Xử lý xác nhận Kiểm kê
+            $('#confirmAdjustStockBtn').on('click', function() {
+                const actualQuantity = parseInt($('#actualQuantityInput').val());
+                const reason = $('#adjustmentReasonInput').val();
+                const token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
+
+                if (isNaN(actualQuantity) || actualQuantity < 0) {
+                    alert('Vui lòng nhập số lượng thực tế hợp lệ (lớn hơn hoặc bằng 0).');
+                    return;
+                }
+
+                const bodyData = new FormData();
+                bodyData.append('id', currentVariantIdForStock);
+                bodyData.append('actualQuantity', actualQuantity);
+                bodyData.append('reason', reason);
+
+                fetch(`/Admin/SanPhamChiTiet/AdjustStock`, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token },
+                    body: new URLSearchParams(bodyData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const stockSpan = $(`span.variant-stock[data-variant-id="${currentVariantIdForStock}"]`);
+                        stockSpan.text(data.newQuantity);
+                        stockSpan.closest('td').find('.add-stock-btn').data('current-stock', data.newQuantity);
+                        stockSpan.closest('td').find('.adjust-stock-btn').data('current-stock', data.newQuantity);
+
+                        const parentId = data.parentId;
+                        const parentRow = $(`#row-${parentId}`);
+                        let totalActiveStock = 0;
+                        let totalPhysicalStock = 0;
+                        parentRow.next('.sanphamchitiet-row').find('tr').each(function() {
+                            const stock = parseInt($(this).find('.variant-stock').text());
+                            const isRowActive = $(this).closest('tr').find('.badge.bg-success').length > 0;
+                             if (!isNaN(stock)) {
+                                totalPhysicalStock += stock;
+                                if (isRowActive) {
+                                    totalActiveStock += stock;
+                                }
+                            }
+                        });
+                        parentRow.find('td').eq(3).find('span').text(`${totalActiveStock} / ${totalPhysicalStock}`);
+                        $('#adjustStockModal').modal('hide');
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                }).catch(error => console.error('Lỗi AJAX khi điều chỉnh kho:', error));
+            });
+
+            // Mở sẵn sản phẩm chi tiết khi chuyển trang (sau khi thêm/sửa phiên bản)
+            var openSanPhamId = '@ViewBag.OpenSanPhamId';
+            if (openSanPhamId) {
+                var btn = $(`button[onclick*='loadChiTiet(${openSanPhamId},']`);
+                if (btn.length) {
+                    var parentStatus = 0;
+                    var statusText = btn.closest('tr').find('td').eq(4).find('.badge').text().trim();
+                    if (statusText === 'Đang kinh doanh') parentStatus = 1;
+                    else if (statusText === 'Chưa kinh doanh') parentStatus = 2;
+                    loadChiTiet(openSanPhamId, btn[0], parentStatus);
+                }
+            }
+        });
+    </script>
+}

@@ -1,0 +1,124 @@
+﻿@model DATNN.Models.DonHang
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hóa đơn @Model.MaDonHang</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            width: 80mm;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .receipt-header, .receipt-footer {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+            .receipt-header h3 {
+                margin: 0;
+                font-size: 18px;
+            }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .item-table th, .item-table td {
+                padding: 4px 0;
+                border-bottom: 1px dashed #ccc;
+            }
+
+            .item-table thead th {
+                text-align: left;
+                border-bottom: 1px solid #000;
+            }
+
+        .totals-table {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+            .totals-table td {
+                padding: 2px 0;
+            }
+
+        hr.dashed {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 10px 0;
+        }
+
+        @@media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-header">
+        <h3>TÊN CỬA HÀNG</h3>
+        <p>Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM<br>Điện thoại: 0123.456.789</p>
+    </div>
+    <h4 class="text-center">HÓA ĐƠN BÁN HÀNG</h4>
+    <p>Số HĐ: @Model.MaDonHang<br>Ngày: @Model.ThoiGianTao.ToString("dd/MM/yyyy HH:mm")<br>Khách hàng: @(Model.KhachHang?.HoTen ?? "Khách vãng lai")</p>
+    <table class="item-table">
+        <thead><tr><th>Tên SP</th><th>SL</th><th class="text-right">Thành tiền</th></tr></thead>
+        <tbody>
+            @foreach (var item in Model.DonHangChiTiets)
+            {
+                <tr><td colspan="3">@item.SanPhamChiTiet.SanPham.TenSanPham (@item.SanPhamChiTiet.MauSac.TenMau - @item.SanPhamChiTiet.Size.TenSize)</td></tr>
+                <tr><td></td><td>@item.SoLuong</td><td class="text-right">@((item.SoLuong * item.DonGia).ToString("N0"))đ</td></tr>
+            }
+        </tbody>
+    </table>
+    <hr class="dashed">
+    <table class="totals-table">
+        <tr>
+            <td>Tạm tính:</td>
+            <td class="text-right">@((Model.TongTien + (Model.SoTienDuocGiam ?? 0)).ToString("N0"))đ</td>
+        </tr>
+        @if ((Model.SoTienDuocGiam ?? 0) > 0)
+        {
+            <tr>
+                <td>Giảm giá (Voucher):</td>
+                <td class="text-right">-@((Model.SoTienDuocGiam ?? 0).ToString("N0"))đ</td>
+            </tr>
+        }
+        <tr>
+            <td><strong>Tổng cộng:</strong></td>
+            <td class="text-right"><strong>@Model.TongTien.ToString("N0")đ</strong></td>
+        </tr>
+        @if (Model.PhuongThucThanhToan == "Tiền mặt")
+        {
+            <tr>
+                <td>Tiền khách đưa:</td>
+                <td class="text-right">@((Model.TienMatDaNhan ?? 0).ToString("N0"))đ</td>
+            </tr>
+            <tr>
+                <td>Tiền trả lại:</td>
+                <td class="text-right">@(((Model.TienMatDaNhan ?? 0) - Model.TongTien).ToString("N0"))đ</td>
+            </tr>
+        }
+    </table>
+    <div class="receipt-footer"><p>Cảm ơn quý khách và hẹn gặp lại!</p></div>
+    <script> window.onload = function() { window.print(); } </script>
+</body>
+</html>
